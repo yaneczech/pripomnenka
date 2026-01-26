@@ -9,7 +9,7 @@
     <div class="card">
         <div class="card-body">
             <form action="/nova-pripominka" method="post" data-validate>
-                <?= CSRF::field() ?>
+                <?= \CSRF::field() ?>
 
                 <!-- Koho slavíte? -->
                 <div class="form-group">

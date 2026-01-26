@@ -23,7 +23,7 @@
             </div>
 
             <form action="/smazat-ucet" method="post">
-                <?= CSRF::field() ?>
+                <?= \CSRF::field() ?>
 
                 <div class="form-group">
                     <label for="confirmation" class="form-label form-label--required">
@@ -43,8 +43,8 @@
 
     <p class="text-small text-muted text-center mt-3">
         Pokud máte dotazy ohledně smazání, kontaktujte nás na
-        <a href="mailto:<?= e(Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?>">
-            <?= e(Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?>
+        <a href="mailto:<?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?>">
+            <?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?>
         </a>
     </p>
 

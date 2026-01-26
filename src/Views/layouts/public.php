@@ -18,12 +18,12 @@
                 <img src="<?= asset('img/logo.svg') ?>" alt="Připomněnka" height="40">
             </a>
 
-            <?php if (Session::isLoggedIn()): ?>
+            <?php if (\\Session::isLoggedIn()): ?>
                 <nav class="nav">
                     <a href="/moje-pripominky" class="nav-link">Moje připomínky</a>
                     <a href="/profil" class="nav-link">Profil</a>
                     <form action="/odhlaseni" method="post" class="nav-form">
-                        <?= CSRF::field() ?>
+                        <?= \CSRF::field() ?>
                         <button type="submit" class="nav-link nav-link--button">Odhlásit</button>
                     </form>
                 </nav>
@@ -65,7 +65,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <img src="<?= asset('img/ikona.svg') ?>" alt="" height="32">
+                    <img src="<?= asset('img/ikona.svg') ?>" alt="" height="48" style="filter: grayscale(100%) opacity(0.6);">
                     <span>Připomněnka</span>
                 </div>
                 <div class="footer-contact">
@@ -73,7 +73,7 @@
                     <p>Jihlava</p>
                 </div>
                 <div class="footer-links">
-                    <a href="/gdpr">Ochrana osobních údajů</a>
+                    <a href="/ochrana-udaju">Ochrana osobních údajů</a>
                 </div>
             </div>
             <div class="footer-bottom">

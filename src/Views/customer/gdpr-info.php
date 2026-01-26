@@ -11,8 +11,8 @@
             <p>
                 <strong>Květinářství Jeleni v zeleni</strong><br>
                 Adresa: [adresa provozovny]<br>
-                Email: <?= e(Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
-                Telefon: <?= e(Setting::get('shop_phone', '123 456 789')) ?>
+                Email: <?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
+                Telefon: <?= e(\Setting::get('shop_phone', '123 456 789')) ?>
             </p>
         </div>
     </div>

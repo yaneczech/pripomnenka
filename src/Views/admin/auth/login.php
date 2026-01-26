@@ -6,7 +6,7 @@
 <h1 class="login-title">Přihlášení</h1>
 
 <form action="/admin/prihlaseni" method="post" data-validate>
-    <?= CSRF::field() ?>
+    <?= \CSRF::field() ?>
 
     <div class="form-group">
         <label for="email" class="form-label">Email</label>

@@ -18,7 +18,7 @@
                 <h1 style="text-align: center; margin-bottom: var(--spacing-lg);">Nejdřív se představte</h1>
 
                 <form action="/aktivace/<?= e($token) ?>" method="post">
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <input type="hidden" name="step" value="1">
 
                     <div class="form-group">
@@ -98,7 +98,7 @@
                 <!-- Formulář pro přidání -->
                 <?php if ($remainingCount > 0): ?>
                     <form action="/aktivace/<?= e($token) ?>" method="post">
-                        <?= CSRF::field() ?>
+                        <?= \CSRF::field() ?>
                         <input type="hidden" name="step" value="2">
                         <input type="hidden" name="action" value="add_reminder">
 
@@ -155,7 +155,7 @@
 
         <!-- Tlačítka pro pokračování -->
         <form action="/aktivace/<?= e($token) ?>" method="post">
-            <?= CSRF::field() ?>
+            <?= \CSRF::field() ?>
             <input type="hidden" name="step" value="2">
             <input type="hidden" name="action" value="continue">
 
@@ -198,7 +198,7 @@
                 <?php endif; ?>
 
                 <form action="/aktivace/<?= e($token) ?>" method="post">
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <input type="hidden" name="step" value="3">
                     <button type="submit" class="btn btn--primary btn--large">Přejít do profilu</button>
                 </form>

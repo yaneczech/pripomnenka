@@ -83,7 +83,7 @@
 
                 <!-- Akční tlačítka -->
                 <form action="/admin/volani/<?= $call['queue_id'] ?>" method="post" id="call-action-form-<?= $call['queue_id'] ?>">
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <input type="hidden" name="action" value="">
 
                     <div class="call-card-actions">
@@ -110,7 +110,7 @@
                             <button class="modal-close" data-modal-close>&times;</button>
                         </div>
                         <form action="/admin/volani/<?= $call['queue_id'] ?>" method="post">
-                            <?= CSRF::field() ?>
+                            <?= \CSRF::field() ?>
                             <input type="hidden" name="action" value="completed">
                             <div class="modal-body">
                                 <div class="form-group">
@@ -138,7 +138,7 @@
                             <button class="modal-close" data-modal-close>&times;</button>
                         </div>
                         <form action="/admin/volani/<?= $call['queue_id'] ?>" method="post">
-                            <?= CSRF::field() ?>
+                            <?= \CSRF::field() ?>
                             <input type="hidden" name="action" value="postponed">
                             <div class="modal-body">
                                 <div class="form-group">

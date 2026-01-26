@@ -8,7 +8,7 @@
     <div class="card">
         <div class="card-body">
             <form action="/pripominka/<?= $reminder['id'] ?>" method="post" data-validate>
-                <?= CSRF::field() ?>
+                <?= \CSRF::field() ?>
 
                 <!-- Koho slavíte? -->
                 <div class="form-group">

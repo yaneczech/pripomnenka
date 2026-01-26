@@ -6,13 +6,13 @@
     <div style="display: flex; gap: var(--spacing-sm);">
         <?php if ($subscription && $subscription['status'] === 'awaiting_activation'): ?>
             <form action="/admin/zakaznik/<?= $customer['id'] ?>/email-aktivace" method="post" style="display: inline;">
-                <?= CSRF::field() ?>
+                <?= \CSRF::field() ?>
                 <button type="submit" class="btn btn--outline btn--small">Znovu poslat aktivaci</button>
             </form>
         <?php endif; ?>
         <?php if ($subscription && $subscription['status'] === 'awaiting_payment'): ?>
             <form action="/admin/zakaznik/<?= $customer['id'] ?>/email-qr" method="post" style="display: inline;">
-                <?= CSRF::field() ?>
+                <?= \CSRF::field() ?>
                 <button type="submit" class="btn btn--outline btn--small">Znovu poslat QR</button>
             </form>
         <?php endif; ?>
@@ -30,7 +30,7 @@
             </div>
             <div class="card-body">
                 <form action="/admin/zakaznik/<?= $customer['id'] ?>" method="post">
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
 
                     <div class="form-group">
                         <label for="name" class="form-label">Jméno</label>
@@ -127,7 +127,7 @@
             </div>
             <div class="card-body">
                 <form action="/admin/zakaznik/<?= $customer['id'] ?>" method="post">
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <input type="hidden" name="name" value="<?= e($customer['name'] ?? '') ?>">
                     <input type="hidden" name="phone" value="<?= e($customer['phone']) ?>">
                     <input type="hidden" name="email" value="<?= e($customer['email']) ?>">
@@ -262,7 +262,7 @@
     <p class="text-small text-muted">Smazání zákazníka je nevratné. Všechna data včetně připomínek budou odstraněna.</p>
     <form action="/admin/zakaznik/<?= $customer['id'] ?>/smazat" method="post"
           onsubmit="return confirm('Opravdu chcete smazat tohoto zákazníka? Tuto akci nelze vrátit.');">
-        <?= CSRF::field() ?>
+        <?= \CSRF::field() ?>
         <button type="submit" class="btn btn--danger btn--small">Smazat zákazníka</button>
     </form>
 </div>

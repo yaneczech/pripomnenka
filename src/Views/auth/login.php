@@ -11,7 +11,7 @@
             <?php if ($step === 'identifier'): ?>
                 <!-- Krok 1: Zadání telefonu nebo emailu -->
                 <form action="/prihlaseni" method="post" data-validate>
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <input type="hidden" name="step" value="identifier">
 
                     <div class="form-group">
@@ -39,7 +39,7 @@
                 </p>
 
                 <form action="/prihlaseni" method="post" data-validate>
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <input type="hidden" name="step" value="password">
 
                     <div class="form-group">
@@ -77,7 +77,7 @@
                 <?php endif; ?>
 
                 <form action="/prihlaseni" method="post" data-validate>
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <input type="hidden" name="step" value="otp">
 
                     <div class="form-group">
@@ -99,7 +99,7 @@
                 <?php if (!empty($canResend)): ?>
                     <div class="text-center mt-3">
                         <form action="/prihlaseni/znovu-poslat" method="post" style="display: inline;">
-                            <?= CSRF::field() ?>
+                            <?= \CSRF::field() ?>
                             <button type="submit" class="btn btn--ghost btn--small">Poslat kód znovu</button>
                         </form>
                     </div>
