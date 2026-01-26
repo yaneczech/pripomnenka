@@ -18,7 +18,7 @@
                 <img src="<?= asset('img/logo.svg') ?>" alt="Připomněnka" height="40">
             </a>
 
-            <?php if (\\Session::isLoggedIn()): ?>
+            <?php if (\Session::isLoggedIn()): ?>
                 <nav class="nav">
                     <a href="/moje-pripominky" class="nav-link">Moje připomínky</a>
                     <a href="/profil" class="nav-link">Profil</a>
