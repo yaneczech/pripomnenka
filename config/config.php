@@ -27,7 +27,7 @@ return [
 
     // Bezpečnostní nastavení
     'security' => [
-        'cron_token' => 'VYGENEROVAT_NAHODNY_TOKEN_32_ZNAKU',
+        'cron_token' => 'f8A3kN7vQ1mZx9T2cR5pL0hYw6JdS4uB',
         'session_lifetime' => 86400 * 30,  // 30 dní
         'otp_lifetime' => 600,  // 10 minut
         'otp_max_attempts' => 3,
