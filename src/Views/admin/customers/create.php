@@ -3,7 +3,7 @@
 <div class="card" style="max-width: 600px;">
     <div class="card-body">
         <form action="/admin/novy-zakaznik" method="post" data-validate id="quick-customer-form">
-            <?= CSRF::field() ?>
+            <?= \CSRF::field() ?>
 
             <div class="form-group">
                 <label for="phone" class="form-label form-label--required">Telefon</label>

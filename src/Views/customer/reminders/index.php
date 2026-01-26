@@ -86,7 +86,7 @@
                                     <a href="/pripominka/<?= $reminder['id'] ?>" class="btn btn--ghost btn--small">Upravit</a>
                                     <form action="/pripominka/<?= $reminder['id'] ?>/smazat" method="post" style="display: inline;"
                                           onsubmit="return confirm('Opravdu smazat tuto připomínku?');">
-                                        <?= CSRF::field() ?>
+                                        <?= \CSRF::field() ?>
                                         <button type="submit" class="btn btn--ghost btn--small text-error">Smazat</button>
                                     </form>
                                 </div>

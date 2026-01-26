@@ -21,9 +21,9 @@
             </a>
 
             <div class="admin-user">
-                <span class="admin-user-name"><?= e(Session::getAdminName() ?? 'Admin') ?></span>
+                <span class="admin-user-name"><?= e(\Session::getAdminName() ?? 'Admin') ?></span>
                 <form action="/admin/odhlaseni" method="post" class="admin-logout-form">
-                    <?= CSRF::field() ?>
+                    <?= \CSRF::field() ?>
                     <button type="submit" class="btn btn--small btn--outline">Odhlásit</button>
                 </form>
             </div>

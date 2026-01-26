@@ -11,7 +11,7 @@
         </div>
         <div class="card-body">
             <form action="/profil" method="post" data-validate>
-                <?= CSRF::field() ?>
+                <?= \CSRF::field() ?>
 
                 <div class="form-group">
                     <label for="name" class="form-label">Jméno</label>
@@ -47,7 +47,7 @@
         </div>
         <div class="card-body">
             <form action="/profil" method="post" data-validate>
-                <?= CSRF::field() ?>
+                <?= \CSRF::field() ?>
                 <input type="hidden" name="name" value="<?= e($customer['name'] ?? '') ?>">
 
                 <?php if ($customer['password_hash']): ?>
