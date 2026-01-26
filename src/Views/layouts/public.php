@@ -7,6 +7,7 @@
     <title><?= e($title ?? 'Připomněnka') ?> | Jeleni v zeleni</title>
 
     <link rel="icon" type="image/svg+xml" href="<?= asset('img/ikona.svg') ?>">
+    <link rel="stylesheet" href="https://use.typekit.net/kmq6mvy.css">
     <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
 </head>
 <body class="layout-public">

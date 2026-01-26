@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Přístup odepřen | Připomněnka</title>
     <link rel="icon" type="image/svg+xml" href="/assets/img/ikona.svg">
+    <link rel="stylesheet" href="https://use.typekit.net/kmq6mvy.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'skolar-latin', Georgia, 'Times New Roman', serif;
             background: #fbf8e7;
             color: #544a26;
             min-height: 100vh;

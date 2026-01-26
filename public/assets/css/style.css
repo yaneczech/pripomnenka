@@ -34,7 +34,7 @@
     --color-info-light: #e6f0f8;
 
     /* Typography */
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family: 'skolar-latin', Georgia, 'Times New Roman', serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-base: 1rem;
@@ -117,10 +117,14 @@ img {
    Typography
    ======================================== */
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
+    font-weight: 600; /* Skolar Latin Semibold */
     line-height: 1.3;
     color: var(--color-text);
     margin-bottom: var(--spacing-md);
+}
+
+em, i {
+    font-style: italic; /* Skolar Latin Italic */
 }
 
 h1 { font-size: var(--font-size-3xl); }
