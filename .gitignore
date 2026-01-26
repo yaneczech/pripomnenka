@@ -1,0 +1,26 @@
+# Logy
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Lokální konfigurace
+config/config.local.php
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Composer (pokud bude použit)
+/vendor/
+composer.lock
+
+# Node (pokud bude použit)
+/node_modules/
+package-lock.json
