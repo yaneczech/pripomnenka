@@ -37,9 +37,9 @@ header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 
-// CSP hlavička - povoluje Typekit fonty
+// CSP hlavicka - povoluje Typekit fonty a Remixicon z jsDelivr
 if (!$config['app']['debug']) {
-    header("Content-Security-Policy: default-src 'self'; script-src 'self' https://use.typekit.net; style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net; font-src 'self' https://use.typekit.net https://p.typekit.net; img-src 'self' data: https://p.typekit.net;");
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' https://use.typekit.net; style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net https://cdn.jsdelivr.net; font-src 'self' https://use.typekit.net https://p.typekit.net https://cdn.jsdelivr.net; img-src 'self' data: https://p.typekit.net;");
 }
 
 // Autoloader pro třídy

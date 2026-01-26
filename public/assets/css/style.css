@@ -136,6 +136,19 @@ p {
     margin-bottom: var(--spacing-md);
 }
 
+/* Ceske uvozovky */
+q {
+    quotes: '\201E' '\201C' '\201A' '\2018';
+}
+
+q::before {
+    content: open-quote;
+}
+
+q::after {
+    content: close-quote;
+}
+
 /* ========================================
    Layout
    ======================================== */

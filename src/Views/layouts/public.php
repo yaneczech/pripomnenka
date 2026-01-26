@@ -8,6 +8,7 @@
 
     <link rel="icon" type="image/svg+xml" href="<?= asset('img/ikona.svg') ?>">
     <link rel="stylesheet" href="https://use.typekit.net/kmq6mvy.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
     <link rel="stylesheet" href="<?= asset('css/style.css') ?>">
 </head>
 <body class="layout-public">

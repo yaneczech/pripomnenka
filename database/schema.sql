@@ -48,13 +48,15 @@ CREATE TABLE IF NOT EXISTS customers (
     email_hash VARCHAR(64) NOT NULL,
     name VARCHAR(100) DEFAULT NULL,
     password_hash VARCHAR(255) DEFAULT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
     gdpr_consent_at DATETIME DEFAULT NULL,
     gdpr_consent_text TEXT DEFAULT NULL,
     last_login_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_phone_hash (phone_hash),
-    INDEX idx_email_hash (email_hash)
+    INDEX idx_email_hash (email_hash),
+    INDEX idx_is_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
 
 -- --------------------------------------------
