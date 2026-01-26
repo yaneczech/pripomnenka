@@ -251,7 +251,7 @@ class Customer
     /**
      * Kontrola existence emailu nebo telefonu
      */
-    public function exists(string $email = null, string $phone = null, int $excludeId = null): bool
+    public function exists(?string $email = null, ?string $phone = null, ?int $excludeId = null): bool
     {
         if ($email) {
             $hash = create_search_hash($email);
