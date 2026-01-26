@@ -17,7 +17,7 @@
     <header class="admin-header">
         <div class="container">
             <a href="/admin" class="admin-logo">
-                <img src="<?= asset('img/ikona.svg') ?>" alt="" height="32">
+                <img src="<?= asset('img/ikona.svg') ?>" alt="" height="32" style="height: 32px;">
                 <span>Připomněnka</span>
             </a>
 
