@@ -1,6 +1,6 @@
 <div class="container" style="max-width: 800px; text-align: center; padding: var(--spacing-2xl) var(--spacing-md);">
 
-    <img src="<?= asset('img/logo.svg') ?>" alt="Připomněnka" style="max-width: 300px; margin-bottom: var(--spacing-xl);">
+    <img src="<?= asset('img/logo.svg') ?>" alt="Připomněnka" style="max-width: 300px; margin: 0 auto var(--spacing-xl) auto;">
 
     <h1 style="font-size: 2.5rem; margin-bottom: var(--spacing-md);">Nikdy nezapomeňte na důležitá data</h1>
 

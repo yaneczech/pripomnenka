@@ -1,7 +1,7 @@
 <div class="container" style="max-width: 400px; padding: var(--spacing-2xl) var(--spacing-md);">
 
     <div style="text-align: center; margin-bottom: var(--spacing-xl);">
-        <img src="<?= asset('img/logo.svg') ?>" alt="Připomněnka" style="max-width: 200px; margin-bottom: var(--spacing-md);">
+        <img src="<?= asset('img/logo.svg') ?>" alt="Připomněnka" style="max-width: 200px; margin: 0 auto var(--spacing-md) auto;">
         <h1 style="font-size: var(--font-size-2xl);">Přihlášení</h1>
     </div>
 
