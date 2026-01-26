@@ -1,10 +1,10 @@
 <div class="page-header">
-    <h1>Tarify predplatneho</h1>
+    <h1>Tarify předplatného</h1>
 </div>
 
 <div class="settings-nav">
     <a href="/admin/nastaveni" class="settings-nav-item">
-        <i class="ri-settings-3-line"></i> Obecne
+        <i class="ri-settings-3-line"></i> Obecné
     </a>
     <a href="/admin/nastaveni/plany" class="settings-nav-item settings-nav-item--active">
         <i class="ri-price-tag-3-line"></i> Tarify
@@ -14,15 +14,15 @@
 <!-- Seznam tarifů -->
 <div class="card mb-3">
     <div class="card-header">
-        <h2 class="card-title">Aktualni tarify</h2>
+        <h2 class="card-title">Aktuální tarify</h2>
     </div>
     <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
-                    <th>Nazev</th>
+                    <th>Název</th>
                     <th>Cena</th>
-                    <th>Pripominek</th>
+                    <th>Připomínek</th>
                     <th>Sleva</th>
                     <th>Stav</th>
                     <th>Akce</th>
@@ -34,20 +34,20 @@
                         <td>
                             <strong><?= e($plan['name']) ?></strong>
                             <?php if ($plan['is_default']): ?>
-                                <span class="badge badge--primary">Vychozi</span>
+                                <span class="badge badge--primary">Výchozí</span>
                             <?php endif; ?>
                             <?php if ($plan['description']): ?>
                                 <div class="text-small text-muted"><?= e($plan['description']) ?></div>
                             <?php endif; ?>
                         </td>
-                        <td><?= number_format($plan['price'], 0, ',', ' ') ?> Kc/rok</td>
+                        <td><?= number_format($plan['price'], 0, ',', ' ') ?> Kč/rok</td>
                         <td><?= $plan['reminder_limit'] ?></td>
                         <td><?= $plan['discount_percent'] ?>%</td>
                         <td>
                             <?php if ($plan['is_available']): ?>
-                                <span class="badge badge--success">Aktivni</span>
+                                <span class="badge badge--success">Aktivní</span>
                             <?php else: ?>
-                                <span class="badge badge--muted">Neaktivni</span>
+                                <span class="badge badge--muted">Neaktivní</span>
                             <?php endif; ?>
                         </td>
                         <td>
@@ -68,7 +68,7 @@
                                         <?= \CSRF::field() ?>
                                         <input type="hidden" name="action" value="set_default">
                                         <input type="hidden" name="plan_id" value="<?= $plan['id'] ?>">
-                                        <button type="submit" class="btn btn--small btn--ghost" title="Nastavit jako vychozi">
+                                        <button type="submit" class="btn btn--small btn--ghost" title="Nastavit jako výchozí">
                                             <i class="ri-star-line"></i>
                                         </button>
                                     </form>
@@ -85,7 +85,7 @@
 <!-- Přidat nový tarif -->
 <div class="card">
     <div class="card-header">
-        <h2 class="card-title"><i class="ri-add-line"></i> Pridat novy tarif</h2>
+        <h2 class="card-title"><i class="ri-add-line"></i> Přidat nový tarif</h2>
     </div>
     <div class="card-body">
         <form action="/admin/nastaveni/plany" method="post">
@@ -94,18 +94,18 @@
 
             <div class="form-row form-row--2">
                 <div class="form-group">
-                    <label for="name" class="form-label form-label--required">Nazev tarifu</label>
-                    <input type="text" id="name" name="name" class="form-input" required placeholder="Napr. Premium">
+                    <label for="name" class="form-label form-label--required">Název tarifu</label>
+                    <input type="text" id="name" name="name" class="form-input" required placeholder="Např. Premium">
                 </div>
                 <div class="form-group">
-                    <label for="price" class="form-label form-label--required">Cena (Kc/rok)</label>
+                    <label for="price" class="form-label form-label--required">Cena (Kč/rok)</label>
                     <input type="number" id="price" name="price" class="form-input" required min="1" step="1">
                 </div>
             </div>
 
             <div class="form-row form-row--2">
                 <div class="form-group">
-                    <label for="reminder_limit" class="form-label">Limit pripominek</label>
+                    <label for="reminder_limit" class="form-label">Limit připomínek</label>
                     <input type="number" id="reminder_limit" name="reminder_limit" class="form-input" value="5" min="1" max="100">
                 </div>
                 <div class="form-group">
@@ -116,11 +116,11 @@
 
             <div class="form-group">
                 <label for="description" class="form-label">Popis</label>
-                <textarea id="description" name="description" class="form-textarea" rows="2" placeholder="Kratky popis tarifu pro zakazniky..."></textarea>
+                <textarea id="description" name="description" class="form-textarea" rows="2" placeholder="Krátký popis tarifu pro zákazníky..."></textarea>
             </div>
 
             <button type="submit" class="btn btn--primary">
-                <i class="ri-add-line"></i> Pridat tarif
+                <i class="ri-add-line"></i> Přidat tarif
             </button>
         </form>
     </div>
@@ -141,7 +141,7 @@
 
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="edit_name" class="form-label">Nazev</label>
+                    <label for="edit_name" class="form-label">Název</label>
                     <input type="text" id="edit_name" name="name" class="form-input" required>
                 </div>
                 <div class="form-row form-row--2">
@@ -150,7 +150,7 @@
                         <input type="number" id="edit_price" name="price" class="form-input" required min="1">
                     </div>
                     <div class="form-group">
-                        <label for="edit_reminder_limit" class="form-label">Limit pripominek</label>
+                        <label for="edit_reminder_limit" class="form-label">Limit připomínek</label>
                         <input type="number" id="edit_reminder_limit" name="reminder_limit" class="form-input" min="1">
                     </div>
                 </div>
@@ -164,8 +164,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn--ghost" onclick="closeModal()">Zrusit</button>
-                <button type="submit" class="btn btn--primary">Ulozit</button>
+                <button type="button" class="btn btn--ghost" onclick="closeModal()">Zrušit</button>
+                <button type="submit" class="btn btn--primary">Uložit</button>
             </div>
         </form>
     </div>

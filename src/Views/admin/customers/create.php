@@ -8,7 +8,7 @@
             <div class="form-group">
                 <label for="phone" class="form-label form-label--required">Telefon</label>
                 <input type="tel" id="phone" name="phone" class="form-input <?= isset($errors['phone']) ? 'form-input--error' : '' ?>"
-                       value="<?= e(old('phone')) ?>" placeholder="+420 777 888 999" required autofocus>
+                       value="<?= e(old('phone', '+420 ')) ?>" placeholder="+420 777 888 999" required autofocus>
                 <?php if (isset($errors['phone'])): ?>
                     <span class="form-error"><?= e($errors['phone']) ?></span>
                 <?php endif; ?>
