@@ -9,21 +9,34 @@ declare(strict_types=1);
 
 namespace Controllers;
 
+use Models\Customer;
+use Models\Subscription;
+
 class CustomerController extends BaseController
 {
+    private Customer $customer;
+    private Subscription $subscription;
+
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+        $this->customer = new Customer();
+        $this->subscription = new Subscription();
+    }
+
     /**
      * Show customer profile
      */
     public function profile(array $params): void
     {
         $customerId = \Session::getCustomerId();
-        $customer = \Customer::find($customerId);
+        $customer = $this->customer->find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
         }
 
-        $subscription = \Subscription::findByCustomerId($customerId);
+        $subscription = $this->subscription->findByCustomerId($customerId);
 
         $this->view('customer/profile', [
             'customer' => $customer,
@@ -39,7 +52,7 @@ class CustomerController extends BaseController
         \CSRF::verify();
 
         $customerId = \Session::getCustomerId();
-        $customer = \Customer::find($customerId);
+        $customer = $this->customer->find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
@@ -50,7 +63,7 @@ class CustomerController extends BaseController
         ];
 
         // Update customer
-        \Customer::update($customerId, $data);
+        $this->customer->update($customerId, $data);
 
         // Handle password change
         $currentPassword = $_POST['current_password'] ?? '';
@@ -76,8 +89,8 @@ class CustomerController extends BaseController
             }
 
             // Update password
-            \Customer::update($customerId, [
-                'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
+            $this->customer->update($customerId, [
+                'password' => $newPassword,
             ]);
 
             \Session::flash('success', 'Profil a heslo byly aktualizovány.');
@@ -94,14 +107,14 @@ class CustomerController extends BaseController
     public function exportData(array $params): void
     {
         $customerId = \Session::getCustomerId();
-        $customer = \Customer::find($customerId);
+        $customer = $this->customer->find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
         }
 
         // Get all customer data
-        $data = \Customer::exportGdprData($customerId);
+        $data = $this->customer->exportData($customerId);
 
         // Determine format
         $format = $_GET['format'] ?? 'json';
@@ -146,7 +159,7 @@ class CustomerController extends BaseController
     public function deleteAccountForm(array $params): void
     {
         $customerId = \Session::getCustomerId();
-        $customer = \Customer::find($customerId);
+        $customer = $this->customer->find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
@@ -165,7 +178,7 @@ class CustomerController extends BaseController
         \CSRF::verify();
 
         $customerId = \Session::getCustomerId();
-        $customer = \Customer::find($customerId);
+        $customer = $this->customer->find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
@@ -188,7 +201,7 @@ class CustomerController extends BaseController
         ));
 
         // Delete customer (cascades to all related data)
-        \Customer::delete($customerId);
+        $this->customer->delete($customerId);
 
         // Clear session
         \Session::logout();

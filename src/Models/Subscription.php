@@ -61,6 +61,14 @@ class Subscription
     }
 
     /**
+     * Alias pro findLatestByCustomer
+     */
+    public function findByCustomerId(int $customerId): ?array
+    {
+        return $this->findLatestByCustomer($customerId);
+    }
+
+    /**
      * Najít předplatné podle variabilního symbolu
      */
     public function findByVariableSymbol(string $vs): ?array
