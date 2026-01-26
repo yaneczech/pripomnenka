@@ -256,9 +256,9 @@
 
 </div>
 
-<!-- Sprava zakaznika -->
+<!-- Správa zákazníka -->
 <div class="mt-4" style="border-top: 1px solid var(--color-border); padding-top: var(--spacing-xl);">
-    <h3>Sprava zakaznika</h3>
+    <h3>Správa zákazníka</h3>
 
     <!-- Aktivace/Deaktivace -->
     <div class="mb-3">
@@ -266,29 +266,29 @@
             <?= \CSRF::field() ?>
             <?php if ($customer['is_active'] ?? true): ?>
                 <button type="submit" class="btn btn--outline btn--small">
-                    <i class="ri-user-unfollow-line"></i> Deaktivovat zakaznika
+                    <i class="ri-user-unfollow-line"></i> Deaktivovat zákazníka
                 </button>
                 <span class="text-small text-muted" style="margin-left: var(--spacing-sm);">
-                    Deaktivovany zakaznik se nebude zobrazovat v seznamu k provolani.
+                    Deaktivovaný zákazník se nebude zobrazovat v seznamu k provolání.
                 </span>
             <?php else: ?>
                 <button type="submit" class="btn btn--primary btn--small">
-                    <i class="ri-user-follow-line"></i> Aktivovat zakaznika
+                    <i class="ri-user-follow-line"></i> Aktivovat zákazníka
                 </button>
-                <span class="badge badge--warning" style="margin-left: var(--spacing-sm);">Deaktivovano</span>
+                <span class="badge badge--warning" style="margin-left: var(--spacing-sm);">Deaktivováno</span>
             <?php endif; ?>
         </form>
     </div>
 
-    <!-- Smazani -->
+    <!-- Smazání -->
     <div class="mt-3">
-        <h4 class="text-error"><i class="ri-error-warning-line"></i> Nebezpecna zona</h4>
-        <p class="text-small text-muted">Smazani zakaznika je nevratne. Vsechna data vcetne pripominek budou odstranena.</p>
+        <h4 class="text-error"><i class="ri-error-warning-line"></i> Nebezpečná zóna</h4>
+        <p class="text-small text-muted">Smazání zákazníka je nevratné. Všechna data včetně připomínek budou odstraněna.</p>
         <form action="/admin/zakaznik/<?= $customer['id'] ?>/smazat" method="post"
-              onsubmit="return confirm('Opravdu chcete smazat tohoto zakaznika? Tuto akci nelze vratit.');">
+              onsubmit="return confirm('Opravdu chcete smazat tohoto zákazníka? Tuto akci nelze vrátit.');">
             <?= \CSRF::field() ?>
             <button type="submit" class="btn btn--danger btn--small">
-                <i class="ri-delete-bin-line"></i> Smazat zakaznika
+                <i class="ri-delete-bin-line"></i> Smazat zákazníka
             </button>
         </form>
     </div>

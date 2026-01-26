@@ -141,9 +141,9 @@ class Subscription
     }
 
     /**
-     * Potvrdit platbu (hotově/kartou)
+     * Potvrdit platbu (hotove/kartou)
      */
-    public function confirmPayment(int $id, int $adminId = null, float $amount = null): bool
+    public function confirmPayment(int $id, ?int $adminId = null, ?float $amount = null): bool
     {
         $subscription = $this->find($id);
         if (!$subscription) {
@@ -172,9 +172,9 @@ class Subscription
     }
 
     /**
-     * Potvrdit platbu převodem
+     * Potvrdit platbu prevodem
      */
-    public function confirmBankPayment(int $id, float $amount, int $adminId = null): bool
+    public function confirmBankPayment(int $id, float $amount, ?int $adminId = null): bool
     {
         $subscription = $this->find($id);
         if (!$subscription) {
@@ -351,7 +351,7 @@ class Subscription
     }
 
     /**
-     * Statistiky předplatného
+     * Statistiky predplatneho
      */
     public function getStats(): array
     {
@@ -366,5 +366,78 @@ class Subscription
                  WHERE payment_status = 'paid' AND MONTH(payment_confirmed_at) = MONTH(CURDATE()) AND YEAR(payment_confirmed_at) = YEAR(CURDATE())"
             ),
         ];
+    }
+
+    /**
+     * Pocet predplatnych podle stavu
+     */
+    public function countByStatus(string $status): int
+    {
+        return (int) $this->db->fetchColumn(
+            "SELECT COUNT(*) FROM subscriptions WHERE status = ?",
+            [$status]
+        );
+    }
+
+    /**
+     * Najit predplatna podle stavu
+     */
+    public function findByStatus(string $status): array
+    {
+        return $this->db->fetchAll(
+            "SELECT s.*, sp.name as plan_name, c.name as customer_name, c.email, c.phone
+             FROM subscriptions s
+             JOIN subscription_plans sp ON sp.id = s.plan_id
+             JOIN customers c ON c.id = s.customer_id
+             WHERE s.status = ?
+             ORDER BY s.created_at DESC",
+            [$status]
+        );
+    }
+
+    /**
+     * Vsechna predplatna
+     */
+    public function findAll(): array
+    {
+        return $this->db->fetchAll(
+            "SELECT s.*, sp.name as plan_name, c.name as customer_name, c.email, c.phone
+             FROM subscriptions s
+             JOIN subscription_plans sp ON sp.id = s.plan_id
+             JOIN customers c ON c.id = s.customer_id
+             ORDER BY s.created_at DESC"
+        );
+    }
+
+    /**
+     * Predplatna expiruji brzy
+     */
+    public function findExpiringSoon(int $days): array
+    {
+        $date = date('Y-m-d', strtotime("+{$days} days"));
+
+        return $this->db->fetchAll(
+            "SELECT s.*, sp.name as plan_name, c.name as customer_name, c.email, c.phone
+             FROM subscriptions s
+             JOIN subscription_plans sp ON sp.id = s.plan_id
+             JOIN customers c ON c.id = s.customer_id
+             WHERE s.status = 'active' AND s.expires_at <= ? AND s.expires_at >= CURDATE()
+             ORDER BY s.expires_at ASC",
+            [$date]
+        );
+    }
+
+    /**
+     * Pocet predplatnych expiruji brzy
+     */
+    public function countExpiringSoon(int $days): int
+    {
+        $date = date('Y-m-d', strtotime("+{$days} days"));
+
+        return (int) $this->db->fetchColumn(
+            "SELECT COUNT(*) FROM subscriptions
+             WHERE status = 'active' AND expires_at <= ? AND expires_at >= CURDATE()",
+            [$date]
+        );
     }
 }

@@ -1,11 +1,11 @@
 <h1>Dashboard</h1>
 
 <?php if ($todayCallCount === 0 && $unmatchedPaymentsCount === 0 && $awaitingActivationCount === 0): ?>
-    <!-- Prazdny stav -->
+    <!-- Prázdný stav -->
     <div class="empty-state">
         <div class="empty-state-icon"><i class="ri-sparkling-2-fill"></i></div>
         <h2 class="empty-state-title">Dnes je klid!</h2>
-        <p class="empty-state-text">Vsechno bezi jak ma. Zadne ukoly k vyrizeni.</p>
+        <p class="empty-state-text">Všechno běží jak má. Žádné úkoly k vyřízení.</p>
     </div>
 <?php endif; ?>
 
@@ -18,25 +18,25 @@
         <div class="widget-label">Dnes volat</div>
     </a>
 
-    <!-- Ceka na aktivaci -->
+    <!-- Čeká na aktivaci -->
     <a href="/admin/zakaznici?filter=awaiting_activation" class="widget" data-href="/admin/zakaznici?filter=awaiting_activation">
         <div class="widget-icon"><i class="ri-hourglass-line"></i></div>
         <div class="widget-value"><?= $awaitingActivationCount ?></div>
-        <div class="widget-label">Ceka na aktivaci</div>
+        <div class="widget-label">Čeká na aktivaci</div>
     </a>
 
-    <!-- Nesparovane platby -->
+    <!-- Nespárované platby -->
     <a href="/admin/predplatne?filter=unmatched" class="widget <?= $unmatchedPaymentsCount > 0 ? 'widget--error' : '' ?>" data-href="/admin/predplatne?filter=unmatched">
         <div class="widget-icon"><i class="ri-bank-card-line"></i></div>
         <div class="widget-value"><?= $unmatchedPaymentsCount ?></div>
-        <div class="widget-label">Nesparovane platby</div>
+        <div class="widget-label">Nespárované platby</div>
     </a>
 
-    <!-- Tento tyden -->
+    <!-- Tento týden -->
     <a href="/admin/tyden" class="widget" data-href="/admin/tyden">
         <div class="widget-icon"><i class="ri-calendar-line"></i></div>
         <div class="widget-value"><?= $thisWeekCount ?></div>
-        <div class="widget-label">Tento tyden</div>
+        <div class="widget-label">Tento týden</div>
     </a>
 
     <!-- Expiruje brzy -->
@@ -56,18 +56,18 @@
         <div class="stats-grid">
             <div class="stat-item">
                 <div class="stat-value"><?= $stats['customers_active'] ?></div>
-                <div class="stat-label">Aktivnich zakazniku</div>
+                <div class="stat-label">Aktivních zákazníků</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value"><?= $stats['reminders_total'] ?></div>
-                <div class="stat-label">Pripominek celkem</div>
+                <div class="stat-label">Připomínek celkem</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value"><?= number_format($stats['revenue_this_month'], 0, ',', ' ') ?> Kc</div>
-                <div class="stat-label">Tento mesic</div>
+                <div class="stat-value"><?= number_format($stats['revenue_this_month'], 0, ',', ' ') ?> Kč</div>
+                <div class="stat-label">Tento měsíc</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value"><?= number_format($stats['revenue_total'], 0, ',', ' ') ?> Kc</div>
+                <div class="stat-value"><?= number_format($stats['revenue_total'], 0, ',', ' ') ?> Kč</div>
                 <div class="stat-label">Celkem</div>
             </div>
         </div>

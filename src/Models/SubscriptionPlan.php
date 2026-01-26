@@ -49,13 +49,21 @@ class SubscriptionPlan
     }
 
     /**
-     * Získat všechny plány (včetně nedostupných)
+     * Ziskat vsechny plany (vcetne nedostupnych)
      */
     public function getAll(): array
     {
         return $this->db->fetchAll(
             "SELECT * FROM subscription_plans ORDER BY sort_order ASC"
         );
+    }
+
+    /**
+     * Alias pro getAll
+     */
+    public function findAll(): array
+    {
+        return $this->getAll();
     }
 
     /**

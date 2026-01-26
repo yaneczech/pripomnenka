@@ -318,7 +318,7 @@ class AdminCustomerController extends BaseController
         $subscription = $this->subscription->findLatestByCustomer($id);
 
         if (!$subscription || $subscription['status'] !== 'awaiting_payment') {
-            flash('error', 'Zakaznik nema predplatne cekajici na platbu.');
+            flash('error', 'Zákazník nemá předplatné čekající na platbu.');
             $this->redirect('/admin/zakaznik/' . $id);
         }
 
@@ -329,7 +329,7 @@ class AdminCustomerController extends BaseController
     }
 
     /**
-     * Prepnout aktivni stav zakaznika
+     * Přepnout aktivní stav zákazníka
      */
     public function toggleActive(array $params): void
     {
@@ -345,7 +345,7 @@ class AdminCustomerController extends BaseController
         $this->customer->toggleActive($id);
 
         $isActive = !($customer['is_active'] ?? true);
-        $message = $isActive ? 'Zakaznik byl aktivovan.' : 'Zakaznik byl deaktivovan.';
+        $message = $isActive ? 'Zákazník byl aktivován.' : 'Zákazník byl deaktivován.';
 
         flash('success', $message);
         $this->redirect('/admin/zakaznik/' . $id);

@@ -33,7 +33,7 @@ class SettingsController extends BaseController
         $plans = $this->plan->findAll();
 
         $this->view('admin/settings/index', [
-            'title' => 'Nastaveni',
+            'title' => 'Nastavení',
             'settings' => $settings,
             'plans' => $plans,
         ], 'admin');
@@ -87,7 +87,7 @@ class SettingsController extends BaseController
             $this->setting->set($key, (string) $value);
         }
 
-        flash('success', 'Nastaveni bylo ulozeno.');
+        flash('success', 'Nastavení bylo uloženo.');
         $this->redirect('/admin/nastaveni');
     }
 
@@ -99,7 +99,7 @@ class SettingsController extends BaseController
         $plans = $this->plan->findAll();
 
         $this->view('admin/settings/plans', [
-            'title' => 'Tarify predplatneho',
+            'title' => 'Tarify předplatného',
             'plans' => $plans,
         ], 'admin');
     }
@@ -147,7 +147,7 @@ class SettingsController extends BaseController
         $description = trim($this->input('description', ''));
 
         if (empty($name) || $price <= 0) {
-            flash('error', 'Vyplnte nazev a cenu tarifu.');
+            flash('error', 'Vyplňte název a cenu tarifu.');
             return;
         }
 
@@ -163,7 +163,7 @@ class SettingsController extends BaseController
             'sort_order' => 99,
         ]);
 
-        flash('success', 'Tarif byl pridan.');
+        flash('success', 'Tarif byl přidán.');
     }
 
     /**
@@ -179,7 +179,7 @@ class SettingsController extends BaseController
         $description = trim($this->input('description', ''));
 
         if ($id <= 0 || empty($name) || $price <= 0) {
-            flash('error', 'Neplatna data.');
+            flash('error', 'Neplatná data.');
             return;
         }
 
@@ -191,7 +191,7 @@ class SettingsController extends BaseController
             'description' => $description,
         ]);
 
-        flash('success', 'Tarif byl aktualizovan.');
+        flash('success', 'Tarif byl aktualizován.');
     }
 
     /**
@@ -202,7 +202,7 @@ class SettingsController extends BaseController
         $id = (int) $this->input('plan_id', 0);
 
         if ($id <= 0) {
-            flash('error', 'Neplatny tarif.');
+            flash('error', 'Neplatný tarif.');
             return;
         }
 
@@ -211,7 +211,7 @@ class SettingsController extends BaseController
             $this->plan->update($id, [
                 'is_available' => !$plan['is_available'],
             ]);
-            flash('success', $plan['is_available'] ? 'Tarif byl deaktivovan.' : 'Tarif byl aktivovan.');
+            flash('success', $plan['is_available'] ? 'Tarif byl deaktivován.' : 'Tarif byl aktivován.');
         }
     }
 
@@ -223,7 +223,7 @@ class SettingsController extends BaseController
         $id = (int) $this->input('plan_id', 0);
 
         if ($id <= 0) {
-            flash('error', 'Neplatny tarif.');
+            flash('error', 'Neplatný tarif.');
             return;
         }
 
@@ -233,7 +233,7 @@ class SettingsController extends BaseController
         // Nastavit nový výchozí
         $this->plan->update($id, ['is_default' => true]);
 
-        flash('success', 'Vychozi tarif byl nastaven.');
+        flash('success', 'Výchozí tarif byl nastaven.');
     }
 
     /**
