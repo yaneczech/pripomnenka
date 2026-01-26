@@ -318,13 +318,36 @@ class AdminCustomerController extends BaseController
         $subscription = $this->subscription->findLatestByCustomer($id);
 
         if (!$subscription || $subscription['status'] !== 'awaiting_payment') {
-            flash('error', 'Zákazník nemá předplatné čekající na platbu.');
+            flash('error', 'Zakaznik nema predplatne cekajici na platbu.');
             $this->redirect('/admin/zakaznik/' . $id);
         }
 
-        // TODO: Odeslat email s QR kódem
-        flash('success', 'Email s QR kódem byl odeslán. VS: ' . $subscription['variable_symbol']);
+        // TODO: Odeslat email s QR kodem
+        flash('success', 'Email s QR kodem byl odeslan. VS: ' . $subscription['variable_symbol']);
 
+        $this->redirect('/admin/zakaznik/' . $id);
+    }
+
+    /**
+     * Prepnout aktivni stav zakaznika
+     */
+    public function toggleActive(array $params): void
+    {
+        $this->validateCsrf();
+
+        $id = (int) $params['id'];
+        $customer = $this->customer->find($id);
+
+        if (!$customer) {
+            $this->notFound();
+        }
+
+        $this->customer->toggleActive($id);
+
+        $isActive = !($customer['is_active'] ?? true);
+        $message = $isActive ? 'Zakaznik byl aktivovan.' : 'Zakaznik byl deaktivovan.';
+
+        flash('success', $message);
         $this->redirect('/admin/zakaznik/' . $id);
     }
 }

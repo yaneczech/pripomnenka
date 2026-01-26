@@ -323,4 +323,33 @@ class Customer
             'exported_at' => date('Y-m-d H:i:s'),
         ];
     }
+
+    /**
+     * Deaktivovat zakaznika
+     */
+    public function deactivate(int $id): bool
+    {
+        return $this->update($id, ['is_active' => false]);
+    }
+
+    /**
+     * Aktivovat zakaznika
+     */
+    public function activate(int $id): bool
+    {
+        return $this->update($id, ['is_active' => true]);
+    }
+
+    /**
+     * Prepnout stav aktivace
+     */
+    public function toggleActive(int $id): bool
+    {
+        $customer = $this->find($id);
+        if (!$customer) {
+            return false;
+        }
+
+        return $this->update($id, ['is_active' => !$customer['is_active']]);
+    }
 }
