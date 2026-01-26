@@ -284,12 +284,41 @@
     <div class="mt-3">
         <h4 class="text-error"><i class="ri-error-warning-line"></i> Nebezpečná zóna</h4>
         <p class="text-small text-muted">Smazání zákazníka je nevratné. Všechna data včetně připomínek budou odstraněna.</p>
-        <form action="/admin/zakaznik/<?= $customer['id'] ?>/smazat" method="post"
-              onsubmit="return confirm('Opravdu chcete smazat tohoto zákazníka? Tuto akci nelze vrátit.');">
+        <button type="button" class="btn btn--danger btn--small" onclick="document.getElementById('deleteCustomerModal').style.display='flex'">
+            <i class="ri-delete-bin-line"></i> Smazat zákazníka
+        </button>
+    </div>
+</div>
+
+<!-- Modal pro potvrzení smazání -->
+<div class="modal-overlay" id="deleteCustomerModal" style="display: none;">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="ri-error-warning-line"></i> Potvrdit smazání</h3>
+            <button class="modal-close" onclick="document.getElementById('deleteCustomerModal').style.display='none'">&times;</button>
+        </div>
+        <form action="/admin/zakaznik/<?= $customer['id'] ?>/smazat" method="post">
             <?= \CSRF::field() ?>
-            <button type="submit" class="btn btn--danger btn--small">
-                <i class="ri-delete-bin-line"></i> Smazat zákazníka
-            </button>
+            <div class="modal-body">
+                <p style="color: var(--color-error); font-weight: 600;">
+                    Opravdu chcete smazat zákazníka <?= e($customer['name'] ?: $customer['phone']) ?>?
+                </p>
+                <p class="text-muted">
+                    Tato akce je <strong>nevratná</strong>. Budou smazány:
+                </p>
+                <ul style="margin: var(--spacing-sm) 0; padding-left: var(--spacing-lg);">
+                    <li>Všechny osobní údaje zákazníka</li>
+                    <li>Všechny připomínky (<?= count($reminders) ?>)</li>
+                    <li>Historie volání a objednávek</li>
+                    <li>Předplatné a platební historie</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" onclick="document.getElementById('deleteCustomerModal').style.display='none'">Zrušit</button>
+                <button type="submit" class="btn btn--danger">
+                    <i class="ri-delete-bin-line"></i> Ano, smazat zákazníka
+                </button>
+            </div>
         </form>
     </div>
 </div>
