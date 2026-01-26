@@ -111,7 +111,7 @@ class Session
     /**
      * Přihlášení zákazníka
      */
-    public static function loginCustomer(int $customerId, string $name = null): void
+    public static function loginCustomer(int $customerId, ?string $name = null): void
     {
         self::regenerate();
         self::set('customer_id', $customerId);

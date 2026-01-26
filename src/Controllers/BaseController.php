@@ -73,7 +73,7 @@ abstract class BaseController
     /**
      * Získání POST dat
      */
-    protected function input(string $key = null, mixed $default = null): mixed
+    protected function input(?string $key = null, mixed $default = null): mixed
     {
         if ($key === null) {
             return $_POST;
@@ -85,7 +85,7 @@ abstract class BaseController
     /**
      * Získání GET parametru
      */
-    protected function query(string $key = null, mixed $default = null): mixed
+    protected function query(?string $key = null, mixed $default = null): mixed
     {
         if ($key === null) {
             return $_GET;

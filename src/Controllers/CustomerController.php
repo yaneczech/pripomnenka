@@ -1,25 +1,29 @@
 <?php
-
 /**
- * Customer Controller
+ * Připomněnka - CustomerController
  *
  * Handles customer profile, settings and GDPR functions
  */
+
+declare(strict_types=1);
+
+namespace Controllers;
+
 class CustomerController extends BaseController
 {
     /**
      * Show customer profile
      */
-    public function profile(): void
+    public function profile(array $params): void
     {
-        $customerId = Session::getCustomerId();
-        $customer = Customer::find($customerId);
+        $customerId = \Session::getCustomerId();
+        $customer = \Customer::find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
         }
 
-        $subscription = Subscription::findByCustomerId($customerId);
+        $subscription = \Subscription::findByCustomerId($customerId);
 
         $this->view('customer/profile', [
             'customer' => $customer,
@@ -30,12 +34,12 @@ class CustomerController extends BaseController
     /**
      * Update customer profile
      */
-    public function updateProfile(): void
+    public function updateProfile(array $params): void
     {
-        CSRF::verify();
+        \CSRF::verify();
 
-        $customerId = Session::getCustomerId();
-        $customer = Customer::find($customerId);
+        $customerId = \Session::getCustomerId();
+        $customer = \Customer::find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
@@ -46,7 +50,7 @@ class CustomerController extends BaseController
         ];
 
         // Update customer
-        Customer::update($customerId, $data);
+        \Customer::update($customerId, $data);
 
         // Handle password change
         $currentPassword = $_POST['current_password'] ?? '';
@@ -56,29 +60,29 @@ class CustomerController extends BaseController
         if (!empty($newPassword)) {
             // If customer has password, verify current one
             if ($customer['password_hash'] && !password_verify($currentPassword, $customer['password_hash'])) {
-                Session::flash('error', 'Aktuální heslo není správné.');
+                \Session::flash('error', 'Aktuální heslo není správné.');
                 redirect('/profil');
             }
 
             // Validate new password
             if (strlen($newPassword) < 8) {
-                Session::flash('error', 'Nové heslo musí mít alespoň 8 znaků.');
+                \Session::flash('error', 'Nové heslo musí mít alespoň 8 znaků.');
                 redirect('/profil');
             }
 
             if ($newPassword !== $confirmPassword) {
-                Session::flash('error', 'Nová hesla se neshodují.');
+                \Session::flash('error', 'Nová hesla se neshodují.');
                 redirect('/profil');
             }
 
             // Update password
-            Customer::update($customerId, [
+            \Customer::update($customerId, [
                 'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
             ]);
 
-            Session::flash('success', 'Profil a heslo byly aktualizovány.');
+            \Session::flash('success', 'Profil a heslo byly aktualizovány.');
         } else {
-            Session::flash('success', 'Profil byl aktualizován.');
+            \Session::flash('success', 'Profil byl aktualizován.');
         }
 
         redirect('/profil');
@@ -87,17 +91,17 @@ class CustomerController extends BaseController
     /**
      * Export all customer data (GDPR)
      */
-    public function exportData(): void
+    public function exportData(array $params): void
     {
-        $customerId = Session::getCustomerId();
-        $customer = Customer::find($customerId);
+        $customerId = \Session::getCustomerId();
+        $customer = \Customer::find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
         }
 
         // Get all customer data
-        $data = Customer::exportGdprData($customerId);
+        $data = \Customer::exportGdprData($customerId);
 
         // Determine format
         $format = $_GET['format'] ?? 'json';
@@ -133,16 +137,16 @@ class CustomerController extends BaseController
         $this->view('customer/export-pdf', [
             'data' => $data,
             'exportDate' => date('j. n. Y H:i'),
-        ], 'layouts/print');
+        ], 'print');
     }
 
     /**
      * Show delete account confirmation
      */
-    public function deleteAccountForm(): void
+    public function deleteAccountForm(array $params): void
     {
-        $customerId = Session::getCustomerId();
-        $customer = Customer::find($customerId);
+        $customerId = \Session::getCustomerId();
+        $customer = \Customer::find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
@@ -156,12 +160,12 @@ class CustomerController extends BaseController
     /**
      * Delete customer account (GDPR)
      */
-    public function deleteAccount(): void
+    public function deleteAccount(array $params): void
     {
-        CSRF::verify();
+        \CSRF::verify();
 
-        $customerId = Session::getCustomerId();
-        $customer = Customer::find($customerId);
+        $customerId = \Session::getCustomerId();
+        $customer = \Customer::find($customerId);
 
         if (!$customer) {
             redirect('/odhlaseni');
@@ -171,7 +175,7 @@ class CustomerController extends BaseController
         $confirmation = $_POST['confirmation'] ?? '';
 
         if ($confirmation !== 'SMAZAT ÚČET') {
-            Session::flash('error', 'Pro potvrzení smazání napište "SMAZAT ÚČET".');
+            \Session::flash('error', 'Pro potvrzení smazání napište "SMAZAT ÚČET".');
             redirect('/smazat-ucet');
         }
 
@@ -184,20 +188,20 @@ class CustomerController extends BaseController
         ));
 
         // Delete customer (cascades to all related data)
-        Customer::delete($customerId);
+        \Customer::delete($customerId);
 
         // Clear session
-        Session::logout();
+        \Session::logout();
 
         // Show confirmation
-        Session::flash('success', 'Váš účet byl smazán. Děkujeme, že jste byli s námi.');
+        \Session::flash('success', 'Váš účet byl smazán. Děkujeme, že jste byli s námi.');
         redirect('/');
     }
 
     /**
      * Show GDPR information
      */
-    public function gdprInfo(): void
+    public function gdprInfo(array $params): void
     {
         $this->view('customer/gdpr-info');
     }
