@@ -59,8 +59,9 @@ spl_autoload_register(function (string $class): void {
 // Načtení pomocných funkcí
 require_once ROOT_PATH . '/src/Helpers/functions.php';
 
-// Inicializace session
+// Inicializace session a pomocných tříd
 require_once ROOT_PATH . '/src/Helpers/Session.php';
+require_once ROOT_PATH . '/src/Helpers/CSRF.php';
 Session::start($config['security']['session_lifetime']);
 
 // Načtení rout
