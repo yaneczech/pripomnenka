@@ -4,115 +4,140 @@ Systém Připomněnka vyžaduje pravidelné spouštění CRON úloh pro automati
 
 ## Přehled CRON úloh
 
-| Úloha | Soubor | Čas | Popis |
-|-------|--------|-----|-------|
-| Generování fronty | `generate-call-list.php` | 6:00 denně | Vytváří seznam zákazníků k provolání |
-| Emaily zákazníkům | `send-customer-emails.php` | 6:00 denně | Posílá připomínky blížících se událostí |
-| Připomínky expirace | `send-expiration-reminders.php` | 8:00 denně | Posílá QR kódy pro prodloužení (30 a 14 dní předem) |
-| Souhrnný email | `send-admin-summary.php` | 7:00 denně | Volitelný denní přehled pro obsluhu |
-| Zpracování plateb | `process-bank-emails.php` | každých 15 min | Čte bankovní notifikace a páruje platby |
+| Úloha | Endpoint | Čas | Popis |
+|-------|----------|-----|-------|
+| Generování fronty | `/cron/generate-queue` | 6:00 denně | Vytváří seznam zákazníků k provolání |
+| Emaily zákazníkům | `/cron/send-emails` | 6:00 denně | Posílá připomínky blížících se událostí |
+| Připomínky expirace | `/cron/expiration-reminders` | 8:00 denně | Posílá QR kódy pro prodloužení (30 a 14 dní předem) |
+| Souhrnný email | `/cron/admin-summary` | 7:00 denně | Volitelný denní přehled pro obsluhu |
+| Zpracování plateb | `/cron/process-bank` | každých 15 min | Čte bankovní notifikace a páruje platby |
 
-## Konfigurace na Webglobe (cPanel)
+---
 
-### 1. Přihlaste se do cPanelu
-Obvykle na adrese: `https://vasedomena.cz:2083` nebo přes administraci Webglobe.
+## Konfigurace na Webglobe (cPanel) — bez SSH
 
-### 2. Otevřete "Cron Jobs" (Naplánované úlohy)
+Na shared hostingu bez SSH se CRON nastavuje přes HTTP volání pomocí `curl` nebo `wget`.
 
-### 3. Přidejte následující úlohy:
+### 1. Nastavte CRON token
+
+V souboru `config/config.php` nastavte bezpečný token:
+
+```php
+'security' => [
+    'cron_token' => 'VYGENERUJTE_NAHODNY_RETEZEC_32_ZNAKU',
+    // ...
+],
+```
+
+Pro vygenerování tokenu můžete použít: https://randomkeygen.com/ (256-bit WEP Key)
+
+### 2. Přihlaste se do cPanelu
+
+Webglobe administrace → cPanel → Cron Jobs (Naplánované úlohy)
+
+### 3. Přidejte CRON úlohy
+
+Nahraďte `vasedomena.cz` vaší doménou a `VAS_CRON_TOKEN` tokenem z config.php:
 
 **Generování fronty k provolání (denně v 6:00):**
 ```
-0 6 * * * /usr/bin/php /cesta/k/pripomnenka/cron/generate-call-list.php >> /cesta/k/pripomnenka/storage/logs/cron.log 2>&1
+0 6 * * * curl -s "https://vasedomena.cz/cron/generate-queue?token=VAS_CRON_TOKEN" > /dev/null
 ```
 
-**Emaily zákazníkům (denně v 6:00):**
+**Emaily zákazníkům (denně v 6:05):**
 ```
-0 6 * * * /usr/bin/php /cesta/k/pripomnenka/cron/send-customer-emails.php >> /cesta/k/pripomnenka/storage/logs/cron.log 2>&1
-```
-
-**Připomínky expirace předplatného (denně v 8:00):**
-```
-0 8 * * * /usr/bin/php /cesta/k/pripomnenka/cron/send-expiration-reminders.php >> /cesta/k/pripomnenka/storage/logs/cron.log 2>&1
+5 6 * * * curl -s "https://vasedomena.cz/cron/send-emails?token=VAS_CRON_TOKEN" > /dev/null
 ```
 
 **Souhrnný email pro obsluhu (denně v 7:00, volitelné):**
 ```
-0 7 * * * /usr/bin/php /cesta/k/pripomnenka/cron/send-admin-summary.php >> /cesta/k/pripomnenka/storage/logs/cron.log 2>&1
+0 7 * * * curl -s "https://vasedomena.cz/cron/admin-summary?token=VAS_CRON_TOKEN" > /dev/null
+```
+
+**Připomínky expirace předplatného (denně v 8:00):**
+```
+0 8 * * * curl -s "https://vasedomena.cz/cron/expiration-reminders?token=VAS_CRON_TOKEN" > /dev/null
 ```
 
 **Zpracování bankovních plateb (každých 15 minut):**
 ```
-*/15 * * * * /usr/bin/php /cesta/k/pripomnenka/cron/process-bank-emails.php >> /cesta/k/pripomnenka/storage/logs/cron.log 2>&1
-```
-
-## Alternativa: Spouštění přes HTTP
-
-Pokud nelze spouštět PHP přímo, použijte HTTP endpoint s tokenem:
-
-```
-0 6 * * * curl -s "https://vasedomena.cz/cron/generate-queue?token=VAS_CRON_TOKEN" > /dev/null
-0 6 * * * curl -s "https://vasedomena.cz/cron/send-emails?token=VAS_CRON_TOKEN" > /dev/null
-0 8 * * * curl -s "https://vasedomena.cz/cron/expiration-reminders?token=VAS_CRON_TOKEN" > /dev/null
 */15 * * * * curl -s "https://vasedomena.cz/cron/process-bank?token=VAS_CRON_TOKEN" > /dev/null
 ```
 
-**Poznámka:** Token nastavte v `config/config.php` pod `security.cron_token`.
+### Alternativa s wget (pokud curl nefunguje)
 
-## Zjištění cesty k PHP
-
-Na Webglobe obvykle:
-- PHP 8.x: `/usr/bin/php` nebo `/usr/local/bin/php8.2`
-
-Pro zjištění správné cesty spusťte v SSH (pokud je dostupné):
-```bash
-which php
+```
+0 6 * * * wget -q -O /dev/null "https://vasedomena.cz/cron/generate-queue?token=VAS_CRON_TOKEN"
 ```
 
-## Zjištění absolutní cesty k projektu
-
-V cPanelu → File Manager najděte složku `pripomnenka` a poznamenejte si celou cestu, např.:
-```
-/home/username/public_html/pripomnenka
-```
+---
 
 ## Testování
 
-Pro ruční otestování CRON úlohy:
+### Ruční spuštění přes prohlížeč
 
-```bash
-php /cesta/k/pripomnenka/cron/generate-call-list.php
+Otevřete v prohlížeči (nebo použijte Postman):
+```
+https://vasedomena.cz/cron/generate-queue?token=VAS_CRON_TOKEN
 ```
 
-Výstup by měl ukázat:
+Měli byste vidět textový výstup typu:
 ```
 [2025-01-26 06:00:00] Starting call list generation...
-[2025-01-26 06:00:00] Found X active reminders
-[2025-01-26 06:00:00] Added X new items to call queue, skipped X
+[2025-01-26 06:00:00] Found 5 active reminders
+[2025-01-26 06:00:00] Added 2 new items to call queue, skipped 3
 [2025-01-26 06:00:00] Call list generation completed
 ```
 
+### Ověření v cPanelu
+
+V cPanelu → Cron Jobs uvidíte seznam naplánovaných úloh a případné chyby.
+
+---
+
 ## Řešení problémů
 
-### Úloha neběží
-1. Zkontrolujte cestu k PHP (`which php`)
-2. Zkontrolujte absolutní cestu k souborům
-3. Zkontrolujte oprávnění souborů (`chmod +x cron/*.php`)
-4. Zkontrolujte log soubor: `storage/logs/cron.log`
+### Dashboard neukazuje připomínky na tento týden
+1. Spusťte ručně URL: `https://vasedomena.cz/cron/generate-queue?token=...`
+2. Připomínky se zobrazují až po přidání do `call_queue` tabulky
+3. Zkontrolujte, že zákazník má aktivní předplatné
 
-### Dashboard neukazuje připomínky
-- Spusťte ručně: `php cron/generate-call-list.php`
-- Připomínky se zobrazují až po přidání do `call_queue` tabulky
+### CRON vrací chybu 403 (Forbidden)
+- Zkontrolujte, že token v URL odpovídá tokenu v `config/config.php`
+- Token nesmí obsahovat speciální znaky (pouze písmena a čísla)
+
+### CRON vrací chybu 500
+- Zkontrolujte PHP error log v cPanelu → Errors
+- Ověřte připojení k databázi
 
 ### Emaily nechodí
-1. Zkontrolujte nastavení SMTP v `config/config.php`
-2. Zkontrolujte SPF/DKIM záznamy domény
-3. Zkontrolujte log emailů
+1. Zkontrolujte nastavení emailu v `config/config.php`
+2. Na shared hostingu použijte `mail()` funkci (bez SMTP)
+3. Zkontrolujte složku spam u příjemce
+4. Ověřte SPF záznam domény
+
+---
 
 ## Doporučené pořadí úloh
 
-1. **6:00** — `generate-call-list.php` (nejdříve vygenerovat frontu)
-2. **6:00** — `send-customer-emails.php` (pak poslat emaily)
-3. **7:00** — `send-admin-summary.php` (souhrn pro obsluhu)
-4. **8:00** — `send-expiration-reminders.php` (expirace předplatného)
-5. ***/15** — `process-bank-emails.php` (průběžně celý den)
+| Čas | Úloha | Důvod |
+|-----|-------|-------|
+| 6:00 | generate-queue | Nejdříve vygenerovat frontu |
+| 6:05 | send-emails | Pak poslat emaily (5 min odstup) |
+| 7:00 | admin-summary | Souhrn pro obsluhu před otevřením |
+| 8:00 | expiration-reminders | Expirace předplatného |
+| */15 | process-bank | Průběžně celý den |
+
+---
+
+## Příklad kompletní konfigurace
+
+Pro doménu `pripomnenka.jelenivzeleni.cz` s tokenem `abc123xyz`:
+
+```
+0 6 * * * curl -s "https://pripomnenka.jelenivzeleni.cz/cron/generate-queue?token=abc123xyz" > /dev/null
+5 6 * * * curl -s "https://pripomnenka.jelenivzeleni.cz/cron/send-emails?token=abc123xyz" > /dev/null
+0 7 * * * curl -s "https://pripomnenka.jelenivzeleni.cz/cron/admin-summary?token=abc123xyz" > /dev/null
+0 8 * * * curl -s "https://pripomnenka.jelenivzeleni.cz/cron/expiration-reminders?token=abc123xyz" > /dev/null
+*/15 * * * * curl -s "https://pripomnenka.jelenivzeleni.cz/cron/process-bank?token=abc123xyz" > /dev/null
+```
