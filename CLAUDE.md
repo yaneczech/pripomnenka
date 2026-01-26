@@ -103,10 +103,10 @@ Zákazník dostane od Sofie email s unikátním aktivačním odkazem. Po kliknut
 - Platnost: 30 dní
 
 **Chybové stavy:**
-- Špatné heslo: "Nesprávné heslo. Zkuste to znovu nebo použijte přihlášení kódem."
+- Špatné heslo: "Nesprávné přihlašovací údaje. Zkuste to znovu nebo použijte přihlášení kódem."
 - Špatný OTP: "Nesprávný kód. Zkontrolujte email a zkuste to znovu."
 - Příliš mnoho pokusů: "Příliš mnoho pokusů. Zkuste to za 15 minut."
-- Neexistující účet: "Účet s tímto kontaktem neexistuje. Máte předplatné Připomněnky?"
+- Neexistující účet (OTP): "Pokud účet s tímto kontaktem existuje, poslali jsme vám kód na email." (stejná zpráva i pro existující — ochrana proti enumeration)
 
 #### 1.4 Předplatné
 
@@ -482,13 +482,62 @@ Jeleni v zeleni 🦌
 - **Informovanost:** Jasné podmínky zpracování při registraci
 
 ### Zabezpečení
-- Hesla: `password_hash()` s `PASSWORD_DEFAULT`
-- HTTPS povinné (zajistí hosting)
-- Session: `httponly`, `secure`, `samesite=strict`
-- CSRF tokeny na všech formulářích
+
+**Hesla a autentizace:**
+- Hesla: `password_hash()` s `PASSWORD_DEFAULT` (aktuálně bcrypt)
+- Tokeny (aktivační, OTP): `bin2hex(random_bytes(32))` — kryptograficky bezpečné, NIKDY `uniqid()`
+- OTP kódy: 6 číslic, max 3 pokusy, expirace 10 minut
+- Session: `session_regenerate_id(true)` po každém přihlášení
+- Rate limiting: max 5 pokusů / 15 min (na IP + identifikátor)
+
+**Session a cookies:**
+```php
+session_set_cookie_params([
+    'lifetime' => 86400 * 30,
+    'path' => '/',
+    'secure' => true,      // Jen HTTPS
+    'httponly' => true,    // Nepřístupné z JS
+    'samesite' => 'Strict' // Ochrana proti CSRF
+]);
+```
+
+**HTTP Security Headers:**
+```php
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';");
+```
+
+**Ochrana proti útokům:**
+- CSRF tokeny na všech POST formulářích
 - Prepared statements (PDO) — žádné SQL injection
-- XSS ochrana: `htmlspecialchars()` na všech výstupech
-- Rate limiting na přihlášení (max 5 pokusů / 15 min)
+- XSS ochrana: `htmlspecialchars($value, ENT_QUOTES, 'UTF-8')` na všech výstupech
+- Email enumeration ochrana: stejná odpověď pro existující/neexistující účet
+  - Správně: "Pokud účet existuje, poslali jsme vám kód na email."
+  - Špatně: "Účet neexistuje" / "Špatné heslo"
+
+**Citlivá konfigurace:**
+- IMAP heslo: uložit šifrovaně (AES-256) nebo použít environment proměnné
+- DB heslo: v `config.php` mimo webroot, nebo v `.env` souboru
+- CRON token: minimálně 32 znaků, `bin2hex(random_bytes(16))`
+
+**Logování:**
+- ✅ Logovat: přihlášení (úspěšná/neúspěšná), změny dat, admin akce
+- ❌ NIKDY nelogovat: hesla, tokeny, plná telefonní čísla, obsah poznámek
+- Formát: `[2025-01-26 10:30:00] [INFO] Login success: user_id=123, IP=1.2.3.4`
+- Retence: 90 dní, pak automatické mazání
+
+**HTTPS:**
+- Povinné (zajistí hosting Webglobe)
+- Redirect HTTP → HTTPS v `.htaccess`
+
+**Zálohy (doporučení pro provoz):**
+- Denní automatické zálohy DB
+- Šifrované (GPG nebo podobné)
+- Uložené mimo hlavní server
 
 ### Retence dat
 - Aktivní účty: bez omezení
