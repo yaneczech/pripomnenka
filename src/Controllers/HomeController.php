@@ -15,7 +15,7 @@ class HomeController extends BaseController
     public function index(array $params): void
     {
         // Pokud je přihlášen, přesměrovat na připomínky
-        if (Session::isLoggedIn()) {
+        if (\Session::isLoggedIn()) {
             $this->redirect('/moje-pripominky');
         }
 
