@@ -9,10 +9,10 @@
 return [
     // Databázové připojení
     'db' => [
-        'host' => 'localhost',
+        'host' => 'db.dw169.webglobe.com',
         'name' => 'pripomnenka',
-        'user' => 'DOPLNIT',
-        'pass' => 'DOPLNIT',
+        'user' => 'dizen_cz1',
+        'pass' => 'P@rametr44',
         'charset' => 'utf8mb4',
     ],
 
