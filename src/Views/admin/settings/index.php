@@ -27,7 +27,7 @@
                            value="<?= e($settings['shop_phone'] ?? '') ?>" placeholder="+420 123 456 789">
                 </div>
                 <div class="form-group">
-                    <label for="shop_email" class="form-label">Email</label>
+                    <label for="shop_email" class="form-label">E-mail</label>
                     <input type="email" id="shop_email" name="shop_email" class="form-input"
                            value="<?= e($settings['shop_email'] ?? '') ?>" placeholder="info@jelenivzeleni.cz">
                 </div>
@@ -64,7 +64,7 @@
                            value="<?= e($settings['bank_imap_host'] ?? '') ?>" placeholder="imap.airbank.cz">
                 </div>
                 <div class="form-group">
-                    <label for="bank_imap_email" class="form-label">Email</label>
+                    <label for="bank_imap_email" class="form-label">E-mail</label>
                     <input type="email" id="bank_imap_email" name="bank_imap_email" class="form-input"
                            value="<?= e($settings['bank_imap_email'] ?? '') ?>">
                 </div>
@@ -105,14 +105,14 @@
         </div>
     </div>
 
-    <!-- Emailové šablony -->
+    <!-- E-mailové šablony -->
     <div class="card mb-3">
         <div class="card-header">
-            <h2 class="card-title"><i class="ri-mail-line"></i> Emailové šablony</h2>
+            <h2 class="card-title"><i class="ri-mail-line"></i> E-mailové šablony</h2>
         </div>
         <div class="card-body">
             <div class="form-group">
-                <label for="email_activation_subject" class="form-label">Předmět: Aktivační email</label>
+                <label for="email_activation_subject" class="form-label">Předmět: Aktivační e-mail</label>
                 <input type="text" id="email_activation_subject" name="email_activation_subject" class="form-input"
                        value="<?= e($settings['email_activation_subject'] ?? '') ?>">
             </div>

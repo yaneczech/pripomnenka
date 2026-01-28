@@ -82,13 +82,13 @@ class SubscriptionController extends BaseController
         // Aktivovat předplatné
         $this->subscription->confirmPayment($id, $pricePaid, $note);
 
-        // Odeslat aktivační email zákazníkovi
+        // Odeslat aktivační e-mail zákazníkovi
         $customer = $this->customer->find($subscription['customer_id']);
         if ($customer) {
             $this->sendActivationEmail($customer, $subscription);
         }
 
-        flash('success', 'Platba potvrzena a aktivační email odeslán.');
+        flash('success', 'Platba potvrzena a aktivační e-mail odeslán.');
         $this->redirect('/admin/predplatne');
     }
 

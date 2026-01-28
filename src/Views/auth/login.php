@@ -9,13 +9,13 @@
         <div class="card-body">
 
             <?php if ($step === 'identifier'): ?>
-                <!-- Krok 1: Zadání telefonu nebo emailu -->
+                <!-- Krok 1: Zadání telefonu nebo e-mailu -->
                 <form action="/prihlaseni" method="post" data-validate>
                     <?= \CSRF::field() ?>
                     <input type="hidden" name="step" value="identifier">
 
                     <div class="form-group">
-                        <label for="identifier" class="form-label">Telefon nebo email</label>
+                        <label for="identifier" class="form-label">Telefon nebo e-mail</label>
                         <input type="text" id="identifier" name="identifier"
                                class="form-input <?= isset($errors['identifier']) ? 'form-input--error' : '' ?>"
                                placeholder="+420 777 888 999 nebo vas@email.cz"

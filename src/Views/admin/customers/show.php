@@ -45,7 +45,7 @@
                                    value="<?= e($customer['phone']) ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="email" class="form-label">Email</label>
+                            <label for="email" class="form-label">E-mail</label>
                             <input type="email" id="email" name="email" class="form-input"
                                    value="<?= e($customer['email']) ?>" required>
                         </div>

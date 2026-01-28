@@ -188,8 +188,8 @@ class AdminCustomerController extends BaseController
             // Hotově/kartou - potvrdit platbu
             $this->subscription->confirmPayment($subscriptionId, \Session::getAdminId(), $plan['price']);
 
-            // TODO: Odeslat aktivační email
-            flash('success', 'Hotovo! Zákazníkovi jsme poslali email s aktivačním odkazem.');
+            // TODO: Odeslat aktivační e-mail
+            flash('success', 'Hotovo! Zákazníkovi jsme poslali e-mail s aktivačním odkazem.');
         }
 
         $this->redirect('/admin/zakaznik/' . $customerId);
@@ -298,8 +298,8 @@ class AdminCustomerController extends BaseController
         $token = $this->subscription->regenerateActivationToken($subscription['id']);
 
         if ($token) {
-            // TODO: Odeslat email
-            flash('success', 'Aktivační email byl odeslán.');
+            // TODO: Odeslat e-mail
+            flash('success', 'Aktivační e-mail byl odeslán.');
         } else {
             flash('error', 'Nepodařilo se vygenerovat aktivační odkaz.');
         }
@@ -322,8 +322,8 @@ class AdminCustomerController extends BaseController
             $this->redirect('/admin/zakaznik/' . $id);
         }
 
-        // TODO: Odeslat email s QR kodem
-        flash('success', 'Email s QR kodem byl odeslan. VS: ' . $subscription['variable_symbol']);
+        // TODO: Odeslat e-mail s QR kódem
+        flash('success', 'E-mail s QR kódem byl odeslán. VS: ' . $subscription['variable_symbol']);
 
         $this->redirect('/admin/zakaznik/' . $id);
     }

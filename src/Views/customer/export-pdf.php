@@ -15,7 +15,7 @@
         <td><?= e($data['customer']['phone']) ?></td>
     </tr>
     <tr>
-        <th>Email</th>
+        <th>E-mail</th>
         <td><?= e($data['customer']['email']) ?></td>
     </tr>
     <tr>
@@ -136,6 +136,6 @@
 <h2>Kontakt na správce</h2>
 <p>
     Květinářství Jeleni v zeleni<br>
-    Email: <?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
+    E-mail: <?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
     Telefon: <?= e(\Setting::get('shop_phone', '123 456 789')) ?>
 </p>

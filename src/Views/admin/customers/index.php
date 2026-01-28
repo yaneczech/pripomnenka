@@ -10,7 +10,7 @@
             <div class="form-inline">
                 <div class="form-group" style="flex: 1; margin: 0;">
                     <input type="text" name="q" id="customer-search" class="form-input"
-                           placeholder="Hledat podle jména, telefonu nebo emailu..."
+                           placeholder="Hledat podle jména, telefonu nebo e-mailu..."
                            value="<?= e($search) ?>">
                 </div>
                 <button type="submit" class="btn btn--primary">Hledat</button>

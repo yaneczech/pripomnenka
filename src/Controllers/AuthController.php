@@ -72,7 +72,7 @@ class AuthController extends BaseController
         $identifier = trim($this->input('identifier', ''));
 
         if (empty($identifier)) {
-            flash('error', 'Zadejte telefon nebo email.');
+            flash('error', 'Zadejte telefon nebo e-mail.');
             $this->redirect('/prihlaseni');
         }
 

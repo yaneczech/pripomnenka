@@ -15,7 +15,7 @@
             </div>
 
             <div class="form-group">
-                <label for="email" class="form-label form-label--required">Email</label>
+                <label for="email" class="form-label form-label--required">E-mail</label>
                 <input type="email" id="email" name="email" class="form-input <?= isset($errors['email']) ? 'form-input--error' : '' ?>"
                        value="<?= e(old('email')) ?>" placeholder="zakaznik@email.cz" required>
                 <?php if (isset($errors['email'])): ?>
@@ -56,7 +56,7 @@
                 </div>
                 <div class="bank-transfer-info mt-2" style="display: <?= old('payment_method') === 'bank_transfer' ? 'block' : 'none' ?>;">
                     <p class="text-small text-muted">
-                        Zákazníkovi bude odeslán email s QR kódem pro platbu.
+                        Zákazníkovi bude odeslán e-mail s QR kódem pro platbu.
                         Po připsání platby mu automaticky pošleme aktivační odkaz.
                     </p>
                 </div>

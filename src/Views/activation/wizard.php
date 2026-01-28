@@ -26,7 +26,7 @@
                         <input type="text" id="name" name="name" class="form-input"
                                value="<?= e(old('name') ?: $customer['name']) ?>"
                                placeholder="Vaše jméno (volitelné)">
-                        <span class="form-hint">Použijeme ho při telefonátech a v emailech.</span>
+                        <span class="form-hint">Použijeme ho při telefonátech a v e-mailech.</span>
                     </div>
 
                     <div class="form-group">
@@ -36,7 +36,7 @@
                         <?php if (isset($errors['password'])): ?>
                             <span class="form-error"><?= e($errors['password']) ?></span>
                         <?php else: ?>
-                            <span class="form-hint">Pokud nenastavíte, pošleme vám při každém přihlášení kód na email.</span>
+                            <span class="form-hint">Pokud nenastavíte, pošleme vám při každém přihlášení kód na e-mail.</span>
                         <?php endif; ?>
                     </div>
 

@@ -11,7 +11,7 @@
             <p>
                 <strong>Květinářství Jeleni v zeleni</strong><br>
                 Adresa: [adresa provozovny]<br>
-                Email: <?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
+                E-mail: <?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
                 Telefon: <?= e(\Setting::get('shop_phone', '123 456 789')) ?>
             </p>
         </div>
@@ -22,7 +22,7 @@
             <h2>2. Jaké údaje zpracováváme</h2>
             <ul>
                 <li><strong>Identifikační údaje:</strong> jméno (pokud ho vyplníte)</li>
-                <li><strong>Kontaktní údaje:</strong> telefonní číslo, emailová adresa</li>
+                <li><strong>Kontaktní údaje:</strong> telefonní číslo, e-mailová adresa</li>
                 <li><strong>Údaje o připomínkách:</strong> typ události (narozeniny, výročí apod.), datum, vztah k oslavenci (manželka, matka apod.), cenový rozsah</li>
                 <li><strong>Poznámky:</strong> vaše preference (oblíbené květiny, barvy apod.)</li>
             </ul>
@@ -62,7 +62,7 @@
             <h2>5. Doba uchovávání</h2>
             <ul>
                 <li><strong>Aktivní účty:</strong> po dobu trvání předplatného a 2 roky po jeho vypršení</li>
-                <li><strong>Neaktivní účty:</strong> po 2 letech bez aktivity vás upozorníme emailem a po 30 dnech účet smažeme</li>
+                <li><strong>Neaktivní účty:</strong> po 2 letech bez aktivity vás upozorníme e-mailem a po 30 dnech účet smažeme</li>
                 <li><strong>Logy přístupů:</strong> 90 dní</li>
             </ul>
         </div>
