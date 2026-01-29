@@ -128,6 +128,7 @@ $fathersDay = get_holiday_date('fathers_day') ?? ['day' => 21, 'month' => 6];
     background-color: #f5f5f5;
     cursor: not-allowed;
 }
+</style>
 
 <script>
 // Automatické doplnění data pro specifické svátky
