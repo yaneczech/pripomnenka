@@ -77,9 +77,21 @@ function format_date(string $date, string $format = 'j. n. Y'): string
 
 /**
  * Formátování data s názvem měsíce
+ * Pro pohyblivé svátky zobrazí popis místo konkrétního data
  */
-function format_date_long(int $day, int $month): string
+function format_date_long(int $day, int $month, ?string $eventType = null): string
 {
+    // Pro pohyblivé svátky zobrazit popis
+    if ($eventType === 'mothers_day') {
+        $currentDate = get_holiday_date('mothers_day');
+        return $currentDate['day'] . '. května (2. neděle v květnu)';
+    }
+
+    if ($eventType === 'fathers_day') {
+        $currentDate = get_holiday_date('fathers_day');
+        return $currentDate['day'] . '. června (3. neděle v červnu)';
+    }
+
     $months = [
         1 => 'ledna', 2 => 'února', 3 => 'března', 4 => 'dubna',
         5 => 'května', 6 => 'června', 7 => 'července', 8 => 'srpna',
@@ -91,11 +103,22 @@ function format_date_long(int $day, int $month): string
 
 /**
  * Výpočet počtu dní do události
+ * Pro svátky s automatickým datem použije vypočítané datum
  */
-function days_until(int $day, int $month): int
+function days_until(int $day, int $month, ?string $eventType = null): int
 {
-    $now = new DateTime();
-    $year = (int) $now->format('Y');
+    // Pro svátky s automatickým datem vypočítat správné datum
+    if ($eventType && has_automatic_date($eventType)) {
+        $holidayDate = get_holiday_date($eventType);
+        if ($holidayDate) {
+            $day = $holidayDate['day'];
+            $month = $holidayDate['month'];
+        }
+    }
+
+    // Začít od půlnoci dnešního dne (bez času)
+    $now = new DateTime('today');
+    $year = (int) date('Y');
 
     $event = new DateTime("{$year}-{$month}-{$day}");
 
@@ -104,7 +127,8 @@ function days_until(int $day, int $month): int
         $event->modify('+1 year');
     }
 
-    return (int) $now->diff($event)->days;
+    $interval = $now->diff($event);
+    return $interval->days;
 }
 
 /**
@@ -120,6 +144,8 @@ function translate_event_type(string $type): string
         'mothers_day' => 'Den matek',
         'fathers_day' => 'Den otců',
         'valentines' => 'Valentýn',
+        'womens_day' => 'Mezinárodní den žen',
+        'school_year_end' => 'Konec školního roku',
         'other' => 'Jiné',
     ];
 
@@ -270,4 +296,64 @@ function asset(string $path): string
     $fullPath = PUBLIC_PATH . '/assets/' . ltrim($path, '/');
     $version = file_exists($fullPath) ? filemtime($fullPath) : time();
     return '/assets/' . ltrim($path, '/') . '?v=' . $version;
+}
+
+/**
+ * Výpočet n-té neděle v měsíci
+ *
+ * @param int $year Rok
+ * @param int $month Měsíc (1-12)
+ * @param int $nth Kolikátá neděle (1-5)
+ * @return array ['day' => int, 'month' => int]
+ */
+function get_nth_sunday(int $year, int $month, int $nth): array
+{
+    $firstDay = new DateTime("{$year}-{$month}-01");
+
+    // Najít první neděli v měsíci
+    $dayOfWeek = (int) $firstDay->format('w'); // 0 = neděle
+    $daysToFirstSunday = $dayOfWeek === 0 ? 0 : 7 - $dayOfWeek;
+
+    $firstSunday = clone $firstDay;
+    $firstSunday->modify("+{$daysToFirstSunday} days");
+
+    // Přidat ($nth - 1) týdnů
+    $nthSunday = clone $firstSunday;
+    $nthSunday->modify('+' . ($nth - 1) . ' weeks');
+
+    return [
+        'day' => (int) $nthSunday->format('j'),
+        'month' => (int) $nthSunday->format('n')
+    ];
+}
+
+/**
+ * Získat datum svátku pro daný rok a typ události
+ *
+ * @param string $eventType Typ události
+ * @param int $year Rok (výchozí aktuální)
+ * @return array|null ['day' => int, 'month' => int] nebo null pokud nemá automatické datum
+ */
+function get_holiday_date(string $eventType, int $year = null): ?array
+{
+    if ($year === null) {
+        $year = (int) date('Y');
+    }
+
+    return match($eventType) {
+        'valentines' => ['day' => 14, 'month' => 2],
+        'womens_day' => ['day' => 8, 'month' => 3],
+        'mothers_day' => get_nth_sunday($year, 5, 2), // 2. neděle v květnu
+        'fathers_day' => get_nth_sunday($year, 6, 3), // 3. neděle v červnu
+        'school_year_end' => ['day' => 30, 'month' => 6],
+        default => null
+    };
+}
+
+/**
+ * Zjistit, zda má událost automatické datum
+ */
+function has_automatic_date(string $eventType): bool
+{
+    return in_array($eventType, ['valentines', 'womens_day', 'mothers_day', 'fathers_day', 'school_year_end']);
 }

@@ -112,3 +112,44 @@
     </div>
 
 </div>
+
+<script>
+// Automatické doplnění data pro specifické svátky
+(function() {
+    const eventTypeInputs = document.querySelectorAll('input[name="event_type"]');
+    const daySelect = document.querySelector('select[name="event_day"]');
+    const monthSelect = document.querySelector('select[name="event_month"]');
+
+    // Svátky s automatickým datem (vypočítáno pro aktuální rok)
+    const autoHolidays = {
+        'valentines': { day: 14, month: 2 },
+        'womens_day': { day: 8, month: 3 },
+        'mothers_day': { day: <?= get_holiday_date('mothers_day')['day'] ?>, month: <?= get_holiday_date('mothers_day')['month'] ?> },
+        'fathers_day': { day: <?= get_holiday_date('fathers_day')['day'] ?>, month: <?= get_holiday_date('fathers_day')['month'] ?> },
+        'school_year_end': { day: 30, month: 6 }
+    };
+
+    eventTypeInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const eventType = this.value;
+
+            if (autoHolidays[eventType]) {
+                daySelect.value = autoHolidays[eventType].day;
+                monthSelect.value = autoHolidays[eventType].month;
+                daySelect.disabled = true;
+                monthSelect.disabled = true;
+            } else {
+                daySelect.disabled = false;
+                monthSelect.disabled = false;
+            }
+        });
+    });
+
+    // Při načtení stránky zkontrolovat aktuálně vybraný event_type
+    const checkedEventType = document.querySelector('input[name="event_type"]:checked');
+    if (checkedEventType && autoHolidays[checkedEventType.value]) {
+        daySelect.disabled = true;
+        monthSelect.disabled = true;
+    }
+})();
+</script>

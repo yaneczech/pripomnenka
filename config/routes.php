@@ -25,6 +25,9 @@ return [
     'GET /aktivace/{token}' => ['ActivationController', 'showActivation', null],
     'POST /aktivace/{token}' => ['ActivationController', 'processActivation', null],
 
+    // GDPR
+    'GET /ochrana-udaju' => ['CustomerController', 'gdprInfo', null],
+
     // ==========================================
     // Zákaznická sekce (vyžaduje přihlášení)
     // ==========================================
@@ -76,6 +79,9 @@ return [
     'POST /admin/nastaveni/plany' => ['SettingsController', 'updatePlans', 'admin'],
     'GET /admin/nastaveni/emaily' => ['SettingsController', 'emailPreviews', 'admin'],
     'GET /admin/nastaveni/emaily/nahled/{type}' => ['SettingsController', 'emailPreview', 'admin'],
+
+    // Debug
+    'GET /admin/debug/reminders' => ['DebugController', 'reminders', 'admin'],
 
     // ==========================================
     // CRON endpointy (chráněné tokenem)

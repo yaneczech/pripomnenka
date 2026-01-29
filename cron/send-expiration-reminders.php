@@ -128,14 +128,14 @@ foreach ($expiring14 as $sub) {
 }
 
 // Mark expired subscriptions
-$db->query("
+$stmt = $db->query("
     UPDATE subscriptions
     SET status = 'expired'
     WHERE status = 'active'
       AND expires_at < ?
 ", [$today]);
 
-$expired = $db->rowCount();
+$expired = $stmt->rowCount();
 if ($expired > 0) {
     $log("Marked $expired subscriptions as expired");
 }

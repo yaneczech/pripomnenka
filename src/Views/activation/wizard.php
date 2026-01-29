@@ -182,10 +182,10 @@
                         <?php foreach ($reminders as $reminder): ?>
                             <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-background); border-radius: var(--radius-md); margin-bottom: var(--spacing-sm);">
                                 <div>
-                                    <strong><?= format_date_long($reminder['event_day'], $reminder['event_month']) ?></strong>
+                                    <strong><?= format_date_long($reminder['event_day'], $reminder['event_month'], $reminder['event_type']) ?></strong>
                                     — <?= translate_event_type($reminder['event_type']) ?> (<?= translate_relation($reminder['recipient_relation']) ?>)
                                 </div>
-                                <div class="text-muted">za <?= days_until($reminder['event_day'], $reminder['event_month']) ?> dní</div>
+                                <div class="text-muted">za <?= days_until($reminder['event_day'], $reminder['event_month'], $reminder['event_type']) ?> dní</div>
                             </div>
                         <?php endforeach; ?>
                     </div>

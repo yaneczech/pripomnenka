@@ -34,7 +34,7 @@
                                 <span><?= translate_relation($call['recipient_relation']) ?></span>
                             </div>
                             <div class="text-small text-muted">
-                                <?= format_date_long($call['event_day'], $call['event_month']) ?>
+                                <?= format_date_long($call['event_day'], $call['event_month'], $call['event_type']) ?>
                                 <?php if ($call['attempt_count'] > 1): ?>
                                     <span class="badge badge--warning" style="margin-left: var(--spacing-sm);"><?= $call['attempt_count'] ?>. pokus</span>
                                 <?php endif; ?>

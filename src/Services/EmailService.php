@@ -5,17 +5,24 @@
  *
  * Handles sending all types of emails in the system
  */
+
+declare(strict_types=1);
+
+namespace Services;
+
 class EmailService
 {
     private array $config;
     private string $fromAddress;
     private string $fromName;
+    private \Models\Setting $setting;
 
     public function __construct()
     {
         $this->config = require __DIR__ . '/../../config/config.php';
         $this->fromAddress = $this->config['email']['from_address'] ?? 'pripomnenka@jelenivzeleni.cz';
         $this->fromName = $this->config['email']['from_name'] ?? 'Jeleni v zeleni';
+        $this->setting = new \Models\Setting();
     }
 
     /**
@@ -23,12 +30,12 @@ class EmailService
      */
     public function sendActivationEmail(array $customer, string $activationUrl): bool
     {
-        $subject = Setting::get('email_activation_subject', 'Vítejte v Připomněnce! 🌷');
+        $subject = $this->setting->get('email_activation_subject', 'Vítejte v Připomněnce! 🌷');
 
         $body = $this->renderTemplate('activation', [
             'customer' => $customer,
             'activation_url' => $activationUrl,
-            'shop_phone' => Setting::get('shop_phone', '123 456 789'),
+            'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
         ]);
 
         return $this->send($customer['email'], $subject, $body);
@@ -39,7 +46,7 @@ class EmailService
      */
     public function sendPaymentQrEmail(array $customer, array $subscription): bool
     {
-        $subject = Setting::get('email_payment_qr_subject', 'QR kód pro platbu Připomněnka 💳');
+        $subject = $this->setting->get('email_payment_qr_subject', 'QR kód pro platbu Připomněnka 💳');
 
         $qrCodeUrl = $this->generateQrCodeUrl($subscription);
 
@@ -47,8 +54,8 @@ class EmailService
             'customer' => $customer,
             'subscription' => $subscription,
             'qr_code_url' => $qrCodeUrl,
-            'bank_account' => Setting::get('bank_account', '123456789/0100'),
-            'shop_phone' => Setting::get('shop_phone', '123 456 789'),
+            'bank_account' => $this->setting->get('bank_account', '123456789/0100'),
+            'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
         ]);
 
         return $this->send($customer['email'], $subject, $body);
@@ -60,7 +67,7 @@ class EmailService
     public function sendEventReminderEmail(array $customer, array $reminder): bool
     {
         $subject = $this->parseSubject(
-            Setting::get('email_customer_reminder_subject', 'Blíží se důležité datum! 💐'),
+            $this->setting->get('email_customer_reminder_subject', 'Blíží se důležité datum! 💐'),
             $reminder
         );
 
@@ -70,7 +77,7 @@ class EmailService
             'event_type' => translate_event_type($reminder['event_type']),
             'recipient' => translate_relation($reminder['recipient_relation']),
             'date' => format_date_long($reminder['event_day'], $reminder['event_month']),
-            'shop_phone' => Setting::get('shop_phone', '123 456 789'),
+            'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
         ]);
 
         return $this->send($customer['email'], $subject, $body);
@@ -81,7 +88,7 @@ class EmailService
      */
     public function sendExpirationReminderEmail(array $customer, array $subscription, int $daysLeft): bool
     {
-        $subject = Setting::get('email_expiration_subject', 'Vaše předplatné Připomněnka brzy vyprší ⏰');
+        $subject = $this->setting->get('email_expiration_subject', 'Vaše předplatné Připomněnka brzy vyprší ⏰');
 
         $qrCodeUrl = $this->generateQrCodeUrl($subscription);
 
@@ -90,8 +97,8 @@ class EmailService
             'subscription' => $subscription,
             'days_left' => $daysLeft,
             'qr_code_url' => $qrCodeUrl,
-            'bank_account' => Setting::get('bank_account', '123456789/0100'),
-            'shop_phone' => Setting::get('shop_phone', '123 456 789'),
+            'bank_account' => $this->setting->get('bank_account', '123456789/0100'),
+            'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
         ]);
 
         return $this->send($customer['email'], $subject, $body);
@@ -107,7 +114,7 @@ class EmailService
         $body = $this->renderTemplate('otp', [
             'customer' => $customer,
             'code' => $code,
-            'shop_phone' => Setting::get('shop_phone', '123 456 789'),
+            'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
         ]);
 
         return $this->send($customer['email'], $subject, $body);
@@ -133,7 +140,7 @@ class EmailService
      */
     private function generateQrCodeUrl(array $subscription): string
     {
-        $iban = Setting::get('bank_iban', 'CZ1234567890123456789012');
+        $iban = $this->setting->get('bank_iban', 'CZ1234567890123456789012');
         $amount = $subscription['price'];
         $vs = $subscription['variable_symbol'];
         $message = 'Pripomnenka ' . $vs;

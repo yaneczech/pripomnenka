@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS unmatched_payments (
 CREATE TABLE IF NOT EXISTS reminders (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     customer_id INT UNSIGNED NOT NULL,
-    event_type ENUM('birthday', 'nameday', 'wedding_anniversary', 'relationship_anniversary', 'mothers_day', 'fathers_day', 'valentines', 'other') NOT NULL,
+    event_type ENUM('birthday', 'nameday', 'wedding_anniversary', 'relationship_anniversary', 'mothers_day', 'fathers_day', 'valentines', 'womens_day', 'school_year_end', 'other') NOT NULL,
     recipient_relation ENUM('wife', 'husband', 'mother', 'father', 'daughter', 'son', 'grandmother', 'grandfather', 'sister', 'brother', 'mother_in_law', 'father_in_law', 'partner', 'friend', 'colleague', 'other') NOT NULL,
     event_day TINYINT UNSIGNED NOT NULL,
     event_month TINYINT UNSIGNED NOT NULL,

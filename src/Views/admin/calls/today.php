@@ -35,7 +35,7 @@
                     <span>—</span>
                     <span><?= translate_relation($call['recipient_relation']) ?></span>
                     <span>·</span>
-                    <span><?= format_date_long($call['event_day'], $call['event_month']) ?></span>
+                    <span><?= format_date_long($call['event_day'], $call['event_month'], $call['event_type']) ?></span>
                 </div>
 
                 <!-- Cenový rozsah -->

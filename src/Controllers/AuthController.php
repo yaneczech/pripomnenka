@@ -11,6 +11,7 @@ namespace Controllers;
 
 use Models\Customer;
 use Models\OtpCode;
+use Services\EmailService;
 
 class AuthController extends BaseController
 {
@@ -229,10 +230,14 @@ class AuthController extends BaseController
     {
         $code = $this->otpCode->create($customer['id']);
 
-        // TODO: Odeslat email s kódem
-        // Pro teď jen ukážeme kód v session (development)
-        if ($this->config['app']['debug']) {
-            \Session::set('debug_otp', $code);
+        // Odeslat email s kódem
+        $emailService = new EmailService();
+        $emailSent = $emailService->sendOtpEmail($customer, $code);
+
+        // Pro debug režim ukázat kód přímo na stránce
+        $debugOtp = null;
+        if (isset($this->config['app']['debug']) && $this->config['app']['debug']) {
+            $debugOtp = $code;
         }
 
         \Session::set('login_step', 'otp');
@@ -240,8 +245,10 @@ class AuthController extends BaseController
         $this->view('auth/login', [
             'title' => 'Přihlášení',
             'step' => 'otp',
-            'identifier' => $this->maskIdentifier(\Session::get('login_identifier')),
-            'debugOtp' => $this->config['app']['debug'] ? $code : null,
+            'identifier' => $customer['email'], // Zobrazit email (ne maskovaný)
+            'customerName' => $customer['name'],
+            'emailSent' => $emailSent,
+            'debugOtp' => $debugOtp,
             'errors' => [],
         ], 'public');
     }

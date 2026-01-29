@@ -66,8 +66,8 @@ class Reminder
 
         // Seřadit podle počtu dní do události
         usort($reminders, function ($a, $b) {
-            $daysA = days_until($a['event_day'], $a['event_month']);
-            $daysB = days_until($b['event_day'], $b['event_month']);
+            $daysA = days_until($a['event_day'], $a['event_month'], $a['event_type']);
+            $daysB = days_until($b['event_day'], $b['event_month'], $b['event_type']);
             return $daysA <=> $daysB;
         });
 
@@ -204,6 +204,8 @@ class Reminder
             'mothers_day' => 'Den matek',
             'fathers_day' => 'Den otců',
             'valentines' => 'Valentýn',
+            'womens_day' => 'Mezinárodní den žen',
+            'school_year_end' => 'Konec školního roku',
             'other' => 'Jiné',
         ];
     }

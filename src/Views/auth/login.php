@@ -65,14 +65,27 @@
 
             <?php elseif ($step === 'otp'): ?>
                 <!-- Krok 2b: Zadání OTP kódu -->
+                <?php if (!empty($customerName)): ?>
+                    <p class="text-center text-muted mb-2">
+                        Přihlášení jako<br>
+                        <strong><?= e($customerName) ?></strong>
+                    </p>
+                <?php endif; ?>
+
                 <p class="text-center text-muted mb-3">
-                    Poslali jsme vám 6místný kód na<br>
+                    Poslali jsme vám 6místný kód na email:<br>
                     <strong><?= e($identifier) ?></strong>
                 </p>
 
                 <?php if (!empty($debugOtp)): ?>
                     <div class="flash flash--info mb-3" style="position: static;">
-                        <strong>Debug:</strong> Váš kód je <?= e($debugOtp) ?>
+                        <strong>🔧 Debug režim:</strong> Váš kód je <strong style="font-size: 1.3em; user-select: all;"><?= e($debugOtp) ?></strong>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($emailSent) && !$emailSent): ?>
+                    <div class="flash flash--error mb-3" style="position: static;">
+                        ⚠️ Nepodařilo se odeslat email. Zkuste to znovu nebo kontaktujte podporu.
                     </div>
                 <?php endif; ?>
 

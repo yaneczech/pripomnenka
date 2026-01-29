@@ -20,15 +20,16 @@ $log = function($message) {
 $log('Starting call list generation...');
 
 $db = Database::getInstance();
+$setting = new Setting();
 $today = date('Y-m-d');
 $todayDay = (int) date('j');
 $todayMonth = (int) date('n');
 
 // Get default advance days from settings
-$defaultAdvanceDays = (int) Setting::get('default_advance_days', 5);
+$defaultAdvanceDays = (int) $setting->get('default_advance_days', 5);
 
 // Get workdays setting (1=Monday, 7=Sunday)
-$workdaysStr = Setting::get('workdays', '1,2,3,4,5');
+$workdaysStr = $setting->get('workdays', '1,2,3,4,5');
 $workdays = array_map('intval', explode(',', $workdaysStr));
 
 /**
@@ -85,9 +86,22 @@ $skipped = 0;
 
 foreach ($reminders as $reminder) {
     $advanceDays = $reminder['advance_days'] ?: $defaultAdvanceDays;
+
+    // Pro svátky s automatickým datem vypočítat aktuální datum
+    $eventDay = $reminder['event_day'];
+    $eventMonth = $reminder['event_month'];
+
+    if (has_automatic_date($reminder['event_type'])) {
+        $holidayDate = get_holiday_date($reminder['event_type']);
+        if ($holidayDate) {
+            $eventDay = $holidayDate['day'];
+            $eventMonth = $holidayDate['month'];
+        }
+    }
+
     $callDate = getCallDate(
-        $reminder['event_day'],
-        $reminder['event_month'],
+        $eventDay,
+        $eventMonth,
         $advanceDays,
         $workdays
     );
@@ -165,7 +179,7 @@ foreach ($noAnswerCalls as $call) {
 $log("Moved $moved 'no answer' calls to today");
 
 // Mark old entries as "gave_up" after 5 attempts
-$db->query("
+$stmt = $db->query("
     UPDATE call_queue
     SET status = 'gave_up'
     WHERE status = 'no_answer'
@@ -173,7 +187,7 @@ $db->query("
       AND scheduled_date < ?
 ", [$today]);
 
-$gaveUp = $db->rowCount();
+$gaveUp = $stmt->rowCount();
 if ($gaveUp > 0) {
     $log("Marked $gaveUp calls as 'gave up' (after 5 attempts)");
 }

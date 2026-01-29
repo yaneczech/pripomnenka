@@ -39,7 +39,7 @@
         <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
             <?php foreach ($reminders as $index => $reminder): ?>
                 <?php
-                $daysUntil = days_until($reminder['event_day'], $reminder['event_month']);
+                $daysUntil = days_until($reminder['event_day'], $reminder['event_month'], $reminder['event_type']);
                 $isNear = $daysUntil <= 14;
                 ?>
                 <div class="card <?= $isNear ? 'card--highlight' : '' ?>" style="<?= $isNear ? 'border-color: var(--color-primary); border-width: 2px;' : '' ?>">
@@ -55,7 +55,7 @@
 
                                 <!-- Datum -->
                                 <div class="text-muted mb-2">
-                                    <?= format_date_long($reminder['event_day'], $reminder['event_month']) ?>
+                                    <?= format_date_long($reminder['event_day'], $reminder['event_month'], $reminder['event_type']) ?>
                                 </div>
 
                                 <!-- Meta -->

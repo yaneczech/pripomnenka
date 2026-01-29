@@ -21,9 +21,10 @@ $log = function($message) {
 $log('Starting bank email processing...');
 
 // Check if IMAP is configured
-$imapHost = Setting::get('bank_imap_host');
-$imapEmail = Setting::get('bank_imap_email');
-$imapPassword = Setting::get('bank_imap_password');
+$setting = new Setting();
+$imapHost = $setting->get('bank_imap_host');
+$imapEmail = $setting->get('bank_imap_email');
+$imapPassword = $setting->get('bank_imap_password');
 
 if (empty($imapHost) || empty($imapEmail) || empty($imapPassword)) {
     $log('IMAP not configured, skipping');

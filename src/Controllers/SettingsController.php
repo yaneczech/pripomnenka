@@ -11,6 +11,7 @@ namespace Controllers;
 
 use Models\Setting;
 use Models\SubscriptionPlan;
+use Services\EmailService;
 
 class SettingsController extends BaseController
 {
@@ -265,8 +266,7 @@ class SettingsController extends BaseController
         $type = $params['type'] ?? 'activation';
 
         // Vytvořit EmailService
-        require_once __DIR__ . '/../Services/EmailService.php';
-        $emailService = new \EmailService();
+        $emailService = new EmailService();
 
         // Testovací data pro jednotlivé typy emailů
         $testData = $this->getTestDataForEmailType($type);

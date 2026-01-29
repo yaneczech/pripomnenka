@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: var(--spacing-lg);">
 
     <!-- Levý sloupec -->
     <div>
@@ -63,7 +63,7 @@
             </div>
             <div class="card-body">
                 <?php if ($subscription): ?>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-md);">
                         <div>
                             <span class="text-small text-muted">Varianta</span>
                             <div><strong><?= e($subscription['plan_name']) ?></strong></div>
@@ -188,12 +188,12 @@
                                     — <?= translate_relation($reminder['recipient_relation']) ?>
                                 </div>
                                 <div class="text-small">
-                                    <?= format_date_long($reminder['event_day'], $reminder['event_month']) ?>
+                                    <?= format_date_long($reminder['event_day'], $reminder['event_month'], $reminder['event_type']) ?>
                                 </div>
                             </div>
                             <div class="text-small text-muted">
                                 <?= translate_price_range($reminder['price_range']) ?>
-                                · Za <?= days_until($reminder['event_day'], $reminder['event_month']) ?> dní
+                                · Za <?= days_until($reminder['event_day'], $reminder['event_month'], $reminder['event_type']) ?> dní
                             </div>
                             <?php if ($reminder['customer_note']): ?>
                                 <div class="text-small" style="margin-top: var(--spacing-xs); color: var(--color-text-light);">
