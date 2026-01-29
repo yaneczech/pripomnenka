@@ -73,6 +73,7 @@ $reminders = $db->fetchAll("
     JOIN customers c ON r.customer_id = c.id
     JOIN subscriptions s ON c.id = s.customer_id
     WHERE r.is_active = 1
+      AND c.is_active = 1
       AND s.status = 'active'
       AND s.expires_at >= CURDATE()
 ");

@@ -246,4 +246,135 @@ class SettingsController extends BaseController
         $slug = trim($slug, '_');
         return $slug ?: 'plan_' . time();
     }
+
+    /**
+     * Náhled zasílaných emailů
+     */
+    public function emailPreviews(array $params): void
+    {
+        $this->view('admin/settings/email-previews', [
+            'title' => 'Náhled emailů',
+        ], 'admin');
+    }
+
+    /**
+     * Zobrazit konkrétní email náhled
+     */
+    public function emailPreview(array $params): void
+    {
+        $type = $params['type'] ?? 'activation';
+
+        // Vytvořit EmailService
+        require_once __DIR__ . '/../Services/EmailService.php';
+        $emailService = new \EmailService();
+
+        // Testovací data pro jednotlivé typy emailů
+        $testData = $this->getTestDataForEmailType($type);
+
+        if ($testData === null) {
+            http_response_code(404);
+            echo 'Neznámý typ emailu';
+            return;
+        }
+
+        // Použít reflexi pro přístup k private metodě renderTemplate
+        $reflection = new \ReflectionClass($emailService);
+        $method = $reflection->getMethod('renderFallbackTemplate');
+        $method->setAccessible(true);
+
+        $html = $method->invoke($emailService, $type, $testData);
+
+        echo $html;
+    }
+
+    /**
+     * Získat testovací data pro daný typ emailu
+     */
+    private function getTestDataForEmailType(string $type): ?array
+    {
+        switch ($type) {
+            case 'activation':
+                return [
+                    'customer' => [
+                        'name' => 'Jan Novák',
+                        'email' => 'jan.novak@example.com',
+                    ],
+                    'activation_url' => $this->config['app']['url'] . '/aktivace/demo-token',
+                    'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
+                ];
+
+            case 'payment_qr':
+                return [
+                    'customer' => [
+                        'name' => 'Jan Novák',
+                        'email' => 'jan.novak@example.com',
+                    ],
+                    'subscription' => [
+                        'price' => 150,
+                        'variable_symbol' => '26001',
+                    ],
+                    'qr_code_url' => 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SPD*1.0*ACC:CZ1234567890*AM:150.00',
+                    'bank_account' => $this->setting->get('bank_account', '123456789/0100'),
+                    'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
+                ];
+
+            case 'event_reminder':
+                return [
+                    'customer' => [
+                        'name' => 'Jan Novák',
+                        'email' => 'jan.novak@example.com',
+                    ],
+                    'reminder' => [
+                        'event_type' => 'birthday',
+                        'recipient_relation' => 'wife',
+                        'event_day' => 15,
+                        'event_month' => 3,
+                    ],
+                    'event_type' => 'narozeniny',
+                    'recipient' => 'vaše manželka',
+                    'date' => '15. března',
+                    'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
+                ];
+
+            case 'expiration_reminder':
+                return [
+                    'customer' => [
+                        'name' => 'Jan Novák',
+                        'email' => 'jan.novak@example.com',
+                    ],
+                    'subscription' => [
+                        'price' => 150,
+                        'variable_symbol' => '26001',
+                    ],
+                    'days_left' => 14,
+                    'qr_code_url' => 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SPD*1.0*ACC:CZ1234567890*AM:150.00',
+                    'bank_account' => $this->setting->get('bank_account', '123456789/0100'),
+                    'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
+                ];
+
+            case 'otp':
+                return [
+                    'customer' => [
+                        'name' => 'Jan Novák',
+                        'email' => 'jan.novak@example.com',
+                    ],
+                    'code' => '123456',
+                    'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
+                ];
+
+            case 'admin_summary':
+                return [
+                    'stats' => [
+                        'calls_today' => 5,
+                        'awaiting_activation' => 2,
+                        'unmatched_payments' => 1,
+                        'expiring_this_week' => 3,
+                    ],
+                    'date' => date('j. n. Y'),
+                ];
+
+            default:
+                return null;
+        }
+    }
 }

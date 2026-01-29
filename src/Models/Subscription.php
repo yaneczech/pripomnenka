@@ -151,8 +151,17 @@ class Subscription
         }
 
         $now = date('Y-m-d H:i:s');
-        $startsAt = date('Y-m-d');
-        $expiresAt = date('Y-m-d', strtotime('+1 year'));
+
+        // Vypočítat expires_at
+        // Pokud už má expires_at a je v budoucnu, přidat rok k němu
+        // Jinak nastavit +1 rok od dnes
+        if ($subscription['expires_at'] && strtotime($subscription['expires_at']) > time()) {
+            $startsAt = $subscription['starts_at'] ?? date('Y-m-d');
+            $expiresAt = date('Y-m-d', strtotime($subscription['expires_at'] . ' +1 year'));
+        } else {
+            $startsAt = date('Y-m-d');
+            $expiresAt = date('Y-m-d', strtotime('+1 year'));
+        }
 
         // Vygenerovat aktivační token
         $token = generate_token(32);
@@ -182,8 +191,17 @@ class Subscription
         }
 
         $now = date('Y-m-d H:i:s');
-        $startsAt = date('Y-m-d');
-        $expiresAt = date('Y-m-d', strtotime('+1 year'));
+
+        // Vypočítat expires_at
+        // Pokud už má expires_at a je v budoucnu, přidat rok k němu
+        // Jinak nastavit +1 rok od dnes
+        if ($subscription['expires_at'] && strtotime($subscription['expires_at']) > time()) {
+            $startsAt = $subscription['starts_at'] ?? date('Y-m-d');
+            $expiresAt = date('Y-m-d', strtotime($subscription['expires_at'] . ' +1 year'));
+        } else {
+            $startsAt = date('Y-m-d');
+            $expiresAt = date('Y-m-d', strtotime('+1 year'));
+        }
 
         // Kontrola částky
         $paymentStatus = abs($amount - $subscription['price']) < 0.01 ? 'paid' : 'mismatched';

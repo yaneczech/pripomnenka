@@ -74,6 +74,8 @@ return [
     'POST /admin/nastaveni' => ['SettingsController', 'update', 'admin'],
     'GET /admin/nastaveni/plany' => ['SettingsController', 'plans', 'admin'],
     'POST /admin/nastaveni/plany' => ['SettingsController', 'updatePlans', 'admin'],
+    'GET /admin/nastaveni/emaily' => ['SettingsController', 'emailPreviews', 'admin'],
+    'GET /admin/nastaveni/emaily/nahled/{type}' => ['SettingsController', 'emailPreview', 'admin'],
 
     // ==========================================
     // CRON endpointy (chráněné tokenem)
@@ -83,4 +85,5 @@ return [
     'GET /cron/admin-summary' => ['CronController', 'adminSummary', 'cron'],
     'GET /cron/process-payments' => ['CronController', 'processPayments', 'cron'],
     'GET /cron/expiration-reminders' => ['CronController', 'expirationReminders', 'cron'],
+    'GET /cron/cleanup' => ['CronController', 'cleanup', 'cron'],
 ];

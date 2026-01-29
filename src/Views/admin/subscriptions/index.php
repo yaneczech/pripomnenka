@@ -61,7 +61,7 @@
                 <tbody>
                     <?php foreach ($subscriptions as $sub): ?>
                         <tr>
-                            <td>
+                            <td data-label="Zákazník">
                                 <?php if (!empty($sub['customer'])): ?>
                                     <a href="/admin/zakaznik/<?= $sub['customer_id'] ?>">
                                         <?= e($sub['customer']['name'] ?: $sub['customer']['email']) ?>
@@ -71,10 +71,10 @@
                                     <span class="text-muted">Zákazník #<?= $sub['customer_id'] ?></span>
                                 <?php endif; ?>
                             </td>
-                            <td><?= e($sub['plan_name'] ?? 'Neznámý') ?></td>
-                            <td><?= number_format($sub['price'], 0, ',', ' ') ?> Kč</td>
-                            <td><code><?= e($sub['variable_symbol']) ?></code></td>
-                            <td>
+                            <td data-label="Tarif"><?= e($sub['plan_name'] ?? 'Neznámý') ?></td>
+                            <td data-label="Částka"><?= number_format($sub['price'], 0, ',', ' ') ?> Kč</td>
+                            <td data-label="VS"><code><?= e($sub['variable_symbol']) ?></code></td>
+                            <td data-label="Stav">
                                 <?php
                                 $statusClass = match ($sub['status']) {
                                     'active' => 'badge--success',
@@ -94,14 +94,14 @@
                                 ?>
                                 <span class="badge <?= $statusClass ?>"><?= $statusText ?></span>
                             </td>
-                            <td>
+                            <td data-label="Platnost">
                                 <?php if ($sub['expires_at']): ?>
                                     <?= format_date($sub['expires_at']) ?>
                                 <?php else: ?>
                                     <span class="text-muted">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td>
+                            <td data-label="Akce">
                                 <?php if ($sub['status'] === 'awaiting_payment'): ?>
                                     <button type="button" class="btn btn--small btn--primary" onclick="confirmPayment(<?= $sub['id'] ?>, <?= $sub['price'] ?>)">
                                         <i class="ri-check-line"></i> Potvrdit

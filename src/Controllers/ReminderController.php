@@ -11,17 +11,20 @@ namespace Controllers;
 
 use Models\Reminder;
 use Models\Subscription;
+use Models\CallQueue;
 
 class ReminderController extends BaseController
 {
     private Reminder $reminder;
     private Subscription $subscription;
+    private CallQueue $callQueue;
 
     public function __construct(array $config)
     {
         parent::__construct($config);
         $this->reminder = new Reminder();
         $this->subscription = new Subscription();
+        $this->callQueue = new CallQueue();
     }
 
     /**
@@ -132,7 +135,10 @@ class ReminderController extends BaseController
         }
 
         $data['customer_id'] = $customerId;
-        $this->reminder->create($data);
+        $reminderId = $this->reminder->create($data);
+
+        // Aktualizovat call queue pro tuto připomínku
+        $this->callQueue->regenerateForReminder($reminderId);
 
         flash('success', 'Připomínka uložena! Ozveme se vám včas.');
         $this->redirect('/moje-pripominky');
@@ -211,6 +217,9 @@ class ReminderController extends BaseController
 
         $this->reminder->update($id, $data);
 
+        // Aktualizovat call queue pro tuto připomínku
+        $this->callQueue->regenerateForReminder($id);
+
         flash('success', 'Připomínka aktualizována.');
         $this->redirect('/moje-pripominky');
     }
@@ -229,6 +238,10 @@ class ReminderController extends BaseController
             $this->notFound();
         }
 
+        // Nejprve smazat z call queue
+        $this->callQueue->deleteForReminder($id);
+
+        // Pak smazat připomínku
         $this->reminder->delete($id);
 
         flash('success', 'Připomínka smazána.');

@@ -9,6 +9,9 @@
     <a href="/admin/nastaveni/plany" class="settings-nav-item settings-nav-item--active">
         <i class="ri-price-tag-3-line"></i> Tarify
     </a>
+    <a href="/admin/nastaveni/emaily" class="settings-nav-item">
+        <i class="ri-mail-line"></i> Náhled emailů
+    </a>
 </div>
 
 <!-- Seznam tarifů -->

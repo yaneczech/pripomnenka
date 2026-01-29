@@ -121,6 +121,10 @@ class Customer
             $updateData['last_login_at'] = $data['last_login_at'];
         }
 
+        if (isset($data['is_active'])) {
+            $updateData['is_active'] = (bool) $data['is_active'];
+        }
+
         if (empty($updateData)) {
             return true;
         }

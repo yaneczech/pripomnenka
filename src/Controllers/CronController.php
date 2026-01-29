@@ -60,4 +60,14 @@ class CronController extends BaseController
         header('Content-Type: text/plain; charset=utf-8');
         require ROOT_PATH . '/cron/process-bank-emails.php';
     }
+
+    /**
+     * Cleanup old records (OTP codes, login attempts, etc.)
+     * URL: /cron/cleanup?token=XXX
+     */
+    public function cleanup(array $params): void
+    {
+        header('Content-Type: text/plain; charset=utf-8');
+        require ROOT_PATH . '/cron/cleanup.php';
+    }
 }
