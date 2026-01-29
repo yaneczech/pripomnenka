@@ -334,7 +334,7 @@ function get_nth_sunday(int $year, int $month, int $nth): array
  * @param int $year Rok (výchozí aktuální)
  * @return array|null ['day' => int, 'month' => int] nebo null pokud nemá automatické datum
  */
-function get_holiday_date(string $eventType, int $year = null): ?array
+function get_holiday_date(string $eventType, ?int $year = null): ?array
 {
     if ($year === null) {
         $year = (int) date('Y');

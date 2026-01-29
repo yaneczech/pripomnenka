@@ -15,7 +15,7 @@
                     <input type="hidden" name="step" value="identifier">
 
                     <div class="form-group">
-                        <label for="identifier" class="form-label">Telefon nebo email</label>
+                        <label for="identifier" class="form-label">Telefon nebo e-mail</label>
                         <input type="text" id="identifier" name="identifier"
                                class="form-input <?= isset($errors['identifier']) ? 'form-input--error' : '' ?>"
                                placeholder="+420 777 888 999 nebo vas@email.cz"
@@ -73,7 +73,7 @@
                 <?php endif; ?>
 
                 <p class="text-center text-muted mb-3">
-                    Poslali jsme vám 6místný kód na email:<br>
+                    Poslali jsme vám 6místný kód na e-mail:<br>
                     <strong><?= e($identifier) ?></strong>
                 </p>
 
@@ -85,7 +85,7 @@
 
                 <?php if (isset($emailSent) && !$emailSent): ?>
                     <div class="flash flash--error mb-3" style="position: static;">
-                        ⚠️ Nepodařilo se odeslat email. Zkuste to znovu nebo kontaktujte podporu.
+                        ⚠️ Nepodařilo se odeslat e-mail. Zkuste to znovu nebo kontaktujte podporu.
                     </div>
                 <?php endif; ?>
 

@@ -17,7 +17,7 @@
                     <label for="name" class="form-label">Jméno</label>
                     <input type="text" id="name" name="name" class="form-input"
                            value="<?= e($customer['name'] ?? '') ?>" placeholder="Jak vám máme říkat?">
-                    <span class="form-hint">Toto jméno uvidíme my i vy v emailech.</span>
+                    <span class="form-hint">Toto jméno uvidíme my i vy v e-mailech.</span>
                 </div>
 
                 <div class="form-row form-row--2">
@@ -29,7 +29,7 @@
                     <div class="form-group">
                         <label class="form-label">Email</label>
                         <input type="email" class="form-input" value="<?= e($customer['email']) ?>" disabled>
-                        <span class="form-hint">Pro změnu emailu nás kontaktujte.</span>
+                        <span class="form-hint">Pro změnu e-mailu nás kontaktujte.</span>
                     </div>
                 </div>
 
@@ -57,7 +57,7 @@
                     </div>
                 <?php else: ?>
                     <p class="text-muted mb-3">
-                        Zatím používáte přihlášení kódem z emailu. Můžete si nastavit heslo pro rychlejší přístup.
+                        Zatím používáte přihlášení kódem z e-mailu. Můžete si nastavit heslo pro rychlejší přístup.
                     </p>
                 <?php endif; ?>
 

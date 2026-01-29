@@ -44,8 +44,8 @@
                 ?>
                 <div class="card <?= $isNear ? 'card--highlight' : '' ?>" style="<?= $isNear ? 'border-color: var(--color-primary); border-width: 2px;' : '' ?>">
                     <div class="card-body">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: var(--spacing-md);">
-                            <div style="flex: 1;">
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                            <div>
                                 <!-- Typ a vztah -->
                                 <h3 style="margin: 0 0 var(--spacing-xs);">
                                     <?= translate_event_type($reminder['event_type']) ?>
@@ -72,25 +72,29 @@
                                 <?php endif; ?>
                             </div>
 
-                            <div style="text-align: right;">
-                                <!-- Countdown -->
-                                <div style="font-size: var(--font-size-2xl); font-weight: 600; color: <?= $isNear ? 'var(--color-primary)' : 'var(--color-text-muted)' ?>;">
+                            <!-- Countdown -->
+                            <div style="text-align: center; min-width: 80px;">
+                                <div style="font-size: var(--font-size-3xl); font-weight: 700; color: <?= $isNear ? 'var(--color-primary)' : 'var(--color-text-muted)' ?>; line-height: 1;">
                                     <?= $daysUntil ?>
                                 </div>
-                                <div class="text-small text-muted">
+                                <div class="text-small text-muted" style="margin-top: var(--spacing-xs);">
                                     <?= $daysUntil === 1 ? 'den' : ($daysUntil < 5 ? 'dny' : 'dní') ?>
                                 </div>
-
-                                <!-- Akce -->
-                                <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-xs);">
-                                    <a href="/pripominka/<?= $reminder['id'] ?>" class="btn btn--ghost btn--small">Upravit</a>
-                                    <form action="/pripominka/<?= $reminder['id'] ?>/smazat" method="post" style="display: inline;"
-                                          onsubmit="return confirm('Opravdu smazat tuto připomínku?');">
-                                        <?= \CSRF::field() ?>
-                                        <button type="submit" class="btn btn--ghost btn--small text-error">Smazat</button>
-                                    </form>
-                                </div>
                             </div>
+                        </div>
+
+                        <!-- Akce tlačítka -->
+                        <div style="display: flex; gap: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border);">
+                            <a href="/pripominka/<?= $reminder['id'] ?>" class="btn btn--outline btn--small" style="flex: 1; max-width: 200px;">
+                                <i class="ri-edit-line"></i> Upravit
+                            </a>
+                            <form action="/pripominka/<?= $reminder['id'] ?>/smazat" method="post" style="flex: 1; max-width: 200px;"
+                                  onsubmit="return confirm('Opravdu smazat tuto připomínku?');">
+                                <?= \CSRF::field() ?>
+                                <button type="submit" class="btn btn--outline btn--small btn--delete-hover" style="width: 100%; color: var(--color-error); border-color: var(--color-error);">
+                                    <i class="ri-delete-bin-line"></i> Smazat
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

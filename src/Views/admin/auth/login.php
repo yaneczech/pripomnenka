@@ -9,7 +9,7 @@
     <?= \CSRF::field() ?>
 
     <div class="form-group">
-        <label for="email" class="form-label">Email</label>
+        <label for="email" class="form-label">E-mail</label>
         <input type="email" id="email" name="email" class="form-input <?= isset($errors['email']) ? 'form-input--error' : '' ?>"
                value="<?= e(old('email')) ?>" required autofocus>
         <?php if (isset($errors['email'])): ?>

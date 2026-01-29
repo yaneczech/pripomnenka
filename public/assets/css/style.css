@@ -270,7 +270,8 @@ q::after {
 }
 
 .footer-links a {
-    color: var(--color-text-light);
+    /* color: var(--color-text-light); */
+    text-decoration: underline;
 }
 
 .footer-bottom {
@@ -388,6 +389,12 @@ q::after {
 .btn--block {
     display: flex;
     width: 100%;
+}
+
+/* Delete button with hover effect */
+.btn--delete-hover:hover:not(:disabled) {
+    background: var(--color-error) !important;
+    color: white !important;
 }
 
 /* ========================================

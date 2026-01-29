@@ -400,9 +400,6 @@ HTML;
      */
     private function getOtpTemplate(array $data): string
     {
-        // Format code with spaces for readability
-        $formattedCode = implode(' ', str_split($data['code'], 3));
-
         return <<<HTML
 <!DOCTYPE html>
 <html>
@@ -420,12 +417,12 @@ HTML;
     <p>Pro přihlášení do Připomněnky použijte tento kód:</p>
 
     <div style="text-align: center; margin: 30px 0;">
-        <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px; background: #f0f0f0; padding: 20px; border-radius: 10px; font-family: monospace;">
-            {$formattedCode}
+        <div style="font-size: 36px; font-weight: bold; letter-spacing: 4px; background: #f0f0f0; padding: 20px; border-radius: 10px; font-family: monospace; user-select: all;">
+            {$data['code']}
         </div>
     </div>
 
-    <p style="color: #888; font-size: 14px;">Kód platí 10 minut. Pokud jste o přihlášení nežádali, tento email ignorujte.</p>
+    <p style="color: #888; font-size: 14px;">Kód platí 10 minut. Pokud jste o přihlášení nežádali, tento e-mail ignorujte.</p>
 
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
 

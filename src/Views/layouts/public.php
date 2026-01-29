@@ -66,12 +66,15 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <img src="<?= asset('img/ikona.svg') ?>" alt="" height="48" style="filter: grayscale(100%) opacity(0.6);">
-                    <span>Připomněnka</span>
+                    <img src="<?= asset('img/JvZ_logo.svg') ?>" alt="logo JvZ" style="height: 80px;">
+                    
                 </div>
                 <div class="footer-contact">
-                    <p>Květinářství Jeleni v zeleni</p>
-                    <p>Jihlava</p>
+                    <p style="font-weight: 600;">Jeleni v zeleni</p>
+                    <p>Palackého 1308/32<br>58601 Jihlava</p>
+                    <p>E-mail: <a href="mailto:mail@jelenivzeleni.cz">mail@jelenivzeleni.cz</a><br>
+                    Telefon: <a href="tel:+420606493031">+420 606 493 031</a></p>
+                    <a href="https://jelenivzeleni.cz">jelenivzeleni.cz</a>
                 </div>
                 <div class="footer-links">
                     <a href="/ochrana-udaju">Ochrana osobních údajů</a>

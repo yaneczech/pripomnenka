@@ -10,7 +10,7 @@
         <i class="ri-price-tag-3-line"></i> Tarify
     </a>
     <a href="/admin/nastaveni/emaily" class="settings-nav-item">
-        <i class="ri-mail-line"></i> Náhled emailů
+        <i class="ri-mail-line"></i> E-maily
     </a>
 </div>
 
@@ -55,7 +55,7 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <button type="button" class="btn btn--small btn--ghost" onclick="editPlan(<?= htmlspecialchars(json_encode($plan)) ?>)">
+                                <button type="button" class="btn btn--small btn--ghost" onclick='editPlan(<?= json_encode($plan, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
                                     <i class="ri-edit-line"></i>
                                 </button>
                                 <form action="/admin/nastaveni/plany" method="post" style="display: inline;">
@@ -130,11 +130,10 @@
 </div>
 
 <!-- Modal pro editaci -->
-<div id="editPlanModal" class="modal" style="display: none;">
-    <div class="modal-backdrop" onclick="closeModal()"></div>
-    <div class="modal-content">
+<div id="editPlanModal" class="modal-overlay">
+    <div class="modal">
         <div class="modal-header">
-            <h3>Upravit tarif</h3>
+            <h3 class="modal-title">Upravit tarif</h3>
             <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
         </div>
         <form id="editPlanForm" action="/admin/nastaveni/plany" method="post">
@@ -182,10 +181,17 @@ function editPlan(plan) {
     document.getElementById('edit_reminder_limit').value = plan.reminder_limit;
     document.getElementById('edit_discount_percent').value = plan.discount_percent;
     document.getElementById('edit_description').value = plan.description || '';
-    document.getElementById('editPlanModal').style.display = 'flex';
+    document.getElementById('editPlanModal').classList.add('is-open');
 }
 
 function closeModal() {
-    document.getElementById('editPlanModal').style.display = 'none';
+    document.getElementById('editPlanModal').classList.remove('is-open');
 }
+
+// Zavřít modal při kliku mimo něj
+document.getElementById('editPlanModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
 </script>

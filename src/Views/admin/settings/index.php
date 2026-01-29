@@ -10,7 +10,7 @@
         <i class="ri-price-tag-3-line"></i> Tarify
     </a>
     <a href="/admin/nastaveni/emaily" class="settings-nav-item">
-        <i class="ri-mail-line"></i> Náhled emailů
+        <i class="ri-mail-line"></i> E-maily
     </a>
 </div>
 
@@ -104,45 +104,6 @@
                            class="form-input" min="1" max="90"
                            value="<?= e($settings['activation_link_validity_days'] ?? '30') ?>">
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Emailové šablony -->
-    <div class="card mb-3">
-        <div class="card-header">
-            <h2 class="card-title"><i class="ri-mail-line"></i> Emailové šablony</h2>
-        </div>
-        <div class="card-body">
-            <div class="form-group">
-                <label for="email_activation_subject" class="form-label">Předmět: Aktivační email</label>
-                <input type="text" id="email_activation_subject" name="email_activation_subject" class="form-input"
-                       value="<?= e($settings['email_activation_subject'] ?? '') ?>">
-            </div>
-
-            <div class="form-group">
-                <label for="email_payment_qr_subject" class="form-label">Předmět: QR kód pro platbu</label>
-                <input type="text" id="email_payment_qr_subject" name="email_payment_qr_subject" class="form-input"
-                       value="<?= e($settings['email_payment_qr_subject'] ?? '') ?>">
-            </div>
-
-            <div class="form-group">
-                <label for="email_customer_reminder_subject" class="form-label">Předmět: Připomínka události</label>
-                <input type="text" id="email_customer_reminder_subject" name="email_customer_reminder_subject" class="form-input"
-                       value="<?= e($settings['email_customer_reminder_subject'] ?? '') ?>">
-            </div>
-
-            <div class="form-group">
-                <label for="email_customer_reminder_template" class="form-label">Šablona: Připomínka události</label>
-                <textarea id="email_customer_reminder_template" name="email_customer_reminder_template"
-                          class="form-textarea" rows="6"><?= e($settings['email_customer_reminder_template'] ?? '') ?></textarea>
-                <span class="form-hint">Proměnné: {{name}}, {{event_type}}, {{recipient}}, {{date}}, {{shop_phone}}</span>
-            </div>
-
-            <div class="form-group">
-                <label for="email_expiration_subject" class="form-label">Předmět: Expirace předplatného</label>
-                <input type="text" id="email_expiration_subject" name="email_expiration_subject" class="form-input"
-                       value="<?= e($settings['email_expiration_subject'] ?? '') ?>">
             </div>
         </div>
     </div>

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Models;
 
+use Models\Setting;
+
 class CallQueue
 {
     private Database $db;
@@ -84,12 +86,35 @@ class CallQueue
     private function calculateCallDate(array $reminder): ?string
     {
         $year = (int) date('Y');
-        $eventDate = mktime(0, 0, 0, $reminder['event_month'], $reminder['event_day'], $year);
+
+        // Pro svátky s automatickým datem použít vypočítané datum
+        $eventDay = $reminder['event_day'];
+        $eventMonth = $reminder['event_month'];
+
+        if (has_automatic_date($reminder['event_type'])) {
+            $holidayDate = get_holiday_date($reminder['event_type'], $year);
+            if ($holidayDate) {
+                $eventDay = $holidayDate['day'];
+                $eventMonth = $holidayDate['month'];
+            }
+        }
+
+        $eventDate = mktime(0, 0, 0, $eventMonth, $eventDay, $year);
 
         // Pokud událost už letos proběhla, použít příští rok
         if ($eventDate < time()) {
             $year++;
-            $eventDate = mktime(0, 0, 0, $reminder['event_month'], $reminder['event_day'], $year);
+
+            // Pro pohyblivé svátky přepočítat datum pro nový rok
+            if (has_automatic_date($reminder['event_type'])) {
+                $holidayDate = get_holiday_date($reminder['event_type'], $year);
+                if ($holidayDate) {
+                    $eventDay = $holidayDate['day'];
+                    $eventMonth = $holidayDate['month'];
+                }
+            }
+
+            $eventDate = mktime(0, 0, 0, $eventMonth, $eventDay, $year);
         }
 
         // Načíst nastavení pracovních dní

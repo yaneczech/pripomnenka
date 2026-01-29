@@ -113,6 +113,22 @@
 
 </div>
 
+<?php
+// Vypočítat data svátků pro JavaScript
+$mothersDay = get_holiday_date('mothers_day') ?? ['day' => 10, 'month' => 5];
+$fathersDay = get_holiday_date('fathers_day') ?? ['day' => 21, 'month' => 6];
+?>
+
+<style>
+/* Zamčené selecty - vizuálně disabled, ale hodnoty se posílají */
+.select-locked {
+    opacity: 0.6;
+    pointer-events: none;
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+</style>
+
 <script>
 // Automatické doplnění data pro specifické svátky
 (function() {
@@ -124,32 +140,41 @@
     const autoHolidays = {
         'valentines': { day: 14, month: 2 },
         'womens_day': { day: 8, month: 3 },
-        'mothers_day': { day: <?= get_holiday_date('mothers_day')['day'] ?>, month: <?= get_holiday_date('mothers_day')['month'] ?> },
-        'fathers_day': { day: <?= get_holiday_date('fathers_day')['day'] ?>, month: <?= get_holiday_date('fathers_day')['month'] ?> },
+        'mothers_day': { day: <?= $mothersDay['day'] ?? 10 ?>, month: <?= $mothersDay['month'] ?? 5 ?> },
+        'fathers_day': { day: <?= $fathersDay['day'] ?? 21 ?>, month: <?= $fathersDay['month'] ?? 6 ?> },
         'school_year_end': { day: 30, month: 6 }
     };
 
+    function updateDateFields(eventType) {
+        if (autoHolidays[eventType]) {
+            // Nastavit hodnoty
+            daySelect.value = autoHolidays[eventType].day;
+            monthSelect.value = autoHolidays[eventType].month;
+
+            // Vizuálně "zamknout" pomocí CSS (ale hodnoty se stále odešlou)
+            daySelect.classList.add('select-locked');
+            monthSelect.classList.add('select-locked');
+            daySelect.setAttribute('tabindex', '-1');
+            monthSelect.setAttribute('tabindex', '-1');
+        } else {
+            // Odemknout
+            daySelect.classList.remove('select-locked');
+            monthSelect.classList.remove('select-locked');
+            daySelect.removeAttribute('tabindex');
+            monthSelect.removeAttribute('tabindex');
+        }
+    }
+
     eventTypeInputs.forEach(input => {
         input.addEventListener('change', function() {
-            const eventType = this.value;
-
-            if (autoHolidays[eventType]) {
-                daySelect.value = autoHolidays[eventType].day;
-                monthSelect.value = autoHolidays[eventType].month;
-                daySelect.disabled = true;
-                monthSelect.disabled = true;
-            } else {
-                daySelect.disabled = false;
-                monthSelect.disabled = false;
-            }
+            updateDateFields(this.value);
         });
     });
 
     // Při načtení stránky zkontrolovat aktuálně vybraný event_type
     const checkedEventType = document.querySelector('input[name="event_type"]:checked');
-    if (checkedEventType && autoHolidays[checkedEventType.value]) {
-        daySelect.disabled = true;
-        monthSelect.disabled = true;
+    if (checkedEventType) {
+        updateDateFields(checkedEventType.value);
     }
 })();
 </script>

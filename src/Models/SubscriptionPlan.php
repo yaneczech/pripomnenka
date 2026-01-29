@@ -87,8 +87,8 @@ class SubscriptionPlan
             'price' => $data['price'],
             'reminder_limit' => $data['reminder_limit'],
             'discount_percent' => $data['discount_percent'] ?? 10,
-            'is_available' => $data['is_available'] ?? 1,
-            'is_default' => $data['is_default'] ?? 0,
+            'is_available' => isset($data['is_available']) ? (int) (bool) $data['is_available'] : 1,
+            'is_default' => isset($data['is_default']) ? (int) (bool) $data['is_default'] : 0,
             'sort_order' => $data['sort_order'] ?? 0,
             'description' => $data['description'] ?? null,
         ]);
@@ -105,7 +105,12 @@ class SubscriptionPlan
 
         foreach ($allowed as $field) {
             if (array_key_exists($field, $data)) {
-                $updateData[$field] = $data[$field];
+                // Konverze boolean hodnot na int pro databázi
+                if (in_array($field, ['is_available', 'is_default'])) {
+                    $updateData[$field] = (int) (bool) $data[$field];
+                } else {
+                    $updateData[$field] = $data[$field];
+                }
             }
         }
 

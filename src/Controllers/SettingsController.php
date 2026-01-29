@@ -209,9 +209,7 @@ class SettingsController extends BaseController
 
         $plan = $this->plan->find($id);
         if ($plan) {
-            $this->plan->update($id, [
-                'is_available' => !$plan['is_available'],
-            ]);
+            $this->plan->toggleAvailability($id);
             flash('success', $plan['is_available'] ? 'Tarif byl deaktivován.' : 'Tarif byl aktivován.');
         }
     }
@@ -228,11 +226,8 @@ class SettingsController extends BaseController
             return;
         }
 
-        // Zrušit výchozí u všech
-        $this->db->query("UPDATE subscription_plans SET is_default = FALSE");
-
-        // Nastavit nový výchozí
-        $this->plan->update($id, ['is_default' => true]);
+        // Nastavit jako výchozí (automaticky zruší ostatní)
+        $this->plan->setDefault($id);
 
         flash('success', 'Výchozí tarif byl nastaven.');
     }

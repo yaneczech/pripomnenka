@@ -40,7 +40,7 @@ $setting = new \Models\Setting();
                     <strong>Identifikační údaje:</strong> vaše jméno (dobrovolné)
                 </li>
                 <li style="margin-bottom: var(--spacing-xs);">
-                    <strong>Kontaktní údaje:</strong> telefonní číslo, emailová adresa
+                    <strong>Kontaktní údaje:</strong> telefonní číslo, e-mailová adresa
                 </li>
                 <li style="margin-bottom: var(--spacing-xs);">
                     <strong>Údaje o připomínkách:</strong> typ události (narozeniny, výročí), datum, vztah k oslavenci (manželka, matka apod.), cenový rozsah
@@ -107,7 +107,7 @@ $setting = new \Models\Setting();
                     <strong>Aktivní účty:</strong> po dobu trvání předplatného bez časového omezení
                 </li>
                 <li style="margin-bottom: var(--spacing-xs);">
-                    <strong>Neaktivní účty:</strong> po 2 letech bez aktivity vás upozorníme emailem, po dalších 30 dnech účet automaticky smažeme
+                    <strong>Neaktivní účty:</strong> po 2 letech bez aktivity vás upozorníme e-mailem, po dalších 30 dnech účet automaticky smažeme
                 </li>
                 <li style="margin-bottom: var(--spacing-xs);">
                     <strong>Historie volání:</strong> uchováváme 2 roky pro statistické účely
