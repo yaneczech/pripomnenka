@@ -34,7 +34,7 @@ class Database
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_EMULATE_PREPARES => true, // true = spolehlivější na shared hostingu
             PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$config['charset']}",
         ];
 
@@ -83,9 +83,20 @@ class Database
      */
     public function query(string $sql, array $params = []): PDOStatement
     {
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            // Chyba 1615: Prepared statement needs to be re-prepared
+            // Zkusíme to znovu (obvykle se to stane po ALTER TABLE nebo cache flush)
+            if ($e->getCode() == 'HY000' && strpos($e->getMessage(), '1615') !== false) {
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute($params);
+                return $stmt;
+            }
+            throw $e;
+        }
     }
 
     /**
