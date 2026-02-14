@@ -44,17 +44,18 @@ class AdminController extends BaseController
         $awaitingActivation = $this->subscription->getAwaitingActivation();
 
         // Nespárované platby
-        $unmatchedPayments = $this->db->fetchAll(
-            "SELECT * FROM unmatched_payments WHERE matched_to_subscription_id IS NULL ORDER BY received_at DESC"
+        $unmatchedPaymentsCount = (int) $this->db->fetchColumn(
+            "SELECT COUNT(*) FROM unmatched_payments WHERE matched_to_subscription_id IS NULL"
         );
 
-        // Tento týden
-        $weekEnd = (new \DateTime())->modify('+7 days');
-        $thisWeekCount = 0;
-        for ($i = 0; $i <= 7; $i++) {
-            $date = (new \DateTime())->modify("+{$i} days");
-            $thisWeekCount += count($this->reminder->getForCallDate($date));
-        }
+        // Tento týden — jeden SQL dotaz místo 8 separátních
+        $weekEnd = (new \DateTime())->modify('+7 days')->format('Y-m-d');
+        $todayStr = $today->format('Y-m-d');
+        $thisWeekCount = (int) $this->db->fetchColumn(
+            "SELECT COUNT(*) FROM call_queue
+             WHERE scheduled_date BETWEEN ? AND ? AND status = 'pending'",
+            [$todayStr, $weekEnd]
+        );
 
         // Expiruje brzy (30 dní)
         $expiringSoon = $this->subscription->getExpiringWithin(30);
@@ -69,7 +70,7 @@ class AdminController extends BaseController
             'todayCallCount' => $todayCallCount,
             'hasRepeatedAttempts' => count($repeatedAttempts) > 0,
             'awaitingActivationCount' => count($awaitingActivation),
-            'unmatchedPaymentsCount' => count($unmatchedPayments),
+            'unmatchedPaymentsCount' => $unmatchedPaymentsCount,
             'thisWeekCount' => $thisWeekCount,
             'expiringSoonCount' => count($expiringSoon),
             'stats' => $stats,

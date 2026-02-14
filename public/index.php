@@ -127,9 +127,10 @@ if ($middleware === 'auth') {
         redirect('/admin/prihlaseni');
     }
 } elseif ($middleware === 'cron') {
-    // Kontrola CRON tokenu
+    // Kontrola CRON tokenu (timing-safe porovnání)
     $token = $_GET['token'] ?? '';
-    if ($token !== $config['security']['cron_token']) {
+    $expectedToken = $config['security']['cron_token'] ?? '';
+    if (!is_string($token) || !is_string($expectedToken) || $expectedToken === '' || !hash_equals($expectedToken, $token)) {
         http_response_code(403);
         echo 'Forbidden';
         exit;

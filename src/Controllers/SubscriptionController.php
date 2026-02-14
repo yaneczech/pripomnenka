@@ -77,10 +77,9 @@ class SubscriptionController extends BaseController
         }
 
         $pricePaid = (float) $this->input('price_paid', $subscription['price']);
-        $note = trim($this->input('note', ''));
 
-        // Aktivovat předplatné
-        $this->subscription->confirmPayment($id, $pricePaid, $note);
+        // Aktivovat předplatné — správné pořadí: id, adminId, amount
+        $this->subscription->confirmPayment($id, \Session::getAdminId(), $pricePaid);
 
         // Odeslat aktivační email zákazníkovi
         $customer = $this->customer->find($subscription['customer_id']);

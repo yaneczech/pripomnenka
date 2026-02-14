@@ -18,8 +18,8 @@ return [
     'GET /prihlaseni' => ['AuthController', 'showLogin', null],
     'POST /prihlaseni' => ['AuthController', 'login', null],
     'POST /odhlaseni' => ['AuthController', 'logout', null],
-    'GET /overeni/{token}' => ['AuthController', 'verifyOtp', null],
-    'POST /overeni' => ['AuthController', 'submitOtp', null],
+    'POST /prihlaseni/otp-znovu' => ['AuthController', 'resendOtp', null],
+    'POST /prihlaseni/otp' => ['AuthController', 'switchToOtp', null],
 
     // Aktivace účtu (z emailu)
     'GET /aktivace/{token}' => ['ActivationController', 'showActivation', null],
@@ -41,6 +41,7 @@ return [
     'GET /profil' => ['CustomerController', 'profile', 'auth'],
     'POST /profil' => ['CustomerController', 'updateProfile', 'auth'],
     'GET /export-dat' => ['CustomerController', 'exportData', 'auth'],
+    'GET /smazat-ucet' => ['CustomerController', 'deleteAccountForm', 'auth'],
     'POST /smazat-ucet' => ['CustomerController', 'deleteAccount', 'auth'],
 
     // ==========================================

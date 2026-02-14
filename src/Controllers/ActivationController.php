@@ -81,6 +81,21 @@ class ActivationController extends BaseController
             $this->redirect('/');
         }
 
+        // Zabránit přeskočení kroků — ověřit, že předchozí krok byl dokončen
+        $completedStep = (int) \Session::get('activation_step', 1);
+
+        // Krok 2 vyžaduje dokončený krok 1 (GDPR souhlas)
+        if ($step === 2 && $completedStep < 2) {
+            flash('error', 'Nejprve musíte dokončit první krok.');
+            $this->redirect('/aktivace/' . $token);
+        }
+
+        // Krok 3 vyžaduje dokončený krok 2
+        if ($step === 3 && $completedStep < 3) {
+            flash('error', 'Nejprve musíte dokončit předchozí kroky.');
+            $this->redirect('/aktivace/' . $token);
+        }
+
         switch ($step) {
             case 1:
                 $this->processStep1($token, $subscription);
@@ -210,6 +225,14 @@ class ActivationController extends BaseController
      */
     private function processStep3(string $token, array $subscription): void
     {
+        // Ověřit, že zákazník udělil GDPR souhlas (krok 1)
+        $customer = $this->customer->find($subscription['customer_id']);
+        if (!$customer || empty($customer['gdpr_consent_at'])) {
+            flash('error', 'Pro aktivaci musíte nejprve souhlasit s podmínkami.');
+            \Session::set('activation_step', 1);
+            $this->redirect('/aktivace/' . $token);
+        }
+
         // Aktivovat předplatné
         $this->subscription->activate($subscription['id']);
 
