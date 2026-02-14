@@ -45,7 +45,8 @@
                             <input type="checkbox" id="gdpr_consent" name="gdpr_consent" value="1"
                                    class="form-check-input" <?= old('gdpr_consent') ? 'checked' : '' ?> required>
                             <label for="gdpr_consent" class="form-check-label">
-                                Souhlasím se <a href="/gdpr" target="_blank">zpracováním osobních údajů</a> pro účely služby Připomněnka.
+                                Souhlasím s <a href="/podminky" target="_blank">obchodními podmínkami</a>
+                                a se <a href="/ochrana-udaju" target="_blank">zpracováním osobních údajů</a>.
                             </label>
                         </div>
                         <?php if (isset($errors['gdpr_consent'])): ?>

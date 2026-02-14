@@ -25,8 +25,9 @@ return [
     'GET /aktivace/{token}' => ['ActivationController', 'showActivation', null],
     'POST /aktivace/{token}' => ['ActivationController', 'processActivation', null],
 
-    // GDPR
+    // GDPR a obchodní podmínky
     'GET /ochrana-udaju' => ['CustomerController', 'gdprInfo', null],
+    'GET /podminky' => ['CustomerController', 'termsInfo', null],
 
     // ==========================================
     // Zákaznická sekce (vyžaduje přihlášení)

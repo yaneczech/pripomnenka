@@ -97,7 +97,7 @@ class ActivationController extends BaseController
     }
 
     /**
-     * Krok 1: Představení (jméno, heslo, GDPR)
+     * Krok 1: Představení (jméno, heslo, souhlas s podmínkami)
      */
     private function processStep1(string $token, array $subscription): void
     {
@@ -105,9 +105,9 @@ class ActivationController extends BaseController
         $password = $this->input('password', '');
         $gdprConsent = $this->input('gdpr_consent');
 
-        // Validace GDPR
+        // Validace souhlasu s podmínkami a GDPR
         if (!$gdprConsent) {
-            $this->withErrors(['gdpr_consent' => 'Pro pokračování musíte souhlasit se zpracováním osobních údajů.']);
+            $this->withErrors(['gdpr_consent' => 'Pro pokračování musíte souhlasit s obchodními podmínkami a zpracováním osobních údajů.']);
             $this->withOldInput();
             $this->redirect('/aktivace/' . $token);
         }
@@ -119,10 +119,12 @@ class ActivationController extends BaseController
             $this->redirect('/aktivace/' . $token);
         }
 
-        // Aktualizovat zákazníka
+        // Aktualizovat zákazníka — souhlas s GDPR i obchodními podmínkami
+        $now = date('Y-m-d H:i:s');
         $updateData = [
-            'gdpr_consent_at' => date('Y-m-d H:i:s'),
-            'gdpr_consent_text' => 'Souhlas se zpracováním osobních údajů pro službu Připomněnka. Verze ' . date('Y-m-d'),
+            'gdpr_consent_at' => $now,
+            'gdpr_consent_text' => 'Souhlas s obchodními podmínkami a zpracováním osobních údajů pro službu Připomněnka. Verze ' . date('Y-m-d'),
+            'terms_consent_at' => $now,
         ];
 
         if ($name) {

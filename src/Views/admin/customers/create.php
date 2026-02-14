@@ -62,6 +62,15 @@
                 </div>
             </div>
 
+            <div style="padding: var(--spacing-md); background: var(--color-background); border-radius: var(--radius-md); border-left: 3px solid var(--color-primary); margin-top: var(--spacing-lg);">
+                <p style="margin: 0; color: var(--color-text-light); font-size: var(--font-size-sm);">
+                    <strong>Souhlas s podmínkami:</strong>
+                    Zákazník odsouhlasí <a href="/podminky" target="_blank">obchodní podmínky</a>
+                    a <a href="/ochrana-udaju" target="_blank">zpracování osobních údajů</a>
+                    při aktivaci účtu (krok 1 aktivačního průvodce).
+                </p>
+            </div>
+
             <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-xl);">
                 <button type="submit" class="btn btn--primary">Uložit a odeslat</button>
                 <a href="/admin/zakaznici" class="btn btn--ghost">Zrušit</a>

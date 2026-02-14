@@ -17,12 +17,40 @@
 <form action="/admin/nastaveni" method="post">
     <?= \CSRF::field() ?>
 
-    <!-- Kontaktní údaje -->
+    <!-- Údaje o provozovateli -->
     <div class="card mb-3">
         <div class="card-header">
-            <h2 class="card-title"><i class="ri-store-2-line"></i> Kontaktní údaje</h2>
+            <h2 class="card-title"><i class="ri-store-2-line"></i> Údaje o provozovateli</h2>
         </div>
         <div class="card-body">
+            <div class="form-row form-row--2">
+                <div class="form-group">
+                    <label for="shop_name_full" class="form-label">Název provozovny</label>
+                    <input type="text" id="shop_name_full" name="shop_name_full" class="form-input"
+                           value="<?= e($settings['shop_name_full'] ?? '') ?>" placeholder="Název firmy / provozovny">
+                </div>
+                <div class="form-group">
+                    <label for="shop_owner" class="form-label">Jméno provozovatele</label>
+                    <input type="text" id="shop_owner" name="shop_owner" class="form-input"
+                           value="<?= e($settings['shop_owner'] ?? '') ?>" placeholder="Jméno a příjmení">
+                </div>
+            </div>
+            <div class="form-row form-row--2">
+                <div class="form-group">
+                    <label for="shop_address" class="form-label">Adresa</label>
+                    <input type="text" id="shop_address" name="shop_address" class="form-input"
+                           value="<?= e($settings['shop_address'] ?? '') ?>" placeholder="Ulice, PSČ Město">
+                </div>
+                <div class="form-group">
+                    <label for="shop_ico" class="form-label">IČO</label>
+                    <input type="text" id="shop_ico" name="shop_ico" class="form-input"
+                           value="<?= e($settings['shop_ico'] ?? '') ?>" placeholder="12345678">
+                </div>
+            </div>
+
+            <hr class="my-3">
+            <h3 class="text-small mb-2">Kontaktní údaje</h3>
+
             <div class="form-row form-row--2">
                 <div class="form-group">
                     <label for="shop_phone" class="form-label">Telefon</label>
@@ -35,6 +63,8 @@
                            value="<?= e($settings['shop_email'] ?? '') ?>" placeholder="info@jelenivzeleni.cz">
                 </div>
             </div>
+
+            <span class="form-hint">Tyto údaje se zobrazí na stránkách <a href="/podminky" target="_blank">obchodních podmínek</a> a <a href="/ochrana-udaju" target="_blank">ochrany osobních údajů</a>.</span>
         </div>
     </div>
 

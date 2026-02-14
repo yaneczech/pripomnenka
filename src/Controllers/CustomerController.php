@@ -218,4 +218,12 @@ class CustomerController extends BaseController
     {
         $this->view('customer/gdpr-info');
     }
+
+    /**
+     * Show terms of service
+     */
+    public function termsInfo(array $params): void
+    {
+        $this->view('customer/terms-info');
+    }
 }
