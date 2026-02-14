@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS admins (
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     name VARCHAR(100) NOT NULL,
+    password_reset_token VARCHAR(64) DEFAULT NULL,
+    password_reset_expires_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
 

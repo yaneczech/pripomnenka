@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Controllers;
 
 use Models\Admin;
+use Services\EmailService;
 
 class AdminAuthController extends BaseController
 {
@@ -96,6 +97,131 @@ class AdminAuthController extends BaseController
         \Session::logoutAdmin();
         flash('success', 'Byli jste odhlášeni.');
 
+        $this->redirect('/admin/prihlaseni');
+    }
+
+    /**
+     * Zobrazit formulář pro zapomenuté heslo
+     */
+    public function showForgotPassword(array $params): void
+    {
+        if (\Session::isAdmin()) {
+            $this->redirect('/admin');
+        }
+
+        $this->view('admin/auth/forgot-password', [
+            'title' => 'Zapomenuté heslo',
+            'errors' => $this->getErrors(),
+        ], 'admin-login');
+    }
+
+    /**
+     * Zpracovat žádost o obnovu hesla
+     */
+    public function forgotPassword(array $params): void
+    {
+        $this->validateCsrf();
+
+        $email = trim($this->input('email', ''));
+
+        $validator = $this->validate(['email' => $email]);
+        $validator
+            ->required('email', 'Zadejte email.')
+            ->email('email', 'Neplatný formát emailu.');
+
+        if ($validator->fails()) {
+            $this->withErrors($validator->errors());
+            $this->withOldInput();
+            $this->redirect('/admin/zapomnene-heslo');
+        }
+
+        // Rate limiting
+        if ($this->isRateLimited('reset:' . $email)) {
+            flash('error', 'Příliš mnoho pokusů. Zkuste to za 15 minut.');
+            $this->redirect('/admin/zapomnene-heslo');
+        }
+
+        // Vždy zobrazit stejnou zprávu (ochrana proti enumeration)
+        $admin = $this->admin->findByEmail($email);
+
+        if ($admin) {
+            $token = $this->admin->generatePasswordResetToken($admin['id']);
+
+            if ($token) {
+                $resetUrl = $this->config['app']['url'] . '/admin/reset-hesla/' . $token;
+                $emailService = new EmailService();
+                $emailService->sendAdminPasswordResetEmail($admin['email'], $admin['name'], $resetUrl);
+            }
+        } else {
+            // Log attempt for non-existent email
+            $this->logLoginAttempt('reset:' . $email);
+        }
+
+        flash('success', 'Pokud účet s tímto emailem existuje, poslali jsme vám odkaz pro obnovu hesla.');
+        $this->redirect('/admin/zapomnene-heslo');
+    }
+
+    /**
+     * Zobrazit formulář pro nastavení nového hesla
+     */
+    public function showResetPassword(array $params): void
+    {
+        $token = $params['token'] ?? '';
+
+        $admin = $this->admin->findByResetToken($token);
+
+        if (!$admin) {
+            flash('error', 'Odkaz pro obnovu hesla je neplatný nebo vypršel. Požádejte o nový.');
+            $this->redirect('/admin/zapomnene-heslo');
+        }
+
+        $this->view('admin/auth/reset-password', [
+            'title' => 'Nové heslo',
+            'token' => $token,
+            'errors' => $this->getErrors(),
+        ], 'admin-login');
+    }
+
+    /**
+     * Zpracovat nastavení nového hesla
+     */
+    public function resetPassword(array $params): void
+    {
+        $this->validateCsrf();
+
+        $token = $params['token'] ?? '';
+        $password = $this->input('password', '');
+        $passwordConfirm = $this->input('password_confirm', '');
+
+        // Validace
+        $validator = $this->validate([
+            'password' => $password,
+            'password_confirm' => $passwordConfirm,
+        ]);
+
+        $validator
+            ->required('password', 'Zadejte nové heslo.')
+            ->minLength('password', 8, 'Heslo musí mít alespoň 8 znaků.');
+
+        if ($validator->fails()) {
+            $this->withErrors($validator->errors());
+            $this->redirect('/admin/reset-hesla/' . $token);
+        }
+
+        if ($password !== $passwordConfirm) {
+            $this->withErrors(['password_confirm' => 'Hesla se neshodují.']);
+            $this->redirect('/admin/reset-hesla/' . $token);
+        }
+
+        // Ověřit token a nastavit heslo
+        $success = $this->admin->resetPasswordWithToken($token, $password);
+
+        if (!$success) {
+            flash('error', 'Odkaz pro obnovu hesla je neplatný nebo vypršel. Požádejte o nový.');
+            $this->redirect('/admin/zapomnene-heslo');
+        }
+
+        flash('success', 'Heslo bylo úspěšně změněno. Můžete se přihlásit.');
         $this->redirect('/admin/prihlaseni');
     }
 

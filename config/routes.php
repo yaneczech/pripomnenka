@@ -49,6 +49,10 @@ return [
     'GET /admin/prihlaseni' => ['AdminAuthController', 'showLogin', null],
     'POST /admin/prihlaseni' => ['AdminAuthController', 'login', null],
     'POST /admin/odhlaseni' => ['AdminAuthController', 'logout', 'admin'],
+    'GET /admin/zapomnene-heslo' => ['AdminAuthController', 'showForgotPassword', null],
+    'POST /admin/zapomnene-heslo' => ['AdminAuthController', 'forgotPassword', null],
+    'GET /admin/reset-hesla/{token}' => ['AdminAuthController', 'showResetPassword', null],
+    'POST /admin/reset-hesla/{token}' => ['AdminAuthController', 'resetPassword', null],
 
     // Seznam k provolání
     'GET /admin/dnes' => ['CallListController', 'today', 'admin'],
