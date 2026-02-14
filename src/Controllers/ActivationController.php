@@ -162,6 +162,15 @@ class ActivationController extends BaseController
                 'customer_note' => trim($this->input('customer_note', '')),
             ];
 
+            // Pro svátky s fixním datem přepsat datum na správné
+            if ($data['event_type'] && has_automatic_date($data['event_type'])) {
+                $holidayDate = get_holiday_date($data['event_type']);
+                if ($holidayDate) {
+                    $data['event_day'] = $holidayDate['day'];
+                    $data['event_month'] = $holidayDate['month'];
+                }
+            }
+
             // Kontrola limitu
             $currentCount = $this->reminder->countByCustomer($subscription['customer_id']);
             if ($currentCount >= $subscription['reminder_limit']) {

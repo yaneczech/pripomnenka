@@ -168,6 +168,63 @@
             </div>
         </form>
 
+        <?php
+        // Svátky s automatickým datem
+        $mothersDay = get_holiday_date('mothers_day') ?? ['day' => 10, 'month' => 5];
+        $fathersDay = get_holiday_date('fathers_day') ?? ['day' => 21, 'month' => 6];
+        ?>
+
+        <style>
+        .select-locked {
+            opacity: 0.6;
+            pointer-events: none;
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        </style>
+
+        <script>
+        (function() {
+            var eventTypeSelect = document.querySelector('select[name="event_type"]');
+            var daySelect = document.querySelector('select[name="event_day"]');
+            var monthSelect = document.querySelector('select[name="event_month"]');
+
+            if (!eventTypeSelect || !daySelect || !monthSelect) return;
+
+            var autoHolidays = {
+                'valentines': { day: 14, month: 2 },
+                'womens_day': { day: 8, month: 3 },
+                'mothers_day': { day: <?= $mothersDay['day'] ?? 10 ?>, month: <?= $mothersDay['month'] ?? 5 ?> },
+                'fathers_day': { day: <?= $fathersDay['day'] ?? 21 ?>, month: <?= $fathersDay['month'] ?? 6 ?> },
+                'school_year_end': { day: 30, month: 6 }
+            };
+
+            function updateDateFields(eventType) {
+                if (autoHolidays[eventType]) {
+                    daySelect.value = autoHolidays[eventType].day;
+                    monthSelect.value = autoHolidays[eventType].month;
+                    daySelect.classList.add('select-locked');
+                    monthSelect.classList.add('select-locked');
+                    daySelect.setAttribute('tabindex', '-1');
+                    monthSelect.setAttribute('tabindex', '-1');
+                } else {
+                    daySelect.classList.remove('select-locked');
+                    monthSelect.classList.remove('select-locked');
+                    daySelect.removeAttribute('tabindex');
+                    monthSelect.removeAttribute('tabindex');
+                }
+            }
+
+            eventTypeSelect.addEventListener('change', function() {
+                updateDateFields(this.value);
+            });
+
+            if (eventTypeSelect.value) {
+                updateDateFields(eventTypeSelect.value);
+            }
+        })();
+        </script>
+
     <?php elseif ($step === 3): ?>
         <!-- Krok 3: Hotovo -->
         <?php $reminders = (new \Models\Reminder())->getByCustomerSorted($subscription['customer_id']); ?>
