@@ -77,6 +77,7 @@
                     <a href="https://jelenivzeleni.cz">jelenivzeleni.cz</a>
                 </div>
                 <div class="footer-links">
+                    <a href="/podminky">Obchodní podmínky</a>
                     <a href="/ochrana-udaju">Ochrana osobních údajů</a>
                 </div>
             </div>
