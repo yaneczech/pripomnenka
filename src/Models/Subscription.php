@@ -104,6 +104,31 @@ class Subscription
     public function create(array $data): int
     {
         $vs = $this->generateVariableSymbol();
+        $isFree = (float) $data['price'] <= 0;
+
+        // Bezplatné tarify přeskočí platbu a jdou rovnou na aktivaci
+        if ($isFree) {
+            $now = date('Y-m-d H:i:s');
+            $token = generate_token(32);
+            $tokenExpires = date('Y-m-d H:i:s', strtotime('+30 days'));
+
+            return $this->db->insert('subscriptions', [
+                'customer_id' => $data['customer_id'],
+                'plan_id' => $data['plan_id'],
+                'reminder_limit' => $data['reminder_limit'],
+                'price' => 0,
+                'variable_symbol' => $vs,
+                'payment_method' => $data['payment_method'] ?? 'cash',
+                'payment_status' => 'paid',
+                'payment_confirmed_at' => $now,
+                'price_paid' => 0,
+                'starts_at' => date('Y-m-d'),
+                'expires_at' => date('Y-m-d', strtotime('+1 year')),
+                'activation_token' => $token,
+                'activation_token_expires_at' => $tokenExpires,
+                'status' => 'awaiting_activation',
+            ]);
+        }
 
         return $this->db->insert('subscriptions', [
             'customer_id' => $data['customer_id'],

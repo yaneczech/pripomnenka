@@ -246,7 +246,7 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
             Jednoduchý ceník
         </h2>
         <p style="text-align: center; color: var(--color-text-light); margin-bottom: var(--spacing-2xl);">
-            Roční předplatné, žádné skryté poplatky.
+            Vyberte si tarif, který vám vyhovuje. Žádné skryté poplatky.
         </p>
 
         <?php
@@ -266,9 +266,13 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
                     <div class="card-body" style="padding: var(--spacing-xl);">
                         <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);"><?= e($plan['name']) ?></h3>
                         <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--color-primary); margin-bottom: var(--spacing-xs);">
-                            <?= number_format($plan['price'], 0, ',', ' ') ?> Kč
+                            <?= format_price($plan['price']) ?>
                         </div>
-                        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">za rok</p>
+                        <?php if ($plan['price'] > 0): ?>
+                            <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">za rok</p>
+                        <?php else: ?>
+                            <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">navždy</p>
+                        <?php endif; ?>
 
                         <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: var(--spacing-lg);">
                             <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
@@ -296,7 +300,7 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
         </div>
 
         <p style="text-align: center; font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--spacing-lg);">
-            Předplatné si aktivujete přímo v naší provozovně. Platba hotově, kartou nebo převodem.
+            Službu si aktivujete přímo v naší provozovně nebo online. Platba hotově, kartou nebo převodem.
         </p>
     </div>
 </section>

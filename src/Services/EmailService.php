@@ -276,7 +276,7 @@ HTML;
      */
     private function getPaymentQrTemplate(array $data): string
     {
-        $amount = number_format($data['subscription']['price'], 0, ',', ' ');
+        $amount = format_price($data['subscription']['price']);
 
         return <<<HTML
 <!DOCTYPE html>
@@ -298,7 +298,7 @@ HTML;
         <img src="{$data['qr_code_url']}" alt="QR kód pro platbu" style="max-width: 200px;">
 
         <p style="margin-top: 20px;">
-            <strong>Částka:</strong> {$amount} Kč<br>
+            <strong>Částka:</strong> {$amount}<br>
             <strong>Účet:</strong> {$data['bank_account']}<br>
             <strong>VS:</strong> {$data['subscription']['variable_symbol']}
         </p>
@@ -365,7 +365,7 @@ HTML;
      */
     private function getExpirationReminderTemplate(array $data): string
     {
-        $amount = number_format($data['subscription']['price'], 0, ',', ' ');
+        $amount = format_price($data['subscription']['price']);
         $daysText = $data['days_left'] == 1 ? 'den' : ($data['days_left'] < 5 ? 'dny' : 'dní');
 
         return <<<HTML
@@ -390,7 +390,7 @@ HTML;
         <img src="{$data['qr_code_url']}" alt="QR kód pro platbu" style="max-width: 200px;">
 
         <p style="margin-top: 20px;">
-            <strong>Částka:</strong> {$amount} Kč<br>
+            <strong>Částka:</strong> {$amount}<br>
             <strong>VS:</strong> {$data['subscription']['variable_symbol']}
         </p>
     </div>

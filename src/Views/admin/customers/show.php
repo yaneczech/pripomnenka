@@ -92,7 +92,7 @@
                         </div>
                         <div>
                             <span class="text-small text-muted">Cena</span>
-                            <div><?= number_format($subscription['price'], 0, ',', ' ') ?> Kč</div>
+                            <div><?= format_price($subscription['price']) ?></div>
                         </div>
                         <div>
                             <span class="text-small text-muted">VS</span>

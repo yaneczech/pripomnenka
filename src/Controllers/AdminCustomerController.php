@@ -135,6 +135,15 @@ class AdminCustomerController extends BaseController
             'payment_method' => $this->input('payment_method', 'cash'),
         ];
 
+        // Najít plán (potřebujeme cenu pro validaci platby)
+        $plan = $this->plan->find($data['plan_id']);
+        $isFree = $plan && (float) $plan['price'] <= 0;
+
+        // Pro bezplatné tarify není potřeba způsob platby
+        if ($isFree) {
+            $data['payment_method'] = 'cash'; // výchozí pro bezplatné
+        }
+
         // Validace
         $validator = $this->validate($data);
         $validator
@@ -142,8 +151,11 @@ class AdminCustomerController extends BaseController
             ->phone('phone', 'Neplatný formát telefonu.')
             ->required('email', 'Zadejte email.')
             ->email('email', 'Neplatný formát emailu.')
-            ->required('plan_id', 'Vyberte variantu předplatného.')
-            ->in('payment_method', ['cash', 'card', 'bank_transfer'], 'Neplatný způsob platby.');
+            ->required('plan_id', 'Vyberte variantu předplatného.');
+
+        if (!$isFree) {
+            $validator->in('payment_method', ['cash', 'card', 'bank_transfer'], 'Neplatný způsob platby.');
+        }
 
         // Kontrola duplicit
         if ($this->customer->exists($data['email'], $data['phone'])) {
@@ -155,9 +167,6 @@ class AdminCustomerController extends BaseController
             $this->withOldInput();
             $this->redirect('/admin/novy-zakaznik');
         }
-
-        // Najít plán
-        $plan = $this->plan->find($data['plan_id']);
         if (!$plan) {
             flash('error', 'Neplatná varianta předplatného.');
             $this->redirect('/admin/novy-zakaznik');
@@ -180,8 +189,12 @@ class AdminCustomerController extends BaseController
 
         $subscription = $this->subscription->find($subscriptionId);
 
-        // Zpracovat podle způsobu platby
-        if ($data['payment_method'] === 'bank_transfer') {
+        // Zpracovat podle typu tarifu a způsobu platby
+        if ((float) $plan['price'] <= 0) {
+            // Bezplatný tarif — platba se nepožaduje, rovnou aktivační email
+            // TODO: Odeslat aktivační email
+            flash('success', 'Hotovo! Bezplatný tarif — zákazníkovi jsme poslali email s aktivačním odkazem.');
+        } elseif ($data['payment_method'] === 'bank_transfer') {
             // TODO: Odeslat email s QR kódem
             flash('success', 'Zákazníkovi jsme poslali QR kód pro platbu. VS: ' . $subscription['variable_symbol']);
         } else {

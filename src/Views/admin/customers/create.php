@@ -28,16 +28,16 @@
                 <?php foreach ($plans as $plan): ?>
                     <div class="form-check">
                         <input type="radio" id="plan_<?= $plan['id'] ?>" name="plan_id" value="<?= $plan['id'] ?>"
-                               class="form-check-input" <?= $plan['id'] == ($defaultPlanId ?? old('plan_id')) ? 'checked' : '' ?> required>
+                               class="form-check-input" data-price="<?= $plan['price'] ?>" <?= $plan['id'] == ($defaultPlanId ?? old('plan_id')) ? 'checked' : '' ?> required>
                         <label for="plan_<?= $plan['id'] ?>" class="form-check-label">
-                            <strong><?= e($plan['name']) ?></strong> — <?= number_format($plan['price'], 0, ',', ' ') ?> Kč
-                            <span class="text-muted">(<?= $plan['reminder_limit'] ?> připomínek)</span>
+                            <strong><?= e($plan['name']) ?></strong> — <?= format_price($plan['price']) ?>
+                            <span class="text-muted">(<?= $plan['reminder_limit'] ?> připomínek<?= $plan['discount_percent'] > 0 ? ', ' . $plan['discount_percent'] . '% sleva' : '' ?>)</span>
                         </label>
                     </div>
                 <?php endforeach; ?>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="payment-method-group">
                 <label class="form-label form-label--required">Způsob platby</label>
                 <div class="form-check">
                     <input type="radio" id="payment_cash" name="payment_method" value="cash"
@@ -82,3 +82,31 @@
 <p class="text-small text-muted mt-3">
     Tip: Pro rychlejší zadávání můžete použít <kbd>Ctrl</kbd> + <kbd>Enter</kbd> pro uložení.
 </p>
+
+<script>
+(function() {
+    var planInputs = document.querySelectorAll('input[name="plan_id"]');
+    var paymentGroup = document.getElementById('payment-method-group');
+    var transferInfo = document.querySelector('.bank-transfer-info');
+
+    function updatePaymentVisibility() {
+        var selected = document.querySelector('input[name="plan_id"]:checked');
+        if (!selected) return;
+
+        var price = parseFloat(selected.dataset.price);
+        if (price <= 0) {
+            paymentGroup.style.display = 'none';
+            if (transferInfo) transferInfo.style.display = 'none';
+        } else {
+            paymentGroup.style.display = '';
+        }
+    }
+
+    planInputs.forEach(function(input) {
+        input.addEventListener('change', updatePaymentVisibility);
+    });
+
+    // Kontrola při načtení stránky
+    updatePaymentVisibility();
+})();
+</script>

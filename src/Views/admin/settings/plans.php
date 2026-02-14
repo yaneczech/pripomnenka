@@ -43,7 +43,7 @@
                                 <div class="text-small text-muted"><?= e($plan['description']) ?></div>
                             <?php endif; ?>
                         </td>
-                        <td><?= number_format($plan['price'], 0, ',', ' ') ?> Kč/rok</td>
+                        <td><?= $plan['price'] > 0 ? number_format($plan['price'], 0, ',', ' ') . ' Kč/rok' : 'Zdarma' ?></td>
                         <td><?= $plan['reminder_limit'] ?></td>
                         <td><?= $plan['discount_percent'] ?>%</td>
                         <td>
@@ -102,7 +102,7 @@
                 </div>
                 <div class="form-group">
                     <label for="price" class="form-label form-label--required">Cena (Kč/rok)</label>
-                    <input type="number" id="price" name="price" class="form-input" required min="1" step="1">
+                    <input type="number" id="price" name="price" class="form-input" required min="0" step="1">
                 </div>
             </div>
 
@@ -149,7 +149,7 @@
                 <div class="form-row form-row--2">
                     <div class="form-group">
                         <label for="edit_price" class="form-label">Cena</label>
-                        <input type="number" id="edit_price" name="price" class="form-input" required min="1">
+                        <input type="number" id="edit_price" name="price" class="form-input" required min="0">
                     </div>
                     <div class="form-group">
                         <label for="edit_reminder_limit" class="form-label">Limit připomínek</label>
