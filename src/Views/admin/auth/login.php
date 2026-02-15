@@ -27,3 +27,7 @@
 
     <button type="submit" class="btn btn--primary btn--block">Přihlásit se</button>
 </form>
+
+<p style="text-align: center; margin-top: var(--spacing-lg);">
+    <a href="/admin/zapomnene-heslo" style="color: var(--color-primary);">Zapomenuté heslo?</a>
+</p>

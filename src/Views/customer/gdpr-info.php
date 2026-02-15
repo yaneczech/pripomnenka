@@ -1,5 +1,11 @@
 <?php
 $setting = new \Models\Setting();
+$shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Provozovatel'));
+$shopAddress = $setting->get('shop_address', '');
+$shopIco = $setting->get('shop_ico', '');
+$shopOwner = $setting->get('shop_owner', '');
+$shopEmail = $setting->get('shop_email', '');
+$shopPhone = $setting->get('shop_phone', '');
 ?>
 <div class="container" style="max-width: 800px; padding: var(--spacing-2xl) var(--spacing-md);">
 
@@ -17,14 +23,14 @@ $setting = new \Models\Setting();
                 1. Správce osobních údajů
             </h2>
             <p style="line-height: 1.7; color: var(--color-text);">
-                <strong>Jeleni v zeleni</strong><br>
-                Palackého 1308/32, 586 01 Jihlava<br>
-                Sofie Janečková<br>
-                IČO: 14111250<br>
+                <strong><?= e($shopName) ?></strong><br>
+                <?php if ($shopAddress): ?><?= e($shopAddress) ?><br><?php endif; ?>
+                <?php if ($shopOwner): ?><?= e($shopOwner) ?><br><?php endif; ?>
+                <?php if ($shopIco): ?>IČO: <?= e($shopIco) ?><br><?php endif; ?>
                 <br>
                 <strong>Kontakt:</strong><br>
-                Email: <?= e($setting->get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
-                Telefon: <?= e($setting->get('shop_phone', '775 900 551')) ?>
+                <?php if ($shopEmail): ?>Email: <?= e($shopEmail) ?><br><?php endif; ?>
+                <?php if ($shopPhone): ?>Telefon: <?= e($shopPhone) ?><?php endif; ?>
             </p>
         </div>
     </div>
@@ -87,7 +93,8 @@ $setting = new \Models\Setting();
             </h2>
             <p style="line-height: 1.7; color: var(--color-text);">
                 Vaše osobní údaje zpracováváme na základě vašeho <strong>výslovného souhlasu</strong>
-                (článek 6 odst. 1 písm. a) nařízení GDPR), který jste poskytli při aktivaci účtu.
+                (článek 6 odst. 1 písm. a) nařízení GDPR), který jste poskytli při aktivaci účtu
+                společně s přijetím <a href="/podminky" style="color: var(--color-primary);">obchodních podmínek</a>.
             </p>
             <p style="line-height: 1.7; color: var(--color-text); margin-top: var(--spacing-sm);">
                 <strong>Odvolání souhlasu:</strong> Souhlas můžete kdykoliv odvolat smazáním účtu.
@@ -216,8 +223,8 @@ $setting = new \Models\Setting();
                 uplatnit svá práva, kontaktujte nás:
             </p>
             <p style="line-height: 1.7; color: var(--color-text); margin-top: var(--spacing-md);">
-                Email: <a href="mailto:<?= e($setting->get('shop_email', 'info@jelenivzeleni.cz')) ?>" style="color: var(--color-primary); font-weight: 600;"><?= e($setting->get('shop_email', 'info@jelenivzeleni.cz')) ?></a><br>
-                Telefon: <a href="tel:<?= e(str_replace(' ', '', $setting->get('shop_phone', '775900551'))) ?>" style="color: var(--color-primary); font-weight: 600;"><?= e($setting->get('shop_phone', '775 900 551')) ?></a>
+                <?php if ($shopEmail): ?>Email: <a href="mailto:<?= e($shopEmail) ?>" style="color: var(--color-primary); font-weight: 600;"><?= e($shopEmail) ?></a><br><?php endif; ?>
+                <?php if ($shopPhone): ?>Telefon: <a href="tel:<?= e(str_replace(' ', '', $shopPhone)) ?>" style="color: var(--color-primary); font-weight: 600;"><?= e($shopPhone) ?></a><?php endif; ?>
             </p>
             <p style="line-height: 1.7; color: var(--color-text-light); font-size: var(--font-size-sm); margin-top: var(--spacing-md); margin-bottom: 0;">
                 Odpovíme vám do 30 dnů od obdržení žádosti.
@@ -228,10 +235,11 @@ $setting = new \Models\Setting();
     <!-- Navigace -->
     <div style="text-align: center;">
         <?php if (\Session::isLoggedIn()): ?>
-            <a href="/profil" class="btn btn--outline">← Zpět na profil</a>
+            <a href="/profil" class="btn btn--outline">Zpět na profil</a>
         <?php else: ?>
-            <a href="/" class="btn btn--outline">← Zpět na úvodní stránku</a>
+            <a href="/" class="btn btn--outline">Zpět na úvodní stránku</a>
         <?php endif; ?>
+        <a href="/podminky" class="btn btn--ghost">Obchodní podmínky</a>
     </div>
 
     <!-- Footer info -->

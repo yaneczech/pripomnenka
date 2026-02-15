@@ -49,7 +49,7 @@ class CustomerController extends BaseController
      */
     public function updateProfile(array $params): void
     {
-        \CSRF::verify();
+        $this->validateCsrf();
 
         $customerId = \Session::getCustomerId();
         $customer = $this->customer->find($customerId);
@@ -59,32 +59,32 @@ class CustomerController extends BaseController
         }
 
         $data = [
-            'name' => trim($_POST['name'] ?? ''),
+            'name' => trim($this->input('name', '')),
         ];
 
         // Update customer
         $this->customer->update($customerId, $data);
 
         // Handle password change
-        $currentPassword = $_POST['current_password'] ?? '';
-        $newPassword = $_POST['new_password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ?? '';
+        $currentPassword = $this->input('current_password', '');
+        $newPassword = $this->input('new_password', '');
+        $confirmPassword = $this->input('confirm_password', '');
 
         if (!empty($newPassword)) {
             // If customer has password, verify current one
             if ($customer['password_hash'] && !password_verify($currentPassword, $customer['password_hash'])) {
-                \Session::flash('error', 'Aktuální heslo není správné.');
+                flash('error', 'Aktuální heslo není správné.');
                 redirect('/profil');
             }
 
             // Validate new password
             if (strlen($newPassword) < 8) {
-                \Session::flash('error', 'Nové heslo musí mít alespoň 8 znaků.');
+                flash('error', 'Nové heslo musí mít alespoň 8 znaků.');
                 redirect('/profil');
             }
 
             if ($newPassword !== $confirmPassword) {
-                \Session::flash('error', 'Nová hesla se neshodují.');
+                flash('error', 'Nová hesla se neshodují.');
                 redirect('/profil');
             }
 
@@ -93,9 +93,9 @@ class CustomerController extends BaseController
                 'password' => $newPassword,
             ]);
 
-            \Session::flash('success', 'Profil a heslo byly aktualizovány.');
+            flash('success', 'Profil a heslo byly aktualizovány.');
         } else {
-            \Session::flash('success', 'Profil byl aktualizován.');
+            flash('success', 'Profil byl aktualizován.');
         }
 
         redirect('/profil');
@@ -175,7 +175,7 @@ class CustomerController extends BaseController
      */
     public function deleteAccount(array $params): void
     {
-        \CSRF::verify();
+        $this->validateCsrf();
 
         $customerId = \Session::getCustomerId();
         $customer = $this->customer->find($customerId);
@@ -185,10 +185,10 @@ class CustomerController extends BaseController
         }
 
         // Verify password or use confirmation phrase
-        $confirmation = $_POST['confirmation'] ?? '';
+        $confirmation = $this->input('confirmation', '');
 
         if ($confirmation !== 'SMAZAT ÚČET') {
-            \Session::flash('error', 'Pro potvrzení smazání napište "SMAZAT ÚČET".');
+            flash('error', 'Pro potvrzení smazání napište "SMAZAT ÚČET".');
             redirect('/smazat-ucet');
         }
 
@@ -203,11 +203,12 @@ class CustomerController extends BaseController
         // Delete customer (cascades to all related data)
         $this->customer->delete($customerId);
 
-        // Clear session
-        \Session::logout();
+        // Flash BEFORE clearing session so the message persists
+        flash('success', 'Váš účet byl smazán. Děkujeme, že jste byli s námi.');
 
-        // Show confirmation
-        \Session::flash('success', 'Váš účet byl smazán. Děkujeme, že jste byli s námi.');
+        // Clear session
+        \Session::logoutCustomer();
+
         redirect('/');
     }
 
@@ -217,5 +218,13 @@ class CustomerController extends BaseController
     public function gdprInfo(array $params): void
     {
         $this->view('customer/gdpr-info');
+    }
+
+    /**
+     * Show terms of service
+     */
+    public function termsInfo(array $params): void
+    {
+        $this->view('customer/terms-info');
     }
 }

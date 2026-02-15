@@ -72,7 +72,7 @@
                                 <?php endif; ?>
                             </td>
                             <td data-label="Tarif"><?= e($sub['plan_name'] ?? 'Neznámý') ?></td>
-                            <td data-label="Částka"><?= number_format($sub['price'], 0, ',', ' ') ?> Kč</td>
+                            <td data-label="Částka"><?= format_price($sub['price']) ?></td>
                             <td data-label="VS"><code><?= e($sub['variable_symbol']) ?></code></td>
                             <td data-label="Stav">
                                 <?php

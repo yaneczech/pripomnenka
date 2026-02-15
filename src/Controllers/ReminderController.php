@@ -92,8 +92,7 @@ class ReminderController extends BaseController
 
         if (!$subscription) {
             flash('error', 'Nemáte aktivní předplatné.');
-            $this->redirect('/moje-pripominky');
-        }
+            $this->redirect('/moje-pripominky');        }
 
         $reminderCount = $this->reminder->countByCustomer($customerId);
 
@@ -111,6 +110,15 @@ class ReminderController extends BaseController
             'price_range' => $this->input('price_range', 'to_discuss'),
             'customer_note' => trim($this->input('customer_note', '')),
         ];
+
+        // Pro svátky s fixním datem přepsat datum na správné
+        if ($data['event_type'] && has_automatic_date($data['event_type'])) {
+            $holidayDate = get_holiday_date($data['event_type']);
+            if ($holidayDate) {
+                $data['event_day'] = $holidayDate['day'];
+                $data['event_month'] = $holidayDate['month'];
+            }
+        }
 
         // Validace
         $validator = $this->validate($data);
@@ -192,6 +200,15 @@ class ReminderController extends BaseController
             'price_range' => $this->input('price_range', 'to_discuss'),
             'customer_note' => trim($this->input('customer_note', '')),
         ];
+
+        // Pro svátky s fixním datem přepsat datum na správné
+        if ($data['event_type'] && has_automatic_date($data['event_type'])) {
+            $holidayDate = get_holiday_date($data['event_type']);
+            if ($holidayDate) {
+                $data['event_day'] = $holidayDate['day'];
+                $data['event_month'] = $holidayDate['month'];
+            }
+        }
 
         // Validace
         $validator = $this->validate($data);

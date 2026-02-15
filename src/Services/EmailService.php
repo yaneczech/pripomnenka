@@ -121,6 +121,21 @@ class EmailService
     }
 
     /**
+     * Send admin password reset email
+     */
+    public function sendAdminPasswordResetEmail(string $adminEmail, string $adminName, string $resetUrl): bool
+    {
+        $subject = 'Obnova hesla do administrace Připomněnky';
+
+        $body = $this->getAdminPasswordResetTemplate([
+            'admin_name' => $adminName,
+            'reset_url' => $resetUrl,
+        ]);
+
+        return $this->send($adminEmail, $subject, $body);
+    }
+
+    /**
      * Send admin daily summary email
      */
     public function sendAdminSummaryEmail(string $adminEmail, array $stats): bool
@@ -261,7 +276,7 @@ HTML;
      */
     private function getPaymentQrTemplate(array $data): string
     {
-        $amount = number_format($data['subscription']['price'], 0, ',', ' ');
+        $amount = format_price($data['subscription']['price']);
 
         return <<<HTML
 <!DOCTYPE html>
@@ -283,7 +298,7 @@ HTML;
         <img src="{$data['qr_code_url']}" alt="QR kód pro platbu" style="max-width: 200px;">
 
         <p style="margin-top: 20px;">
-            <strong>Částka:</strong> {$amount} Kč<br>
+            <strong>Částka:</strong> {$amount}<br>
             <strong>Účet:</strong> {$data['bank_account']}<br>
             <strong>VS:</strong> {$data['subscription']['variable_symbol']}
         </p>
@@ -350,7 +365,7 @@ HTML;
      */
     private function getExpirationReminderTemplate(array $data): string
     {
-        $amount = number_format($data['subscription']['price'], 0, ',', ' ');
+        $amount = format_price($data['subscription']['price']);
         $daysText = $data['days_left'] == 1 ? 'den' : ($data['days_left'] < 5 ? 'dny' : 'dní');
 
         return <<<HTML
@@ -375,7 +390,7 @@ HTML;
         <img src="{$data['qr_code_url']}" alt="QR kód pro platbu" style="max-width: 200px;">
 
         <p style="margin-top: 20px;">
-            <strong>Částka:</strong> {$amount} Kč<br>
+            <strong>Částka:</strong> {$amount}<br>
             <strong>VS:</strong> {$data['subscription']['variable_symbol']}
         </p>
     </div>
@@ -486,6 +501,47 @@ HTML;
 
     <p style="text-align: center;">
         <a href="{$this->config['app']['url']}/admin" style="color: #3e6ea1;">Otevřít administraci →</a>
+    </p>
+</body>
+</html>
+HTML;
+    }
+
+    /**
+     * Get admin password reset email template
+     */
+    private function getAdminPasswordResetTemplate(array $data): string
+    {
+        $name = $data['admin_name'] ? ", {$data['admin_name']}" : '';
+
+        return <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Obnova hesla</title>
+</head>
+<body style="font-family: Georgia, serif; line-height: 1.6; color: #544a26; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #3e6ea1; margin: 0;">Obnova hesla</h1>
+    </div>
+
+    <p>Dobrý den{$name}!</p>
+
+    <p>Obdrželi jsme žádost o obnovu hesla do administrace Připomněnky.</p>
+
+    <p>Pro nastavení nového hesla klikněte na tlačítko níže:</p>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{$data['reset_url']}" style="background-color: #b87333; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">NASTAVIT NOVÉ HESLO</a>
+    </div>
+
+    <p style="color: #888; font-size: 14px;">Odkaz platí 1 hodinu. Pokud jste o obnovu hesla nežádali, tento email ignorujte.</p>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+
+    <p style="text-align: center; color: #666;">
+        <strong>Připomněnka — Jeleni v zeleni</strong>
     </p>
 </body>
 </html>

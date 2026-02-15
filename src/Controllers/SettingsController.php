@@ -48,6 +48,10 @@ class SettingsController extends BaseController
         $this->validateCsrf();
 
         $settings = [
+            'shop_name_full' => trim($this->input('shop_name_full', '')),
+            'shop_owner' => trim($this->input('shop_owner', '')),
+            'shop_address' => trim($this->input('shop_address', '')),
+            'shop_ico' => trim($this->input('shop_ico', '')),
             'shop_phone' => trim($this->input('shop_phone', '')),
             'shop_email' => trim($this->input('shop_email', '')),
             'bank_account' => trim($this->input('bank_account', '')),

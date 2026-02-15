@@ -81,6 +81,21 @@ class ActivationController extends BaseController
             $this->redirect('/');
         }
 
+        // Zabránit přeskočení kroků — ověřit, že předchozí krok byl dokončen
+        $completedStep = (int) \Session::get('activation_step', 1);
+
+        // Krok 2 vyžaduje dokončený krok 1 (GDPR souhlas)
+        if ($step === 2 && $completedStep < 2) {
+            flash('error', 'Nejprve musíte dokončit první krok.');
+            $this->redirect('/aktivace/' . $token);
+        }
+
+        // Krok 3 vyžaduje dokončený krok 2
+        if ($step === 3 && $completedStep < 3) {
+            flash('error', 'Nejprve musíte dokončit předchozí kroky.');
+            $this->redirect('/aktivace/' . $token);
+        }
+
         switch ($step) {
             case 1:
                 $this->processStep1($token, $subscription);
@@ -97,7 +112,7 @@ class ActivationController extends BaseController
     }
 
     /**
-     * Krok 1: Představení (jméno, heslo, GDPR)
+     * Krok 1: Představení (jméno, heslo, souhlas s podmínkami)
      */
     private function processStep1(string $token, array $subscription): void
     {
@@ -105,9 +120,9 @@ class ActivationController extends BaseController
         $password = $this->input('password', '');
         $gdprConsent = $this->input('gdpr_consent');
 
-        // Validace GDPR
+        // Validace souhlasu s podmínkami a GDPR
         if (!$gdprConsent) {
-            $this->withErrors(['gdpr_consent' => 'Pro pokračování musíte souhlasit se zpracováním osobních údajů.']);
+            $this->withErrors(['gdpr_consent' => 'Pro pokračování musíte souhlasit s obchodními podmínkami a zpracováním osobních údajů.']);
             $this->withOldInput();
             $this->redirect('/aktivace/' . $token);
         }
@@ -119,10 +134,12 @@ class ActivationController extends BaseController
             $this->redirect('/aktivace/' . $token);
         }
 
-        // Aktualizovat zákazníka
+        // Aktualizovat zákazníka — souhlas s GDPR i obchodními podmínkami
+        $now = date('Y-m-d H:i:s');
         $updateData = [
-            'gdpr_consent_at' => date('Y-m-d H:i:s'),
-            'gdpr_consent_text' => 'Souhlas se zpracováním osobních údajů pro službu Připomněnka. Verze ' . date('Y-m-d'),
+            'gdpr_consent_at' => $now,
+            'gdpr_consent_text' => 'Souhlas s obchodními podmínkami a zpracováním osobních údajů pro službu Připomněnka. Verze ' . date('Y-m-d'),
+            'terms_consent_at' => $now,
         ];
 
         if ($name) {
@@ -159,6 +176,15 @@ class ActivationController extends BaseController
                 'price_range' => $this->input('price_range', 'to_discuss'),
                 'customer_note' => trim($this->input('customer_note', '')),
             ];
+
+            // Pro svátky s fixním datem přepsat datum na správné
+            if ($data['event_type'] && has_automatic_date($data['event_type'])) {
+                $holidayDate = get_holiday_date($data['event_type']);
+                if ($holidayDate) {
+                    $data['event_day'] = $holidayDate['day'];
+                    $data['event_month'] = $holidayDate['month'];
+                }
+            }
 
             // Kontrola limitu
             $currentCount = $this->reminder->countByCustomer($subscription['customer_id']);
@@ -199,6 +225,14 @@ class ActivationController extends BaseController
      */
     private function processStep3(string $token, array $subscription): void
     {
+        // Ověřit, že zákazník udělil GDPR souhlas (krok 1)
+        $customer = $this->customer->find($subscription['customer_id']);
+        if (!$customer || empty($customer['gdpr_consent_at'])) {
+            flash('error', 'Pro aktivaci musíte nejprve souhlasit s podmínkami.');
+            \Session::set('activation_step', 1);
+            $this->redirect('/aktivace/' . $token);
+        }
+
         // Aktivovat předplatné
         $this->subscription->activate($subscription['id']);
 

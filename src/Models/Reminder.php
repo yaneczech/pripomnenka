@@ -165,6 +165,7 @@ class Reminder
              FROM call_queue cq
              JOIN reminders r ON r.id = cq.reminder_id
              JOIN customers c ON c.id = r.customer_id
+             JOIN subscriptions s ON s.customer_id = c.id AND s.status = 'active' AND s.expires_at >= CURDATE()
              LEFT JOIN customer_notes cn ON cn.customer_id = c.id
              WHERE cq.scheduled_date = ? AND cq.status = 'pending'
              ORDER BY cq.priority DESC, cq.attempt_count ASC",
