@@ -49,6 +49,16 @@ class SubscriptionPlan
     }
 
     /**
+     * Získat plány pro zobrazení na landing page
+     */
+    public function getForLandingPage(): array
+    {
+        return $this->db->fetchAll(
+            "SELECT * FROM subscription_plans WHERE is_available = 1 AND show_on_landing = 1 ORDER BY sort_order ASC"
+        );
+    }
+
+    /**
      * Ziskat vsechny plany (vcetne nedostupnych)
      */
     public function getAll(): array
@@ -89,6 +99,7 @@ class SubscriptionPlan
             'discount_percent' => $data['discount_percent'] ?? 10,
             'is_available' => isset($data['is_available']) ? (int) (bool) $data['is_available'] : 1,
             'is_default' => isset($data['is_default']) ? (int) (bool) $data['is_default'] : 0,
+            'show_on_landing' => isset($data['show_on_landing']) ? (int) (bool) $data['show_on_landing'] : 1,
             'sort_order' => $data['sort_order'] ?? 0,
             'description' => $data['description'] ?? null,
         ]);
@@ -101,12 +112,12 @@ class SubscriptionPlan
     {
         $updateData = [];
         $allowed = ['name', 'slug', 'price', 'reminder_limit', 'discount_percent',
-                    'is_available', 'is_default', 'sort_order', 'description'];
+                    'is_available', 'is_default', 'show_on_landing', 'sort_order', 'description'];
 
         foreach ($allowed as $field) {
             if (array_key_exists($field, $data)) {
                 // Konverze boolean hodnot na int pro databázi
-                if (in_array($field, ['is_available', 'is_default'])) {
+                if (in_array($field, ['is_available', 'is_default', 'show_on_landing'])) {
                     $updateData[$field] = (int) (bool) $data[$field];
                 } else {
                     $updateData[$field] = $data[$field];

@@ -28,6 +28,7 @@
                     <th>Připomínek</th>
                     <th>Sleva</th>
                     <th>Stav</th>
+                    <th>Na webu</th>
                     <th>Akce</th>
                 </tr>
             </thead>
@@ -52,6 +53,16 @@
                             <?php else: ?>
                                 <span class="badge badge--muted">Neaktivní</span>
                             <?php endif; ?>
+                        </td>
+                        <td>
+                            <form action="/admin/nastaveni/plany" method="post" style="display: inline;">
+                                <?= \CSRF::field() ?>
+                                <input type="hidden" name="action" value="toggle_landing">
+                                <input type="hidden" name="plan_id" value="<?= $plan['id'] ?>">
+                                <button type="submit" class="btn btn--small btn--ghost" title="<?= !empty($plan['show_on_landing']) ? 'Skrýt z webu' : 'Zobrazit na webu' ?>">
+                                    <i class="ri-<?= !empty($plan['show_on_landing']) ? 'global-line' : 'eye-close-line' ?>" style="color: <?= !empty($plan['show_on_landing']) ? 'var(--color-success)' : 'var(--color-text-muted)' ?>;"></i>
+                                </button>
+                            </form>
                         </td>
                         <td>
                             <div class="btn-group">

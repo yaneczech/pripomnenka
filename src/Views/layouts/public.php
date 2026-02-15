@@ -76,7 +76,7 @@
                     Telefon: <a href="tel:+420606493031">+420 606 493 031</a></p>
                     <a href="https://jelenivzeleni.cz">jelenivzeleni.cz</a>
                 </div>
-                <div class="footer-links">
+                <div class="footer-links" style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
                     <a href="/podminky">Obchodní podmínky</a>
                     <a href="/ochrana-udaju">Ochrana osobních údajů</a>
                 </div>
