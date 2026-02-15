@@ -81,8 +81,7 @@ if ($planCount > 0) {
 } else {
     // Insert default plans
     $plans = [
-        ['Early bird', 'early_bird', 75.00, 5, 10, 1, 0, 1, 'Zvýhodněná cena pro první zákazníky. 5 připomínek, 10% sleva na kytice.'],
-        ['Standard', 'standard', 150.00, 10, 10, 1, 1, 2, 'Plná verze služby. 10 připomínek, 10% sleva na kytice.'],
+        ['Zdarma', 'free', 0.00, 5, 0, 1, 1, 1, 'Bezplatná služba. 5 připomínek, osobní telefonát před každou událostí.'],
     ];
 
     $stmt = $pdo->prepare('
