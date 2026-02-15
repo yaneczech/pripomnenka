@@ -15,7 +15,7 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
 
         <p style="font-size: var(--font-size-lg); color: var(--color-text-light); margin-bottom: var(--spacing-xl); max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.7;">
             Narozeniny, výročí, svátky — my si je pamatujeme za vás.
-            Včas vám zavoláme a společně vybereme tu pravou kytici.
+            Včas vám zavoláme a společně vybereme tu pravou kytici, případně dárek.
         </p>
 
         <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
@@ -44,7 +44,7 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
                 </div>
                 <h3 style="font-size: var(--font-size-base); margin-bottom: var(--spacing-xs);">1. Zaregistrujte se</h3>
                 <p style="font-size: var(--font-size-sm); color: var(--color-text-light); margin: 0;">
-                    Navštivte nás v květinářství nebo se zaregistrujte online.
+                    Navštivte nás v květinářství a my vám službu rádi aktivujeme.
                 </p>
             </div>
 
@@ -118,11 +118,11 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
             <div class="card" style="text-align: center;">
                 <div class="card-body">
                     <div style="font-size: 2rem; color: var(--color-secondary); margin-bottom: var(--spacing-sm);">
-                        <i class="ri-percent-line"></i>
+                        <i class="ri-key-2-line"></i>
                     </div>
-                    <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--spacing-sm);">Sleva na kytice</h3>
+                    <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--spacing-sm);">Snadné přihlášení</h3>
                     <p style="font-size: var(--font-size-sm); color: var(--color-text-light); margin: 0;">
-                        Jako člen Připomněnky získáte trvalou slevu na všechny květinové aranžmá v naší nabídce.
+                        Přihlaste se heslem, nebo jednorázovým kódem na e-mail — jak vám vyhovuje.
                     </p>
                 </div>
             </div>
@@ -251,56 +251,59 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
 
         <?php
         $planModel = new \Models\SubscriptionPlan();
-        $plans = $planModel->getAvailable();
+        $allPlans = $planModel->getAvailable();
+        // Nezobrazovat testovací tarify (s cenou 0 Kč)
+        $plans = array_values(array_filter($allPlans, fn($p) => (float)$p['price'] > 0));
+        $colCount = min(count($plans), 3);
         ?>
 
-        <div style="display: grid; grid-template-columns: repeat(<?= count($plans) ?>, 1fr); gap: var(--spacing-lg);"
+        <?php if (!empty($plans)): ?>
+        <div style="display: grid; grid-template-columns: repeat(<?= $colCount ?>, 1fr); gap: var(--spacing-lg); max-width: <?= $colCount <= 2 ? '600px' : '900px' ?>; margin: 0 auto;"
              class="landing-pricing">
             <?php foreach ($plans as $plan): ?>
-                <div class="card" style="text-align: center; <?= $plan['is_default'] ? 'border-color: var(--color-primary); box-shadow: var(--shadow-md);' : '' ?>">
+                <div class="card" style="text-align: center; position: relative; <?= $plan['is_default'] ? 'border-color: var(--color-primary); box-shadow: var(--shadow-md);' : '' ?>">
                     <?php if ($plan['is_default']): ?>
                         <div style="background: var(--color-primary); color: white; padding: var(--spacing-xs) var(--spacing-md); font-size: var(--font-size-sm); font-weight: 600; border-radius: var(--radius-md) var(--radius-md) 0 0;">
                             Nejoblíbenější
                         </div>
                     <?php endif; ?>
                     <div class="card-body" style="padding: var(--spacing-xl);">
-                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);"><?= e($plan['name']) ?></h3>
+                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-md);"><?= e($plan['name']) ?></h3>
                         <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--color-primary); margin-bottom: var(--spacing-xs);">
                             <?= format_price($plan['price']) ?>
                         </div>
-                        <?php if ($plan['price'] > 0): ?>
-                            <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">za rok</p>
-                        <?php else: ?>
-                            <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">navždy</p>
-                        <?php endif; ?>
+                        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">za rok</p>
 
-                        <ul style="text-align: left; list-style: none; padding: 0; margin-bottom: var(--spacing-lg);">
-                            <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                                <i class="ri-check-line" style="color: var(--color-success); font-size: 1.1rem;"></i>
-                                Až <?= $plan['reminder_limit'] ?> připomínek
-                            </li>
-                            <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                                <i class="ri-check-line" style="color: var(--color-success); font-size: 1.1rem;"></i>
-                                Osobní telefonát před událostí
-                            </li>
-                            <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                                <i class="ri-check-line" style="color: var(--color-success); font-size: 1.1rem;"></i>
-                                E-mailové upozornění
-                            </li>
-                            <?php if ($plan['discount_percent'] > 0): ?>
-                            <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                                <i class="ri-check-line" style="color: var(--color-success); font-size: 1.1rem;"></i>
-                                <strong><?= $plan['discount_percent'] ?>% sleva</strong> na kytice
-                            </li>
-                            <?php endif; ?>
-                        </ul>
+                        <div style="border-top: 1px solid var(--color-border); padding-top: var(--spacing-md);">
+                            <ul style="text-align: left; list-style: none; padding: 0; margin: 0;">
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span>Až <strong><?= $plan['reminder_limit'] ?></strong> připomínek</span>
+                                </li>
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span>Osobní telefonát před událostí</span>
+                                </li>
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span>E-mailové upozornění</span>
+                                </li>
+                                <?php if ($plan['discount_percent'] > 0): ?>
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span><strong><?= $plan['discount_percent'] ?>% sleva</strong> na kytice</span>
+                                </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+        <?php endif; ?>
 
         <p style="text-align: center; font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--spacing-lg);">
-            Službu si aktivujete přímo v naší provozovně nebo online. Platba hotově, kartou nebo převodem.
+            Službu si aktivujete přímo v naší provozovně. Platba hotově, kartou nebo převodem.
         </p>
     </div>
 </section>
