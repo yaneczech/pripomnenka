@@ -147,9 +147,13 @@ class CustomerController extends BaseController
     private function exportPdf(array $data): void
     {
         // For shared hosting without PDF libraries, generate HTML that can be printed
+        $settings = new \Models\Setting();
+
         $this->view('customer/export-pdf', [
             'data' => $data,
             'exportDate' => date('j. n. Y H:i'),
+            'shopEmail' => $settings->getShopEmail(),
+            'shopPhone' => $settings->getShopPhone(),
         ], 'print');
     }
 

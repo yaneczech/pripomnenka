@@ -69,6 +69,7 @@ return [
     'POST /admin/novy-zakaznik' => ['AdminCustomerController', 'store', 'admin'],
     'POST /admin/zakaznik/{id}/smazat' => ['AdminCustomerController', 'delete', 'admin'],
     'POST /admin/zakaznik/{id}/toggle-active' => ['AdminCustomerController', 'toggleActive', 'admin'],
+    'POST /admin/zakaznik/{id}/zmenit-tarif' => ['AdminCustomerController', 'changePlan', 'admin'],
     'POST /admin/zakaznik/{id}/email-aktivace' => ['AdminCustomerController', 'resendActivation', 'admin'],
     'POST /admin/zakaznik/{id}/email-qr' => ['AdminCustomerController', 'resendPaymentQr', 'admin'],
     'POST /admin/zakaznik/{id}/pripominka' => ['AdminCustomerController', 'storeReminder', 'admin'],

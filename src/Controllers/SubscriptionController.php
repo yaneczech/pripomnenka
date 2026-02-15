@@ -91,6 +91,19 @@ class SubscriptionController extends BaseController
         if ($note !== '') {
             $this->subscription->update($id, ['payment_note' => $note]);
         }
+        $note = trim($this->input('note', ''));
+        $adminId = \Session::getAdminId();
+
+        // Aktivovat předplatné
+        $updated = $this->subscription->confirmPayment($id, $adminId, $pricePaid);
+        if (!$updated) {
+            flash('error', 'Nepodařilo se potvrdit platbu.');
+            $this->redirect('/admin/predplatne');
+        }
+
+        if ($note !== '') {
+            $this->subscription->update($id, ['payment_note' => $note]);
+        }
 
         // Odeslat aktivační email zákazníkovi
         $customer = $this->customer->find($subscription['customer_id']);

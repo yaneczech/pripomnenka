@@ -114,6 +114,7 @@
                             <?= e($subscription['payment_note']) ?>
                         </div>
                     <?php endif; ?>
+
                     <form action="/admin/zakaznik/<?= $customer['id'] ?>/zmenit-tarif" method="post" class="mt-3">
                         <?= \CSRF::field() ?>
                         <div class="form-group">
