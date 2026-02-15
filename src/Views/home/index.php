@@ -239,47 +239,76 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
     </div>
 </section>
 
-<!-- Služba zdarma -->
+<!-- Tarify -->
+<?php if (!empty($plans)): ?>
 <section style="padding: var(--spacing-2xl) var(--spacing-md);">
-    <div class="container" style="max-width: 600px;">
+    <div class="container" style="max-width: <?= count($plans) > 1 ? '900px' : '600px' ?>;">
         <h2 style="text-align: center; font-size: var(--font-size-2xl); margin-bottom: var(--spacing-md);">
-            Služba kompletně zdarma
+            <?= count($plans) > 1 ? 'Vyberte si variantu' : 'Služba kompletně zdarma' ?>
         </h2>
         <p style="text-align: center; color: var(--color-text-light); margin-bottom: var(--spacing-2xl);">
-            Žádné poplatky, žádné háčky. Prostě přijďte a my se o zbytek postaráme.
+            <?= count($plans) > 1
+                ? 'Základní varianta je zdarma. Potřebujete víc připomínek? Zvolte vyšší tarif.'
+                : 'Žádné poplatky, žádné háčky. Prostě přijďte a my se o zbytek postaráme.' ?>
         </p>
 
-        <div class="card" style="text-align: center; border-color: var(--color-primary); box-shadow: var(--shadow-md);">
-            <div style="background: var(--color-success); color: white; padding: var(--spacing-xs) var(--spacing-md); font-size: var(--font-size-sm); font-weight: 600; border-radius: var(--radius-md) var(--radius-md) 0 0;">
-                Zdarma
-            </div>
-            <div class="card-body" style="padding: var(--spacing-xl);">
-                <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--color-success); margin-bottom: var(--spacing-xs);">
-                    0 Kč
-                </div>
-                <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">žádné poplatky</p>
+        <div style="display: grid; grid-template-columns: repeat(<?= min(count($plans), 3) ?>, 1fr); gap: var(--spacing-lg); align-items: start;"
+             class="landing-pricing">
+            <?php foreach ($plans as $plan):
+                $isFree = (float) $plan['price'] <= 0;
+                $isDefault = !empty($plan['is_default']);
+                $accentColor = $isFree ? 'var(--color-success)' : 'var(--color-primary)';
+            ?>
+                <div class="card" style="text-align: center; <?= $isDefault ? 'border-color: ' . $accentColor . '; box-shadow: var(--shadow-md);' : '' ?>">
+                    <?php if ($isDefault): ?>
+                        <div style="background: <?= $accentColor ?>; color: white; padding: var(--spacing-xs) var(--spacing-md); font-size: var(--font-size-sm); font-weight: 600; border-radius: var(--radius-md) var(--radius-md) 0 0;">
+                            <?= $isFree ? 'Zdarma' : 'Doporučujeme' ?>
+                        </div>
+                    <?php endif; ?>
+                    <div class="card-body" style="padding: var(--spacing-xl);">
+                        <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--spacing-sm);"><?= e($plan['name']) ?></h3>
+                        <div style="font-size: var(--font-size-3xl); font-weight: 700; color: <?= $accentColor ?>; margin-bottom: var(--spacing-xs);">
+                            <?= $isFree ? '0 Kč' : number_format((float) $plan['price'], 0, ',', ' ') . ' Kč' ?>
+                        </div>
+                        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--spacing-lg);">
+                            <?= $isFree ? 'žádné poplatky' : 'ročně' ?>
+                        </p>
 
-                <div style="border-top: 1px solid var(--color-border); padding-top: var(--spacing-md);">
-                    <ul style="text-align: left; list-style: none; padding: 0; margin: 0;">
-                        <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                            <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
-                            <span>Až <strong>5</strong> připomínek</span>
-                        </li>
-                        <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                            <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
-                            <span>Osobní telefonát před událostí</span>
-                        </li>
-                        <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                            <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
-                            <span>E-mailové upozornění</span>
-                        </li>
-                        <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
-                            <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
-                            <span>Automatické opakování každý rok</span>
-                        </li>
-                    </ul>
+                        <div style="border-top: 1px solid var(--color-border); padding-top: var(--spacing-md);">
+                            <ul style="text-align: left; list-style: none; padding: 0; margin: 0;">
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span>Až <strong><?= (int) $plan['reminder_limit'] ?></strong> připomínek</span>
+                                </li>
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span>Osobní telefonát před událostí</span>
+                                </li>
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span>E-mailové upozornění</span>
+                                </li>
+                                <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                    <span>Automatické opakování každý rok</span>
+                                </li>
+                                <?php if ((int) $plan['discount_percent'] > 0): ?>
+                                    <li style="padding: var(--spacing-xs) 0; display: flex; align-items: center; gap: var(--spacing-sm);">
+                                        <i class="ri-check-line" style="color: var(--color-success); flex-shrink: 0;"></i>
+                                        <span><strong><?= (int) $plan['discount_percent'] ?>% sleva</strong> na kytice</span>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
+
+                        <?php if ($plan['description']): ?>
+                            <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--spacing-md); margin-bottom: 0;">
+                                <?= e($plan['description']) ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
         </div>
 
         <p style="text-align: center; font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--spacing-lg);">
@@ -287,6 +316,7 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
         </p>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- CTA závěrečný -->
 <section style="padding: var(--spacing-2xl) var(--spacing-md); background: var(--color-surface); text-align: center;">
