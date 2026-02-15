@@ -120,7 +120,7 @@ $effectiveDate = $setting->get('terms_effective_date', date('Y-m-d'));
             <ul style="line-height: 1.8; color: var(--color-text); padding-left: var(--spacing-lg); margin-bottom: var(--spacing-md);">
                 <li style="margin-bottom: var(--spacing-xs);">Spravovat své připomínky v rámci limitu zvoleného tarifu</li>
                 <li style="margin-bottom: var(--spacing-xs);">Měnit své kontaktní údaje a preference</li>
-                <li style="margin-bottom: var(--spacing-xs);">Uplatnit slevu na nákup květin dle podmínek tarifu</li>
+                <li style="margin-bottom: var(--spacing-xs);">Využívat výhody dle podmínek zvoleného tarifu</li>
                 <li style="margin-bottom: var(--spacing-xs);">Exportovat nebo smazat svá data (viz <a href="/ochrana-udaju" style="color: var(--color-primary);">Ochrana osobních údajů</a>)</li>
                 <li>Odmítnout telefonické kontaktování u konkrétní připomínky</li>
             </ul>

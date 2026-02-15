@@ -56,6 +56,8 @@ CREATE TABLE IF NOT EXISTS customers (
     gdpr_consent_text TEXT DEFAULT NULL,
     terms_consent_at DATETIME DEFAULT NULL,
     last_login_at DATETIME DEFAULT NULL,
+    empty_reminder_count TINYINT UNSIGNED DEFAULT 0,
+    empty_reminder_last_sent_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_phone_hash (phone_hash),
@@ -245,8 +247,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- Varianty předplatného
 INSERT INTO subscription_plans (name, slug, price, reminder_limit, discount_percent, is_available, is_default, sort_order, description) VALUES
-('Early bird', 'early_bird', 75.00, 5, 10, TRUE, FALSE, 1, 'Zvýhodněná cena pro první zákazníky. 5 připomínek, 10% sleva na kytice.'),
-('Standard', 'standard', 150.00, 10, 10, TRUE, TRUE, 2, 'Plná verze služby. 10 připomínek, 10% sleva na kytice.');
+('Zdarma', 'free', 0.00, 5, 0, TRUE, TRUE, 1, 'Bezplatná služba. 5 připomínek, osobní telefonát před každou událostí.');
 
 -- Výchozí nastavení
 INSERT INTO settings (setting_key, setting_value) VALUES
@@ -270,7 +271,10 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('shop_address', 'Palackého 1308/32, 586 01 Jihlava'),
 ('shop_ico', '14111250'),
 ('shop_owner', 'Sofie Janečková'),
-('terms_effective_date', '2026-02-14');
+('terms_effective_date', '2026-02-14'),
+('email_empty_account_subject', 'Zatím nemáte nastavené žádné připomínky 📅'),
+('empty_reminder_delay_days', '3'),
+('empty_reminder_max_count', '2');
 
 -- Inicializace čítače VS pro aktuální rok
 INSERT INTO vs_counter (year, last_number) VALUES (YEAR(CURRENT_DATE), 0);

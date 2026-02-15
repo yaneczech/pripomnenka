@@ -58,6 +58,7 @@ class SettingsController extends BaseController
             'bank_iban' => trim($this->input('bank_iban', '')),
             'default_advance_days' => (int) $this->input('default_advance_days', 5),
             'activation_link_validity_days' => (int) $this->input('activation_link_validity_days', 30),
+            'notification_emails' => trim($this->input('notification_emails', '')),
         ];
 
         // Emailové šablony

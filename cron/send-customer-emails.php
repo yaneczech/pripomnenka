@@ -88,4 +88,71 @@ foreach ($calls as $call) {
     usleep(100000); // 100ms
 }
 
-$log("Email sending completed: $sent sent, $failed failed");
+$log("Event email sending completed: $sent sent, $failed failed");
+
+// =====================================================
+// Připomínky prázdného účtu
+// Zákazníci, kteří aktivovali účet ale nemají žádné připomínky
+// =====================================================
+
+$log('Checking for empty accounts to remind...');
+
+$setting = new Setting();
+$delayDays = (int) $setting->get('empty_reminder_delay_days', '3');
+$maxCount = (int) $setting->get('empty_reminder_max_count', '2');
+
+// Najít zákazníky s aktivovaným účtem, bez připomínek, kteří ještě nedostali max počet upozornění
+$emptyAccounts = $db->fetchAll("
+    SELECT
+        c.id as customer_id,
+        c.email,
+        c.name,
+        c.phone,
+        c.empty_reminder_count,
+        s.activated_at
+    FROM customers c
+    JOIN subscriptions s ON s.customer_id = c.id AND s.status = 'active'
+    LEFT JOIN reminders r ON r.customer_id = c.id AND r.is_active = TRUE
+    WHERE s.activated_at IS NOT NULL
+      AND s.activated_at <= DATE_SUB(NOW(), INTERVAL ? DAY)
+      AND c.empty_reminder_count < ?
+      AND (c.empty_reminder_last_sent_at IS NULL
+           OR c.empty_reminder_last_sent_at <= DATE_SUB(NOW(), INTERVAL ? DAY))
+      AND c.is_active = TRUE
+      AND r.id IS NULL
+    GROUP BY c.id
+", [$delayDays, $maxCount, $delayDays]);
+
+$log('Found ' . count($emptyAccounts) . ' empty accounts to remind');
+
+$emptySent = 0;
+$emptyFailed = 0;
+
+foreach ($emptyAccounts as $account) {
+    $customer = [
+        'id' => $account['customer_id'],
+        'name' => $account['name'],
+        'email' => $account['email'],
+        'phone' => $account['phone'],
+    ];
+
+    $nextCount = $account['empty_reminder_count'] + 1;
+    $result = $emailService->sendEmptyAccountReminderEmail($customer, $nextCount);
+
+    if ($result) {
+        // Aktualizovat počítadlo
+        $db->query(
+            "UPDATE customers SET empty_reminder_count = ?, empty_reminder_last_sent_at = NOW() WHERE id = ?",
+            [$nextCount, $account['customer_id']]
+        );
+        $emptySent++;
+        $log("Sent empty account reminder #{$nextCount} to: {$customer['email']}");
+    } else {
+        $emptyFailed++;
+        $log("FAILED to send empty account reminder to: {$customer['email']}");
+    }
+
+    usleep(100000); // 100ms
+}
+
+$log("Empty account reminders completed: $emptySent sent, $emptyFailed failed");
