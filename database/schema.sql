@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS subscription_plans (
     discount_percent TINYINT UNSIGNED DEFAULT 10,
     is_available BOOLEAN DEFAULT TRUE,
     is_default BOOLEAN DEFAULT FALSE,
+    show_on_landing BOOLEAN DEFAULT TRUE,
     sort_order TINYINT UNSIGNED DEFAULT 0,
     description TEXT DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

@@ -251,9 +251,7 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
 
         <?php
         $planModel = new \Models\SubscriptionPlan();
-        $allPlans = $planModel->getAvailable();
-        // Nezobrazovat testovací tarify (s cenou 0 Kč)
-        $plans = array_values(array_filter($allPlans, fn($p) => (float)$p['price'] > 0));
+        $plans = $planModel->getForLandingPage();
         $colCount = min(count($plans), 3);
         ?>
 

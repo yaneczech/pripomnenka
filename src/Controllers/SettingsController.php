@@ -134,6 +134,10 @@ class SettingsController extends BaseController
             case 'set_default':
                 $this->setDefaultPlan();
                 break;
+
+            case 'toggle_landing':
+                $this->toggleLanding();
+                break;
         }
 
         $this->redirect('/admin/nastaveni/plany');
@@ -234,6 +238,25 @@ class SettingsController extends BaseController
         $this->plan->setDefault($id);
 
         flash('success', 'Výchozí tarif byl nastaven.');
+    }
+
+    /**
+     * Přepnout zobrazení na landing page
+     */
+    private function toggleLanding(): void
+    {
+        $id = (int) $this->input('plan_id', 0);
+
+        if ($id <= 0) {
+            flash('error', 'Neplatný tarif.');
+            return;
+        }
+
+        $plan = $this->plan->find($id);
+        if ($plan) {
+            $this->plan->update($id, ['show_on_landing' => !$plan['show_on_landing']]);
+            flash('success', $plan['show_on_landing'] ? 'Tarif skryt z webu.' : 'Tarif zobrazen na webu.');
+        }
     }
 
     /**
