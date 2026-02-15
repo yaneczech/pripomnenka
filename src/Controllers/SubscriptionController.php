@@ -11,6 +11,7 @@ namespace Controllers;
 
 use Models\Subscription;
 use Models\Customer;
+use Services\EmailService;
 
 class SubscriptionController extends BaseController
 {
@@ -77,17 +78,33 @@ class SubscriptionController extends BaseController
         }
 
         $pricePaid = (float) $this->input('price_paid', $subscription['price']);
+        $note = trim($this->input('note', ''));
+        $adminId = \Session::getAdminId();
 
-        // Aktivovat předplatné — správné pořadí: id, adminId, amount
-        $this->subscription->confirmPayment($id, \Session::getAdminId(), $pricePaid);
+        // Aktivovat předplatné
+        $updated = $this->subscription->confirmPayment($id, $adminId, $pricePaid);
+        if (!$updated) {
+            flash('error', 'Nepodařilo se potvrdit platbu.');
+            $this->redirect('/admin/predplatne');
+        }
+
+        if ($note !== '') {
+            $this->subscription->update($id, ['payment_note' => $note]);
+        }
 
         // Odeslat aktivační email zákazníkovi
         $customer = $this->customer->find($subscription['customer_id']);
-        if ($customer) {
-            $this->sendActivationEmail($customer, $subscription);
+        $subscription = $this->subscription->find($id);
+        $emailSent = false;
+        if ($customer && $subscription) {
+            $emailSent = $this->sendActivationEmail($customer, $subscription);
         }
 
-        flash('success', 'Platba potvrzena a aktivační email odeslán.');
+        if ($emailSent) {
+            flash('success', 'Platba potvrzena a aktivační email odeslán.');
+        } else {
+            flash('warning', 'Platba potvrzena, ale aktivační email se nepodařilo odeslat.');
+        }
         $this->redirect('/admin/predplatne');
     }
 
@@ -129,20 +146,24 @@ class SubscriptionController extends BaseController
     /**
      * Odeslat aktivační email
      */
-    private function sendActivationEmail(array $customer, array $subscription): void
+    private function sendActivationEmail(array $customer, array $subscription): bool
     {
-        // Vygenerovat aktivační token
-        $token = bin2hex(random_bytes(32));
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+30 days'));
+        $token = $subscription['activation_token'] ?? null;
+        $expiresAt = $subscription['activation_token_expires_at'] ?? null;
 
-        $this->subscription->update($subscription['id'], [
-            'activation_token' => $token,
-            'activation_token_expires_at' => $expiresAt,
-            'status' => 'awaiting_activation',
-        ]);
+        if (empty($token) || ($expiresAt && strtotime($expiresAt) < time())) {
+            $token = bin2hex(random_bytes(32));
+            $expiresAt = date('Y-m-d H:i:s', strtotime('+30 days'));
 
-        $activationUrl = $this->config['app']['url'] . '/aktivace/' . $token;
-        $emailService = new \Services\EmailService();
-        $emailService->sendActivationEmail($customer, $activationUrl);
+            $this->subscription->update($subscription['id'], [
+                'activation_token' => $token,
+                'activation_token_expires_at' => $expiresAt,
+                'status' => 'awaiting_activation',
+            ]);
+        }
+
+        $activationUrl = rtrim($this->config['app']['url'], '/') . '/aktivace/' . $token;
+        $emailService = new EmailService();
+        return $emailService->sendActivationEmail($customer, $activationUrl);
     }
 }

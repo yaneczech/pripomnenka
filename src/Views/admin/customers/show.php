@@ -114,6 +114,27 @@
                             <?= e($subscription['payment_note']) ?>
                         </div>
                     <?php endif; ?>
+                    <form action="/admin/zakaznik/<?= $customer['id'] ?>/zmenit-tarif" method="post" class="mt-3">
+                        <?= \CSRF::field() ?>
+                        <div class="form-group">
+                            <label for="plan_id" class="form-label">Změnit tarif</label>
+                            <select id="plan_id" name="plan_id" class="form-select" required>
+                                <?php foreach ($plans as $plan): ?>
+                                    <?php
+                                    $label = $plan['name'] . ' — ' . ($plan['price'] > 0 ? number_format($plan['price'], 0, ',', ' ') . ' Kč' : 'Zdarma') . ' (' . $plan['reminder_limit'] . ' připomínek)';
+                                    if (!$plan['is_available']) {
+                                        $label .= ' (neaktivní)';
+                                    }
+                                    ?>
+                                    <option value="<?= $plan['id'] ?>" <?= (int) $plan['id'] === (int) $subscription['plan_id'] ? 'selected' : '' ?>>
+                                        <?= e($label) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-hint">Aktuálně: <?= $reminderCount ?> / <?= $reminderLimit ?> připomínek.</div>
+                        </div>
+                        <button type="submit" class="btn btn--outline btn--small">Uložit tarif</button>
+                    </form>
                     <?php if (in_array($subscription['status'], ['active', 'expired'])): ?>
                         <div class="mt-2">
                             <form action="/admin/zakaznik/<?= $customer['id'] ?>/prodlouzit" method="post" style="display: inline;"
