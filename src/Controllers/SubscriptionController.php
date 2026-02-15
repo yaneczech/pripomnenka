@@ -141,6 +141,8 @@ class SubscriptionController extends BaseController
             'status' => 'awaiting_activation',
         ]);
 
-        // TODO: Odeslat email přes EmailService
+        $activationUrl = $this->config['app']['url'] . '/aktivace/' . $token;
+        $emailService = new \Services\EmailService();
+        $emailService->sendActivationEmail($customer, $activationUrl);
     }
 }

@@ -28,18 +28,25 @@
                     <button type="submit" class="btn btn--small btn--outline">Odhlásit</button>
                 </form>
             </div>
+
+            <button class="admin-nav-toggle" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
     <!-- Admin Navigation -->
-    <nav class="admin-nav">
+    <nav class="admin-nav" id="admin-nav">
         <div class="container">
             <ul class="admin-nav-list">
-                <li><a href="/admin" class="admin-nav-link <?= ($_SERVER['REQUEST_URI'] === '/admin') ? 'is-active' : '' ?>">Dashboard</a></li>
-                <li><a href="/admin/dnes" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/dnes') ? 'is-active' : '' ?>">Dnes volat</a></li>
-                <li><a href="/admin/zakaznici" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/zakazni') ? 'is-active' : '' ?>">Zákazníci</a></li>
-                <li><a href="/admin/predplatne" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/predplatne') ? 'is-active' : '' ?>">Předplatné</a></li>
-                <li><a href="/admin/nastaveni" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/nastaveni') ? 'is-active' : '' ?>">Nastavení</a></li>
+                <li><a href="/admin" class="admin-nav-link <?= ($_SERVER['REQUEST_URI'] === '/admin') ? 'is-active' : '' ?>"><i class="ri-dashboard-line"></i> Dashboard</a></li>
+                <li><a href="/admin/dnes" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/dnes') ? 'is-active' : '' ?>"><i class="ri-phone-line"></i> Dnes volat</a></li>
+                <li><a href="/admin/zakaznici" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/zakazni') ? 'is-active' : '' ?>"><i class="ri-user-line"></i> Zákazníci</a></li>
+                <li><a href="/admin/predplatne" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/predplatne') ? 'is-active' : '' ?>"><i class="ri-bank-card-line"></i> Předplatné</a></li>
+                <li><a href="/admin/platby" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/platby') ? 'is-active' : '' ?>"><i class="ri-money-cny-circle-line"></i> Platby</a></li>
+                <li><a href="/admin/nastaveni" class="admin-nav-link <?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/nastaveni') ? 'is-active' : '' ?>"><i class="ri-settings-3-line"></i> Nastavení</a></li>
             </ul>
         </div>
     </nav>

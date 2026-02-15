@@ -63,6 +63,37 @@
     border-color: white;
 }
 
+/* Admin Hamburger Toggle */
+.admin-nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--spacing-sm);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.admin-nav-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: white;
+    transition: all var(--transition-fast);
+}
+
+.admin-nav-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: rotate(45deg) translate(4px, 4px);
+}
+
+.admin-nav-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.admin-nav-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -4px);
+}
+
 /* ========================================
    Admin Navigation
    ======================================== */
@@ -701,16 +732,112 @@
 }
 
 /* ========================================
+   Skeleton Loading
+   ======================================== */
+@keyframes skeleton-pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.6; }
+}
+
+.skeleton {
+    background: var(--color-border);
+    border-radius: var(--radius-md);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.skeleton-line {
+    height: 1rem;
+    margin-bottom: var(--spacing-sm);
+    background: var(--color-border);
+    border-radius: var(--radius-sm);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-line--short { width: 40%; }
+.skeleton-line--medium { width: 65%; }
+.skeleton-line--long { width: 90%; }
+
+.skeleton-line--large {
+    height: 1.5rem;
+    width: 50%;
+    margin-bottom: var(--spacing-md);
+}
+
+.skeleton-row {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.skeleton-btn {
+    height: 2.5rem;
+    flex: 1;
+    background: var(--color-border);
+    border-radius: var(--radius-md);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* Swipe hint for call cards */
+.call-card[data-swipe] {
+    touch-action: pan-y;
+    will-change: transform;
+}
+
+/* Nav link icons */
+.admin-nav-link i {
+    margin-right: var(--spacing-xs);
+    font-size: var(--font-size-lg);
+    vertical-align: -2px;
+}
+
+/* ========================================
    Responsive Admin
    ======================================== */
 @media (max-width: 768px) {
+    .admin-nav-toggle {
+        display: flex;
+    }
+
+    .admin-user {
+        display: none;
+    }
+
+    .admin-nav {
+        display: none;
+        overflow: visible;
+    }
+
+    .admin-nav.is-open {
+        display: block;
+    }
+
     .admin-nav-list {
+        flex-direction: column;
         padding: var(--spacing-sm);
+        gap: var(--spacing-xs);
     }
 
     .admin-nav-link {
-        padding: var(--spacing-sm);
-        font-size: var(--font-size-sm);
+        padding: var(--spacing-md);
+        font-size: var(--font-size-base);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .admin-nav-link i {
+        font-size: var(--font-size-xl);
+        width: 24px;
+        text-align: center;
     }
 
     .dashboard-widgets {

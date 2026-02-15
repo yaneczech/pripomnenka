@@ -32,12 +32,17 @@ $defaultAdvanceDays = (int) $setting->get('default_advance_days', 5);
 $workdaysStr = $setting->get('workdays', '1,2,3,4,5');
 $workdays = array_map('intval', explode(',', $workdaysStr));
 
+// WorkdayCalculator s podporou českých státních svátků
+$calculator = new \Services\WorkdayCalculator($workdays);
+
 /**
  * Calculate the date X workdays before the event
  */
 function getCallDate(int $eventDay, int $eventMonth, int $advanceDays, array $workdays): ?string
 {
-    $year = date('Y');
+    global $calculator;
+
+    $year = (int) date('Y');
     $eventDate = mktime(0, 0, 0, $eventMonth, $eventDay, $year);
 
     // If the event already passed this year, use next year
@@ -46,25 +51,7 @@ function getCallDate(int $eventDay, int $eventMonth, int $advanceDays, array $wo
         $eventDate = mktime(0, 0, 0, $eventMonth, $eventDay, $year);
     }
 
-    // Go back X workdays
-    $callDate = $eventDate;
-    $daysBack = 0;
-
-    while ($daysBack < $advanceDays) {
-        $callDate = strtotime('-1 day', $callDate);
-        $dayOfWeek = (int) date('N', $callDate); // 1=Monday, 7=Sunday
-
-        if (in_array($dayOfWeek, $workdays)) {
-            $daysBack++;
-        }
-    }
-
-    // Also skip backwards if the calculated date lands on a non-workday
-    while (!in_array((int) date('N', $callDate), $workdays)) {
-        $callDate = strtotime('-1 day', $callDate);
-    }
-
-    return date('Y-m-d', $callDate);
+    return $calculator->subtractWorkdays(date('Y-m-d', $eventDate), $advanceDays);
 }
 
 // Get all active reminders with active subscriptions

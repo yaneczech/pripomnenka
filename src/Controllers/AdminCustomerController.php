@@ -14,6 +14,7 @@ use Models\Subscription;
 use Models\SubscriptionPlan;
 use Models\Reminder;
 use Models\Setting;
+use Services\EmailService;
 
 class AdminCustomerController extends BaseController
 {
@@ -190,18 +191,26 @@ class AdminCustomerController extends BaseController
         $subscription = $this->subscription->find($subscriptionId);
 
         // Zpracovat podle typu tarifu a způsobu platby
+        $emailService = new EmailService();
+        $customer = $this->customer->find($customerId);
+
         if ((float) $plan['price'] <= 0) {
             // Bezplatný tarif — platba se nepožaduje, rovnou aktivační email
-            // TODO: Odeslat aktivační email
+            $subscription = $this->subscription->find($subscriptionId);
+            $activationUrl = $this->config['app']['url'] . '/aktivace/' . $subscription['activation_token'];
+            $emailService->sendActivationEmail($customer, $activationUrl);
             flash('success', 'Hotovo! Bezplatný tarif — zákazníkovi jsme poslali email s aktivačním odkazem.');
         } elseif ($data['payment_method'] === 'bank_transfer') {
-            // TODO: Odeslat email s QR kódem
+            $subscription = $this->subscription->find($subscriptionId);
+            $emailService->sendPaymentQrEmail($customer, $subscription);
             flash('success', 'Zákazníkovi jsme poslali QR kód pro platbu. VS: ' . $subscription['variable_symbol']);
         } else {
             // Hotově/kartou - potvrdit platbu
             $this->subscription->confirmPayment($subscriptionId, \Session::getAdminId(), $plan['price']);
 
-            // TODO: Odeslat aktivační email
+            $subscription = $this->subscription->find($subscriptionId);
+            $activationUrl = $this->config['app']['url'] . '/aktivace/' . $subscription['activation_token'];
+            $emailService->sendActivationEmail($customer, $activationUrl);
             flash('success', 'Hotovo! Zákazníkovi jsme poslali email s aktivačním odkazem.');
         }
 
@@ -311,7 +320,10 @@ class AdminCustomerController extends BaseController
         $token = $this->subscription->regenerateActivationToken($subscription['id']);
 
         if ($token) {
-            // TODO: Odeslat email
+            $customer = $this->customer->find($id);
+            $activationUrl = $this->config['app']['url'] . '/aktivace/' . $token;
+            $emailService = new EmailService();
+            $emailService->sendActivationEmail($customer, $activationUrl);
             flash('success', 'Aktivační email byl odeslán.');
         } else {
             flash('error', 'Nepodařilo se vygenerovat aktivační odkaz.');
@@ -335,8 +347,10 @@ class AdminCustomerController extends BaseController
             $this->redirect('/admin/zakaznik/' . $id);
         }
 
-        // TODO: Odeslat email s QR kodem
-        flash('success', 'Email s QR kodem byl odeslan. VS: ' . $subscription['variable_symbol']);
+        $customer = $this->customer->find($id);
+        $emailService = new EmailService();
+        $emailService->sendPaymentQrEmail($customer, $subscription);
+        flash('success', 'Email s QR kódem byl odeslán. VS: ' . $subscription['variable_symbol']);
 
         $this->redirect('/admin/zakaznik/' . $id);
     }
