@@ -111,6 +111,25 @@
         </div>
     </div>
 
+    <!-- Denní přehledy -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2 class="card-title"><i class="ri-notification-3-line"></i> Denní přehledy</h2>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <label for="notification_emails" class="form-label">Další e-maily pro denní přehled</label>
+                <input type="text" id="notification_emails" name="notification_emails" class="form-input"
+                       value="<?= e($settings['notification_emails'] ?? '') ?>"
+                       placeholder="kolega@email.cz, dalsi@email.cz">
+                <span class="form-hint">
+                    Denní přehled (seznam k provolání, nespárované platby apod.) se posílá všem administrátorům.
+                    Sem můžete přidat další e-maily oddělené čárkou — např. pro zaměstnance, kteří nemají admin účet.
+                </span>
+            </div>
+        </div>
+    </div>
+
     <!-- Výchozí nastavení -->
     <div class="card mb-3">
         <div class="card-header">

@@ -102,26 +102,43 @@ $log("  - Awaiting activation: {$stats['awaiting_activation']}");
 $log("  - Unmatched payments: {$stats['unmatched_payments']}");
 $log("  - Expiring this week: {$stats['expiring_this_week']}");
 
-// Get admin email from first admin (Sofie)
-$admin = $db->fetchOne("SELECT email FROM admins LIMIT 1");
+// Sestavit seznam příjemců: všichni admini + další e-maily z nastavení
+$admins = $db->fetchAll("SELECT email FROM admins");
+$recipients = array_column($admins, 'email');
 
-if (!$admin) {
-    $log('No admin found, skipping email');
+$setting = new Setting();
+$extraEmails = trim($setting->get('notification_emails', ''));
+if (!empty($extraEmails)) {
+    $parsed = array_map('trim', explode(',', $extraEmails));
+    $parsed = array_filter($parsed, function ($email) {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    });
+    $recipients = array_unique(array_merge($recipients, $parsed));
+}
+
+if (empty($recipients)) {
+    $log('No recipients found, skipping email');
     exit;
 }
 
-// Check if there's anything to report
-$hasUrgentItems = $stats['calls_today'] > 0
-    || $stats['unmatched_payments'] > 0
-    || $stats['awaiting_activation'] > 0;
+$log('Sending summary to ' . count($recipients) . ' recipient(s): ' . implode(', ', $recipients));
 
-// Send email
-$result = $emailService->sendAdminSummaryEmail($admin['email'], $stats);
+// Send email to each recipient
+$sentCount = 0;
+$failCount = 0;
 
-if ($result) {
-    $log("Summary email sent to: {$admin['email']}");
-} else {
-    $log("FAILED to send summary to: {$admin['email']}");
+foreach ($recipients as $email) {
+    $result = $emailService->sendAdminSummaryEmail($email, $stats);
+
+    if ($result) {
+        $sentCount++;
+        $log("Summary email sent to: {$email}");
+    } else {
+        $failCount++;
+        $log("FAILED to send summary to: {$email}");
+    }
+
+    usleep(100000); // 100ms
 }
 
-$log('Admin summary completed');
+$log("Admin summary completed: {$sentCount} sent, {$failCount} failed");
