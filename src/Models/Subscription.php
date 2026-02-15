@@ -141,6 +141,18 @@ class Subscription
     }
 
     /**
+     * Změnit tarif předplatného (upgrade/downgrade)
+     */
+    public function changePlan(int $id, array $plan): bool
+    {
+        return $this->db->update('subscriptions', [
+            'plan_id' => $plan['id'],
+            'reminder_limit' => $plan['reminder_limit'],
+            'price' => $plan['price'],
+        ], 'id = ?', [$id]) > 0;
+    }
+
+    /**
      * Potvrdit platbu (hotove/kartou)
      */
     public function confirmPayment(int $id, ?int $adminId = null, ?float $amount = null): bool

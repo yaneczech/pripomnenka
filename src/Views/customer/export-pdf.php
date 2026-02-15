@@ -136,6 +136,6 @@
 <h2>Kontakt na správce</h2>
 <p>
     Květinářství Jeleni v zeleni<br>
-    Email: <?= e(\Setting::get('shop_email', 'info@jelenivzeleni.cz')) ?><br>
-    Telefon: <?= e(\Setting::get('shop_phone', '123 456 789')) ?>
+    Email: <?= e($shopEmail ?? 'info@jelenivzeleni.cz') ?><br>
+    Telefon: <?= e($shopPhone ?? '123 456 789') ?>
 </p>

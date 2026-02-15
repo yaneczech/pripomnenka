@@ -14,10 +14,12 @@ use Models\Setting;
 class CallQueue
 {
     private Database $db;
+    private Setting $settings;
 
     public function __construct()
     {
         $this->db = Database::getInstance();
+        $this->settings = new Setting();
     }
 
     /**
@@ -118,10 +120,10 @@ class CallQueue
         }
 
         // Načíst nastavení pracovních dní
-        $workdaysStr = Setting::get('workdays', '1,2,3,4,5');
+        $workdaysStr = $this->settings->get('workdays', '1,2,3,4,5');
         $workdays = array_map('intval', explode(',', $workdaysStr));
 
-        $advanceDays = $reminder['advance_days'] ?: (int) Setting::get('default_advance_days', 5);
+        $advanceDays = $reminder['advance_days'] ?: (int) $this->settings->get('default_advance_days', 5);
 
         // Jít zpět X pracovních dní
         $callDate = $eventDate;

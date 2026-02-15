@@ -28,7 +28,7 @@ class Validator
     /**
      * Validace povinného pole
      */
-    public function required(string $field, string $message = null): self
+    public function required(string $field, ?string $message = null): self
     {
         $value = $this->data[$field] ?? null;
 
@@ -42,7 +42,7 @@ class Validator
     /**
      * Validace emailu
      */
-    public function email(string $field, string $message = null): self
+    public function email(string $field, ?string $message = null): self
     {
         $value = $this->data[$field] ?? '';
 
@@ -56,7 +56,7 @@ class Validator
     /**
      * Validace telefonního čísla
      */
-    public function phone(string $field, string $message = null): self
+    public function phone(string $field, ?string $message = null): self
     {
         $value = $this->data[$field] ?? '';
 
@@ -70,7 +70,7 @@ class Validator
     /**
      * Validace minimální délky
      */
-    public function minLength(string $field, int $min, string $message = null): self
+    public function minLength(string $field, int $min, ?string $message = null): self
     {
         $value = $this->data[$field] ?? '';
 
@@ -84,7 +84,7 @@ class Validator
     /**
      * Validace maximální délky
      */
-    public function maxLength(string $field, int $max, string $message = null): self
+    public function maxLength(string $field, int $max, ?string $message = null): self
     {
         $value = $this->data[$field] ?? '';
 
@@ -98,7 +98,7 @@ class Validator
     /**
      * Validace hodnoty z výčtu
      */
-    public function in(string $field, array $allowed, string $message = null): self
+    public function in(string $field, array $allowed, ?string $message = null): self
     {
         $value = $this->data[$field] ?? '';
 
@@ -112,7 +112,7 @@ class Validator
     /**
      * Validace číselného rozsahu
      */
-    public function between(string $field, int $min, int $max, string $message = null): self
+    public function between(string $field, int $min, int $max, ?string $message = null): self
     {
         $value = $this->data[$field] ?? null;
 
@@ -129,7 +129,7 @@ class Validator
     /**
      * Validace data (den a měsíc)
      */
-    public function validDate(string $dayField, string $monthField, string $message = null): self
+    public function validDate(string $dayField, string $monthField, ?string $message = null): self
     {
         $day = (int) ($this->data[$dayField] ?? 0);
         $month = (int) ($this->data[$monthField] ?? 0);
@@ -151,7 +151,7 @@ class Validator
     /**
      * Validace hesla (síla)
      */
-    public function password(string $field, string $message = null): self
+    public function password(string $field, ?string $message = null): self
     {
         $value = $this->data[$field] ?? '';
 
@@ -165,7 +165,7 @@ class Validator
     /**
      * Validace shody dvou polí
      */
-    public function matches(string $field, string $otherField, string $message = null): self
+    public function matches(string $field, string $otherField, ?string $message = null): self
     {
         $value = $this->data[$field] ?? '';
         $otherValue = $this->data[$otherField] ?? '';
