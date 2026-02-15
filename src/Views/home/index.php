@@ -312,7 +312,7 @@ $shopName = $setting->get('shop_name_full', $setting->get('shop_name', 'Jeleni v
         </div>
 
         <p style="text-align: center; font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--spacing-lg);">
-            Službu si aktivujete přímo v naší provozovně. Stačí přijít a říct si o ni, nebo nás <a href="#kontakt" style="color: var(--color-primary);">kontaktujte</a>.
+            Službu si aktivujete přímo v naší provozovně. Stačí přijít a říct si o ni.
         </p>
     </div>
 </section>

@@ -74,7 +74,6 @@ return [
     'POST /admin/zakaznik/{id}/email-qr' => ['AdminCustomerController', 'resendPaymentQr', 'admin'],
     'POST /admin/zakaznik/{id}/pripominka' => ['AdminCustomerController', 'storeReminder', 'admin'],
     'POST /admin/zakaznik/{id}/prodlouzit' => ['AdminCustomerController', 'extendSubscription', 'admin'],
-    'POST /admin/zakaznik/{id}/zmenit-tarif' => ['AdminCustomerController', 'changePlan', 'admin'],
 
     // Správa předplatného
     'GET /admin/predplatne' => ['SubscriptionController', 'index', 'admin'],
