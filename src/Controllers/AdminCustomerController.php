@@ -356,6 +356,128 @@ class AdminCustomerController extends BaseController
     }
 
     /**
+     * Přidat připomínku za zákazníka
+     */
+    public function storeReminder(array $params): void
+    {
+        $this->validateCsrf();
+
+        $id = (int) $params['id'];
+        $customer = $this->customer->find($id);
+
+        if (!$customer) {
+            $this->notFound();
+        }
+
+        $subscription = $this->subscription->findLatestByCustomer($id);
+
+        if (!$subscription || !in_array($subscription['status'], ['active', 'awaiting_activation'])) {
+            flash('error', 'Zákazník nemá aktivní předplatné.');
+            $this->redirect('/admin/zakaznik/' . $id);
+        }
+
+        $reminderCount = $this->reminder->countByCustomer($id);
+
+        if ($reminderCount >= $subscription['reminder_limit']) {
+            flash('error', 'Zákazník dosáhl limitu připomínek (' . $subscription['reminder_limit'] . ').');
+            $this->redirect('/admin/zakaznik/' . $id);
+        }
+
+        $data = [
+            'event_type' => $this->input('event_type'),
+            'recipient_relation' => $this->input('recipient_relation'),
+            'event_day' => (int) $this->input('event_day'),
+            'event_month' => (int) $this->input('event_month'),
+            'advance_days' => (int) $this->input('advance_days', 5),
+            'price_range' => $this->input('price_range', 'to_discuss'),
+            'customer_note' => trim($this->input('customer_note', '')),
+        ];
+
+        // Pro svátky s fixním datem přepsat datum
+        if ($data['event_type'] && has_automatic_date($data['event_type'])) {
+            $holidayDate = get_holiday_date($data['event_type']);
+            if ($holidayDate) {
+                $data['event_day'] = $holidayDate['day'];
+                $data['event_month'] = $holidayDate['month'];
+            }
+        }
+
+        // Validace
+        $validator = $this->validate($data);
+        $validator
+            ->required('event_type', 'Vyberte typ události.')
+            ->in('event_type', array_keys(\Models\Reminder::getEventTypes()), 'Neplatný typ události.')
+            ->required('recipient_relation', 'Vyberte koho slavíte.')
+            ->in('recipient_relation', array_keys(\Models\Reminder::getRelations()), 'Neplatný vztah.')
+            ->required('event_day', 'Vyberte den.')
+            ->between('event_day', 1, 31, 'Neplatný den.')
+            ->required('event_month', 'Vyberte měsíc.')
+            ->between('event_month', 1, 12, 'Neplatný měsíc.');
+
+        if ($validator->fails()) {
+            $this->withErrors($validator->errors());
+            flash('error', 'Opravte chyby ve formuláři.');
+            $this->redirect('/admin/zakaznik/' . $id);
+        }
+
+        $data['customer_id'] = $id;
+        $reminderId = $this->reminder->create($data);
+
+        // Aktualizovat call queue
+        $callQueue = new \Models\CallQueue();
+        $callQueue->regenerateForReminder($reminderId);
+
+        flash('success', 'Připomínka přidána.');
+        $this->redirect('/admin/zakaznik/' . $id);
+    }
+
+    /**
+     * Ručně prodloužit předplatné
+     */
+    public function extendSubscription(array $params): void
+    {
+        $this->validateCsrf();
+
+        $id = (int) $params['id'];
+        $customer = $this->customer->find($id);
+
+        if (!$customer) {
+            $this->notFound();
+        }
+
+        $subscription = $this->subscription->findLatestByCustomer($id);
+
+        if (!$subscription) {
+            flash('error', 'Zákazník nemá žádné předplatné.');
+            $this->redirect('/admin/zakaznik/' . $id);
+        }
+
+        // Vypočítat nové datum expirace
+        $now = date('Y-m-d');
+        if ($subscription['expires_at'] && strtotime($subscription['expires_at']) > time()) {
+            // Pokud ještě nevypršelo, přidat rok k aktuální expiraci
+            $newExpires = date('Y-m-d', strtotime($subscription['expires_at'] . ' +1 year'));
+        } else {
+            // Pokud už vypršelo, počítat od dnes
+            $newExpires = date('Y-m-d', strtotime('+1 year'));
+        }
+
+        $startsAt = $subscription['starts_at'] ?? $now;
+
+        $this->subscription->update($subscription['id'], [
+            'starts_at' => $startsAt,
+            'expires_at' => $newExpires,
+            'status' => 'active',
+            'payment_status' => 'paid',
+            'payment_confirmed_at' => date('Y-m-d H:i:s'),
+            'payment_confirmed_by' => \Session::getAdminId(),
+        ]);
+
+        flash('success', 'Předplatné prodlouženo do ' . format_date($newExpires) . '.');
+        $this->redirect('/admin/zakaznik/' . $id);
+    }
+
+    /**
      * Přepnout aktivní stav zákazníka
      */
     public function toggleActive(array $params): void

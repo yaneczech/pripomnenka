@@ -61,7 +61,10 @@
                 </form>
 
                 <div class="text-center mt-3">
-                    <a href="/prihlaseni/otp" class="text-small">Zapomněli jste heslo? Přihlaste se kódem</a>
+                    <form action="/prihlaseni/otp" method="post" style="display: inline;">
+                        <?= \CSRF::field() ?>
+                        <button type="submit" class="text-small" style="background: none; border: none; color: var(--color-primary); cursor: pointer; text-decoration: underline; padding: 0;">Zapomněli jste heslo? Přihlaste se kódem</button>
+                    </form>
                 </div>
 
                 <div class="text-center mt-2">
@@ -121,13 +124,13 @@
 
                 <div class="text-center mt-3" id="otp-resend">
                     <?php if (!empty($canResend)): ?>
-                        <form action="/prihlaseni/znovu-poslat" method="post" style="display: inline;">
+                        <form action="/prihlaseni/otp-znovu" method="post" style="display: inline;">
                             <?= \CSRF::field() ?>
                             <button type="submit" class="btn btn--ghost btn--small">Poslat kód znovu</button>
                         </form>
                     <?php else: ?>
                         <span class="text-muted text-small" id="otp-countdown">Poslat znovu za <strong id="otp-timer">60</strong>s</span>
-                        <form action="/prihlaseni/znovu-poslat" method="post" style="display: none;" id="otp-resend-form">
+                        <form action="/prihlaseni/otp-znovu" method="post" style="display: none;" id="otp-resend-form">
                             <?= \CSRF::field() ?>
                             <button type="submit" class="btn btn--ghost btn--small">Poslat kód znovu</button>
                         </form>

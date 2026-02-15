@@ -176,10 +176,9 @@ class Subscription
         }
 
         $now = date('Y-m-d H:i:s');
+        $isRenewal = $subscription['activated_at'] !== null;
 
         // Vypočítat expires_at
-        // Pokud už má expires_at a je v budoucnu, přidat rok k němu
-        // Jinak nastavit +1 rok od dnes
         if ($subscription['expires_at'] && strtotime($subscription['expires_at']) > time()) {
             $startsAt = $subscription['starts_at'] ?? date('Y-m-d');
             $expiresAt = date('Y-m-d', strtotime($subscription['expires_at'] . ' +1 year'));
@@ -188,21 +187,28 @@ class Subscription
             $expiresAt = date('Y-m-d', strtotime('+1 year'));
         }
 
-        // Vygenerovat aktivační token
-        $token = generate_token(32);
-        $tokenExpires = date('Y-m-d H:i:s', strtotime('+30 days'));
-
-        return $this->update($id, [
+        $updateData = [
             'payment_status' => 'paid',
             'payment_confirmed_at' => $now,
             'payment_confirmed_by' => $adminId,
             'price_paid' => $amount ?? $subscription['price'],
             'starts_at' => $startsAt,
             'expires_at' => $expiresAt,
-            'activation_token' => $token,
-            'activation_token_expires_at' => $tokenExpires,
-            'status' => 'awaiting_activation',
-        ]);
+        ];
+
+        if ($isRenewal) {
+            // Obnova — účet už byl aktivován, rovnou aktivní
+            $updateData['status'] = 'active';
+        } else {
+            // Nové předplatné — čeká na aktivaci
+            $token = generate_token(32);
+            $tokenExpires = date('Y-m-d H:i:s', strtotime('+30 days'));
+            $updateData['status'] = 'awaiting_activation';
+            $updateData['activation_token'] = $token;
+            $updateData['activation_token_expires_at'] = $tokenExpires;
+        }
+
+        return $this->update($id, $updateData);
     }
 
     /**
@@ -216,10 +222,9 @@ class Subscription
         }
 
         $now = date('Y-m-d H:i:s');
+        $isRenewal = $subscription['activated_at'] !== null;
 
         // Vypočítat expires_at
-        // Pokud už má expires_at a je v budoucnu, přidat rok k němu
-        // Jinak nastavit +1 rok od dnes
         if ($subscription['expires_at'] && strtotime($subscription['expires_at']) > time()) {
             $startsAt = $subscription['starts_at'] ?? date('Y-m-d');
             $expiresAt = date('Y-m-d', strtotime($subscription['expires_at'] . ' +1 year'));
@@ -239,11 +244,7 @@ class Subscription
                 : "Nedoplatek " . number_format(abs($diff), 2, ',', ' ') . " Kč";
         }
 
-        // Vygenerovat aktivační token
-        $token = generate_token(32);
-        $tokenExpires = date('Y-m-d H:i:s', strtotime('+30 days'));
-
-        return $this->update($id, [
+        $updateData = [
             'payment_status' => $paymentStatus,
             'payment_confirmed_at' => $now,
             'payment_confirmed_by' => $adminId,
@@ -251,10 +252,21 @@ class Subscription
             'payment_note' => $paymentNote,
             'starts_at' => $startsAt,
             'expires_at' => $expiresAt,
-            'activation_token' => $token,
-            'activation_token_expires_at' => $tokenExpires,
-            'status' => 'awaiting_activation',
-        ]);
+        ];
+
+        if ($isRenewal) {
+            // Obnova — účet už byl aktivován, rovnou aktivní
+            $updateData['status'] = 'active';
+        } else {
+            // Nové předplatné — čeká na aktivaci
+            $token = generate_token(32);
+            $tokenExpires = date('Y-m-d H:i:s', strtotime('+30 days'));
+            $updateData['status'] = 'awaiting_activation';
+            $updateData['activation_token'] = $token;
+            $updateData['activation_token_expires_at'] = $tokenExpires;
+        }
+
+        return $this->update($id, $updateData);
     }
 
     /**
