@@ -213,6 +213,9 @@ class Customer
                 break;
         }
 
+        $limit = max(1, $limit);
+        $offset = max(0, $offset);
+
         return $this->db->fetchAll(
             "SELECT c.*,
                     (SELECT status FROM subscriptions WHERE customer_id = c.id ORDER BY id DESC LIMIT 1) as subscription_status,
@@ -220,8 +223,8 @@ class Customer
              FROM customers c
              WHERE {$where}
              ORDER BY c.created_at DESC
-             LIMIT ? OFFSET ?",
-            array_merge($params, [$limit, $offset])
+             LIMIT {$limit} OFFSET {$offset}",
+            $params
         );
     }
 
