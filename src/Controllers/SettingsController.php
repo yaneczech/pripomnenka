@@ -188,7 +188,7 @@ class SettingsController extends BaseController
         $discountPercent = (int) $this->input('discount_percent', 10);
         $description = trim($this->input('description', ''));
 
-        if ($id <= 0 || empty($name) || $price <= 0) {
+        if ($id <= 0 || empty($name) || $price < 0) {
             flash('error', 'Neplatná data.');
             return;
         }
