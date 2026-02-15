@@ -52,11 +52,19 @@
                         <?php endif; ?>
                     </div>
 
+                    <div class="form-check mb-3">
+                        <input type="checkbox" id="remember" name="remember" value="1" class="form-check-input" checked>
+                        <label for="remember" class="form-check-label">Zapamatovat si mě</label>
+                    </div>
+
                     <button type="submit" class="btn btn--primary btn--block">Přihlásit se</button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <a href="/prihlaseni/otp" class="text-small">Zapomněli jste heslo? Přihlaste se kódem</a>
+                    <form action="/prihlaseni/otp" method="post" style="display: inline;">
+                        <?= \CSRF::field() ?>
+                        <button type="submit" class="text-small" style="background: none; border: none; color: var(--color-primary); cursor: pointer; text-decoration: underline; padding: 0;">Zapomněli jste heslo? Přihlaste se kódem</button>
+                    </form>
                 </div>
 
                 <div class="text-center mt-2">
@@ -106,17 +114,45 @@
                         <span class="form-hint">Zkontrolujte i složku spam.</span>
                     </div>
 
+                    <div class="form-check mb-3">
+                        <input type="checkbox" id="remember_otp" name="remember" value="1" class="form-check-input" checked>
+                        <label for="remember_otp" class="form-check-label">Zapamatovat si mě</label>
+                    </div>
+
                     <button type="submit" class="btn btn--primary btn--block">Ověřit</button>
                 </form>
 
-                <?php if (!empty($canResend)): ?>
-                    <div class="text-center mt-3">
-                        <form action="/prihlaseni/znovu-poslat" method="post" style="display: inline;">
+                <div class="text-center mt-3" id="otp-resend">
+                    <?php if (!empty($canResend)): ?>
+                        <form action="/prihlaseni/otp-znovu" method="post" style="display: inline;">
                             <?= \CSRF::field() ?>
                             <button type="submit" class="btn btn--ghost btn--small">Poslat kód znovu</button>
                         </form>
-                    </div>
-                <?php endif; ?>
+                    <?php else: ?>
+                        <span class="text-muted text-small" id="otp-countdown">Poslat znovu za <strong id="otp-timer">60</strong>s</span>
+                        <form action="/prihlaseni/otp-znovu" method="post" style="display: none;" id="otp-resend-form">
+                            <?= \CSRF::field() ?>
+                            <button type="submit" class="btn btn--ghost btn--small">Poslat kód znovu</button>
+                        </form>
+                        <script>
+                        (function() {
+                            var seconds = 60;
+                            var timer = document.getElementById('otp-timer');
+                            var countdown = document.getElementById('otp-countdown');
+                            var form = document.getElementById('otp-resend-form');
+                            var interval = setInterval(function() {
+                                seconds--;
+                                timer.textContent = seconds;
+                                if (seconds <= 0) {
+                                    clearInterval(interval);
+                                    countdown.style.display = 'none';
+                                    form.style.display = 'inline';
+                                }
+                            }, 1000);
+                        })();
+                        </script>
+                    <?php endif; ?>
+                </div>
 
                 <div class="text-center mt-2">
                     <a href="/prihlaseni" class="text-small text-muted">← Zpět</a>

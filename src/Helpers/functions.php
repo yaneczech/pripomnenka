@@ -351,6 +351,23 @@ function get_holiday_date(string $eventType, ?int $year = null): ?array
 }
 
 /**
+ * Formátování ceny předplatného
+ * Pro nulovou cenu zobrazí "Zdarma", jinak formátovanou částku s "Kč"
+ */
+function format_price(float|int|string $price, string $suffix = ''): string
+{
+    $price = (float) $price;
+    if ($price <= 0) {
+        return 'Zdarma';
+    }
+    $formatted = number_format($price, 0, ',', ' ') . ' Kč';
+    if ($suffix) {
+        $formatted .= $suffix;
+    }
+    return $formatted;
+}
+
+/**
  * Zjistit, zda má událost automatické datum
  */
 function has_automatic_date(string $eventType): bool

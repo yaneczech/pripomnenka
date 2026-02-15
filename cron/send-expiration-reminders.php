@@ -29,6 +29,7 @@ $in30Days = date('Y-m-d', strtotime('+30 days'));
 $in14Days = date('Y-m-d', strtotime('+14 days'));
 
 // Get subscriptions expiring in exactly 30 days (first reminder)
+// Bezplatné tarify (price=0) se neposílají — automaticky se prodlouží
 $expiring30 = $db->fetchAll("
     SELECT
         s.*,
@@ -42,6 +43,7 @@ $expiring30 = $db->fetchAll("
     JOIN subscription_plans sp ON s.plan_id = sp.id
     WHERE s.status = 'active'
       AND s.expires_at = ?
+      AND s.price > 0
 ", [$in30Days]);
 
 $log('Found ' . count($expiring30) . ' subscriptions expiring in 30 days');
@@ -60,6 +62,7 @@ $expiring14 = $db->fetchAll("
     JOIN subscription_plans sp ON s.plan_id = sp.id
     WHERE s.status = 'active'
       AND s.expires_at = ?
+      AND s.price > 0
 ", [$in14Days]);
 
 $log('Found ' . count($expiring14) . ' subscriptions expiring in 14 days');
@@ -127,12 +130,27 @@ foreach ($expiring14 as $sub) {
     usleep(100000);
 }
 
-// Mark expired subscriptions
+// Auto-renew free subscriptions (price=0)
+$autoRenewed = $db->query("
+    UPDATE subscriptions
+    SET expires_at = DATE_ADD(expires_at, INTERVAL 1 YEAR)
+    WHERE status = 'active'
+      AND expires_at <= ?
+      AND price = 0
+", [$today]);
+
+$renewedCount = $autoRenewed->rowCount();
+if ($renewedCount > 0) {
+    $log("Auto-renewed $renewedCount free subscriptions");
+}
+
+// Mark expired subscriptions (only paid plans)
 $stmt = $db->query("
     UPDATE subscriptions
     SET status = 'expired'
     WHERE status = 'active'
       AND expires_at < ?
+      AND price > 0
 ", [$today]);
 
 $expired = $stmt->rowCount();

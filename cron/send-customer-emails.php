@@ -43,6 +43,7 @@ $calls = $db->fetchAll("
     FROM call_queue cq
     JOIN reminders r ON cq.reminder_id = r.id
     JOIN customers c ON r.customer_id = c.id
+    JOIN subscriptions s ON s.customer_id = c.id AND s.status = 'active' AND s.expires_at >= CURDATE()
     WHERE cq.scheduled_date = ?
       AND cq.status = 'pending'
       AND cq.attempt_count = 1

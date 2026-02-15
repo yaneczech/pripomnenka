@@ -49,7 +49,7 @@
     </tr>
     <tr>
         <th>Cena</th>
-        <td><?= number_format($data['subscription']['price'], 0, ',', ' ') ?> Kč</td>
+        <td><?= format_price($data['subscription']['price']) ?></td>
     </tr>
 </table>
 <?php endif; ?>

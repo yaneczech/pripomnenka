@@ -160,14 +160,22 @@ class AuthController extends BaseController
     {
         $customerId = \Session::get('login_customer_id');
         $code = $this->input('code', '');
+        $identifier = \Session::get('login_identifier', '');
+
+        // Rate limiting pro OTP pokusy
+        if ($this->isRateLimited($identifier)) {
+            flash('error', 'Příliš mnoho pokusů. Zkuste to za 15 minut.');
+            $this->redirect('/prihlaseni');
+        }
 
         // Fake OTP pro neexistující účty
         if (\Session::get('login_step') === 'otp_fake') {
+            $this->logLoginAttempt($identifier);
             sleep(1); // Simulace ověření
             $this->view('auth/login', [
                 'title' => 'Přihlášení',
                 'step' => 'otp',
-                'identifier' => $this->maskIdentifier(\Session::get('login_identifier')),
+                'identifier' => $this->maskIdentifier($identifier),
                 'errors' => ['code' => 'Nesprávný kód. Zkontrolujte email a zkuste to znovu.'],
             ], 'public');
             return;
@@ -185,6 +193,7 @@ class AuthController extends BaseController
 
         // Ověřit OTP
         if (!$this->otpCode->verify($customerId, $code)) {
+            $this->logLoginAttempt($customer['email']);
             $remaining = $this->otpCode->getRemainingAttempts($customerId);
 
             $this->view('auth/login', [

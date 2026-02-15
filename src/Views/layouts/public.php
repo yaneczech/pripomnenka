@@ -77,6 +77,7 @@
                     <a href="https://jelenivzeleni.cz">jelenivzeleni.cz</a>
                 </div>
                 <div class="footer-links">
+                    <a href="/podminky">Obchodní podmínky</a>
                     <a href="/ochrana-udaju">Ochrana osobních údajů</a>
                 </div>
             </div>
@@ -85,6 +86,25 @@
             </div>
         </div>
     </footer>
+
+    <?php if (\Session::isLoggedIn()): ?>
+    <!-- Bottom Navigation (mobile) -->
+    <nav class="bottom-nav" aria-label="Mobilní navigace">
+        <?php $uri = $_SERVER['REQUEST_URI']; ?>
+        <a href="/moje-pripominky" class="bottom-nav-link <?= str_starts_with($uri, '/moje-pripominky') || str_starts_with($uri, '/nova-pripominka') || str_starts_with($uri, '/pripominka') ? 'is-active' : '' ?>">
+            <i class="ri-notification-3-line"></i>
+            <span>Připomínky</span>
+        </a>
+        <a href="/nova-pripominka" class="bottom-nav-link <?= $uri === '/nova-pripominka' ? 'is-active' : '' ?>">
+            <i class="ri-add-circle-line"></i>
+            <span>Nová</span>
+        </a>
+        <a href="/profil" class="bottom-nav-link <?= str_starts_with($uri, '/profil') ? 'is-active' : '' ?>">
+            <i class="ri-user-line"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
+    <?php endif; ?>
 
     <script src="<?= asset('js/app.js') ?>"></script>
 </body>

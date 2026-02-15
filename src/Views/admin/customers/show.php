@@ -92,7 +92,7 @@
                         </div>
                         <div>
                             <span class="text-small text-muted">Cena</span>
-                            <div><?= number_format($subscription['price'], 0, ',', ' ') ?> Kč</div>
+                            <div><?= format_price($subscription['price']) ?></div>
                         </div>
                         <div>
                             <span class="text-small text-muted">VS</span>
@@ -114,6 +114,7 @@
                             <?= e($subscription['payment_note']) ?>
                         </div>
                     <?php endif; ?>
+<<<<<<< HEAD
 
                     <form action="/admin/zakaznik/<?= $customer['id'] ?>/zmenit-tarif" method="post" class="mt-3">
                         <?= \CSRF::field() ?>
@@ -136,6 +137,26 @@
                         </div>
                         <button type="submit" class="btn btn--outline btn--small">Uložit tarif</button>
                     </form>
+=======
+                    <?php if (in_array($subscription['status'], ['active', 'expired'])): ?>
+                        <div class="mt-2">
+                            <form action="/admin/zakaznik/<?= $customer['id'] ?>/prodlouzit" method="post" style="display: inline;"
+                                  onsubmit="return confirm('Opravdu prodloužit předplatné o 1 rok?')">
+                                <?= \CSRF::field() ?>
+                                <button type="submit" class="btn btn--outline btn--small">Prodloužit o rok</button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($subscription['status'] === 'awaiting_payment'): ?>
+                        <div class="mt-2">
+                            <form action="/admin/predplatne/<?= $subscription['id'] ?>/potvrdit" method="post" style="display: inline;">
+                                <?= \CSRF::field() ?>
+                                <input type="hidden" name="price_paid" value="<?= $subscription['price'] ?>">
+                                <button type="submit" class="btn btn--outline btn--small">Potvrdit platbu</button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
+>>>>>>> 0b38b24821d9b9766d41bc9ff5ed30a4259491ef
                 <?php else: ?>
                     <p class="text-muted">Zákazník nemá žádné předplatné.</p>
                 <?php endif; ?>
@@ -196,7 +217,12 @@
         <div class="card mb-3">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <h2 class="card-title" style="margin: 0;">Připomínky</h2>
-                <span class="text-small text-muted"><?= count($reminders) ?>/<?= $reminderLimit ?></span>
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <span class="text-small text-muted"><?= count($reminders) ?>/<?= $reminderLimit ?></span>
+                    <?php if (count($reminders) < $reminderLimit): ?>
+                        <button type="button" class="btn btn--primary btn--small" onclick="document.getElementById('addReminderModal').style.display='flex'">+ Přidat</button>
+                    <?php endif; ?>
+                </div>
             </div>
             <div class="card-body">
                 <?php if (empty($reminders)): ?>
@@ -311,6 +337,119 @@
         </button>
     </div>
 </div>
+
+<!-- Modal pro přidání připomínky -->
+<div class="modal-overlay" id="addReminderModal" style="display: none;">
+    <div class="modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Přidat připomínku</h3>
+            <button class="modal-close" onclick="document.getElementById('addReminderModal').style.display='none'">&times;</button>
+        </div>
+        <form action="/admin/zakaznik/<?= $customer['id'] ?>/pripominka" method="post">
+            <?= \CSRF::field() ?>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Koho slavíte?</label>
+                    <select name="recipient_relation" class="form-select" required>
+                        <option value="">— vyberte —</option>
+                        <?php foreach (\Models\Reminder::getRelations() as $val => $label): ?>
+                            <option value="<?= $val ?>"><?= e($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Co slavíte?</label>
+                    <select name="event_type" class="form-select" id="admin_event_type" required>
+                        <option value="">— vyberte —</option>
+                        <?php foreach (\Models\Reminder::getEventTypes() as $val => $label): ?>
+                            <option value="<?= $val ?>"><?= e($label) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-row form-row--2">
+                    <div class="form-group">
+                        <label class="form-label">Den</label>
+                        <select name="event_day" class="form-select" id="admin_event_day" required>
+                            <option value="">Den</option>
+                            <?php for ($i = 1; $i <= 31; $i++): ?>
+                                <option value="<?= $i ?>"><?= $i ?>.</option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Měsíc</label>
+                        <select name="event_month" class="form-select" id="admin_event_month" required>
+                            <option value="">Měsíc</option>
+                            <?php
+                            $months = ['', 'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
+                            for ($i = 1; $i <= 12; $i++):
+                            ?>
+                                <option value="<?= $i ?>"><?= $months[$i] ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row form-row--2">
+                    <div class="form-group">
+                        <label class="form-label">Předstih</label>
+                        <select name="advance_days" class="form-select">
+                            <?php foreach (\Models\Reminder::getAdvanceDays() as $val => $label): ?>
+                                <option value="<?= $val ?>" <?= $val === 5 ? 'selected' : '' ?>><?= e($label) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rozpočet</label>
+                        <select name="price_range" class="form-select">
+                            <?php foreach (\Models\Reminder::getPriceRanges() as $val => $label): ?>
+                                <option value="<?= $val ?>" <?= $val === 'to_discuss' ? 'selected' : '' ?>><?= e($label) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Poznámka</label>
+                    <textarea name="customer_note" class="form-textarea" rows="2" maxlength="500"
+                              placeholder="Např. má ráda tulipány..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" onclick="document.getElementById('addReminderModal').style.display='none'">Zrušit</button>
+                <button type="submit" class="btn btn--primary">Přidat připomínku</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Auto-fill date for holidays
+(function() {
+    var eventType = document.getElementById('admin_event_type');
+    var daySelect = document.getElementById('admin_event_day');
+    var monthSelect = document.getElementById('admin_event_month');
+    if (!eventType) return;
+
+    <?php
+    $mothersDay = get_holiday_date('mothers_day') ?? ['day' => 10, 'month' => 5];
+    $fathersDay = get_holiday_date('fathers_day') ?? ['day' => 21, 'month' => 6];
+    ?>
+    var autoHolidays = {
+        'valentines': { day: 14, month: 2 },
+        'womens_day': { day: 8, month: 3 },
+        'mothers_day': { day: <?= $mothersDay['day'] ?>, month: <?= $mothersDay['month'] ?> },
+        'fathers_day': { day: <?= $fathersDay['day'] ?>, month: <?= $fathersDay['month'] ?> },
+        'school_year_end': { day: 30, month: 6 }
+    };
+
+    eventType.addEventListener('change', function() {
+        var h = autoHolidays[this.value];
+        if (h) {
+            daySelect.value = h.day;
+            monthSelect.value = h.month;
+        }
+    });
+})();
+</script>
 
 <!-- Modal pro potvrzení smazání -->
 <div class="modal-overlay" id="deleteCustomerModal" style="display: none;">

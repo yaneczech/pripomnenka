@@ -6,25 +6,69 @@
     'use strict';
 
     // ========================================
+    // Admin Mobile Nav Toggle
+    // ========================================
+    var adminNavToggle = document.querySelector('.admin-nav-toggle');
+    var adminNav = document.getElementById('admin-nav');
+
+    if (adminNavToggle && adminNav) {
+        adminNavToggle.addEventListener('click', function() {
+            var isOpen = adminNav.classList.toggle('is-open');
+            adminNavToggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Close nav when clicking outside
+        document.addEventListener('click', function(e) {
+            if (adminNav.classList.contains('is-open') &&
+                !adminNav.contains(e.target) &&
+                !adminNavToggle.contains(e.target)) {
+                adminNav.classList.remove('is-open');
+                adminNavToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // ========================================
     // Modal Functionality
     // ========================================
     const modalOverlays = document.querySelectorAll('.modal-overlay');
 
-    // Open modal
+    var lastFocusedElement = null;
+
+    // Open modal with ARIA and focus trap
     document.querySelectorAll('[data-modal-open]').forEach(function(trigger) {
         trigger.addEventListener('click', function(e) {
             e.preventDefault();
-            const modalId = this.dataset.modalOpen;
-            const modal = document.getElementById(modalId);
+            var modalId = this.dataset.modalOpen;
+            var modal = document.getElementById(modalId);
             if (modal) {
-                modal.classList.add('is-open');
-                document.body.style.overflow = 'hidden';
+                openModal(modal);
             }
         });
     });
 
+    function openModal(overlay) {
+        lastFocusedElement = document.activeElement;
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        // Focus first focusable element
+        var modal = overlay.querySelector('.modal');
+        if (modal) {
+            var focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (focusable.length) {
+                focusable[0].focus();
+            }
+        }
+    }
+
     // Close modal
     modalOverlays.forEach(function(overlay) {
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-hidden', 'true');
+
         // Close on overlay click
         overlay.addEventListener('click', function(e) {
             if (e.target === overlay) {
@@ -33,8 +77,9 @@
         });
 
         // Close button
-        const closeBtn = overlay.querySelector('.modal-close');
+        var closeBtn = overlay.querySelector('.modal-close');
         if (closeBtn) {
+            closeBtn.setAttribute('aria-label', 'Zavřít');
             closeBtn.addEventListener('click', function() {
                 closeModal(overlay);
             });
@@ -46,12 +91,34 @@
                 closeModal(overlay);
             });
         });
+
+        // Focus trap
+        overlay.addEventListener('keydown', function(e) {
+            if (e.key !== 'Tab') return;
+
+            var modal = overlay.querySelector('.modal');
+            if (!modal) return;
+
+            var focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (!focusable.length) return;
+
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        });
     });
 
     // Close on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            const openModal = document.querySelector('.modal-overlay.is-open');
+            var openModal = document.querySelector('.modal-overlay.is-open');
             if (openModal) {
                 closeModal(openModal);
             }
@@ -60,7 +127,14 @@
 
     function closeModal(overlay) {
         overlay.classList.remove('is-open');
+        overlay.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+
+        // Restore focus
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+            lastFocusedElement = null;
+        }
     }
 
     // ========================================
@@ -248,6 +322,54 @@
         widget.style.cursor = 'pointer';
         widget.addEventListener('click', function() {
             window.location.href = this.dataset.href;
+        });
+    });
+
+    // ========================================
+    // Swipe Gestures for Call Cards (mobile)
+    // ========================================
+    document.querySelectorAll('.call-card[data-swipe]').forEach(function(card) {
+        var startX = 0;
+        var startY = 0;
+        var threshold = 80;
+
+        card.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        card.addEventListener('touchmove', function(e) {
+            var deltaX = e.touches[0].clientX - startX;
+            var deltaY = e.touches[0].clientY - startY;
+
+            // Only horizontal swipes
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 20) {
+                card.style.transform = 'translateX(' + deltaX + 'px)';
+                card.style.opacity = Math.max(0.3, 1 - Math.abs(deltaX) / 300);
+            }
+        }, { passive: true });
+
+        card.addEventListener('touchend', function(e) {
+            var deltaX = e.changedTouches[0].clientX - startX;
+
+            card.style.transition = 'all 0.3s ease';
+
+            if (deltaX > threshold) {
+                // Swipe right = Vyřízeno
+                var completedBtn = card.querySelector('[data-action="completed"]');
+                if (completedBtn) completedBtn.click();
+            } else if (deltaX < -threshold) {
+                // Swipe left = Nezvedá
+                var noAnswerBtn = card.querySelector('[data-action="no_answer"]');
+                if (noAnswerBtn) noAnswerBtn.click();
+            } else {
+                card.style.transform = '';
+                card.style.opacity = '';
+            }
+
+            setTimeout(function() {
+                card.style.transition = '';
+            }, 300);
         });
     });
 

@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS admins (
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     name VARCHAR(100) NOT NULL,
+    password_reset_token VARCHAR(64) DEFAULT NULL,
+    password_reset_expires_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
 
@@ -51,6 +53,7 @@ CREATE TABLE IF NOT EXISTS customers (
     is_active BOOLEAN DEFAULT TRUE,
     gdpr_consent_at DATETIME DEFAULT NULL,
     gdpr_consent_text TEXT DEFAULT NULL,
+    terms_consent_at DATETIME DEFAULT NULL,
     last_login_at DATETIME DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -261,7 +264,12 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('bank_imap_host', 'imap.airbank.cz'),
 ('bank_imap_email', ''),
 ('bank_imap_password', ''),
-('activation_link_validity_days', '30');
+('activation_link_validity_days', '30'),
+('shop_name_full', 'Jeleni v zeleni'),
+('shop_address', 'Palackého 1308/32, 586 01 Jihlava'),
+('shop_ico', '14111250'),
+('shop_owner', 'Sofie Janečková'),
+('terms_effective_date', '2026-02-14');
 
 -- Inicializace čítače VS pro aktuální rok
 INSERT INTO vs_counter (year, last_number) VALUES (YEAR(CURRENT_DATE), 0);

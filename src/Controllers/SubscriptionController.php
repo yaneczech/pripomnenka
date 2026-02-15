@@ -78,6 +78,7 @@ class SubscriptionController extends BaseController
         }
 
         $pricePaid = (float) $this->input('price_paid', $subscription['price']);
+<<<<<<< HEAD
         $note = trim($this->input('note', ''));
         $adminId = \Session::getAdminId();
 
@@ -91,6 +92,11 @@ class SubscriptionController extends BaseController
         if ($note !== '') {
             $this->subscription->update($id, ['payment_note' => $note]);
         }
+=======
+
+        // Aktivovat předplatné — správné pořadí: id, adminId, amount
+        $this->subscription->confirmPayment($id, \Session::getAdminId(), $pricePaid);
+>>>>>>> 0b38b24821d9b9766d41bc9ff5ed30a4259491ef
 
         // Odeslat aktivační email zákazníkovi
         $customer = $this->customer->find($subscription['customer_id']);
@@ -155,6 +161,7 @@ class SubscriptionController extends BaseController
             $token = bin2hex(random_bytes(32));
             $expiresAt = date('Y-m-d H:i:s', strtotime('+30 days'));
 
+<<<<<<< HEAD
             $this->subscription->update($subscription['id'], [
                 'activation_token' => $token,
                 'activation_token_expires_at' => $expiresAt,
@@ -165,5 +172,10 @@ class SubscriptionController extends BaseController
         $activationUrl = rtrim($this->config['app']['url'], '/') . '/aktivace/' . $token;
         $emailService = new EmailService();
         return $emailService->sendActivationEmail($customer, $activationUrl);
+=======
+        $activationUrl = $this->config['app']['url'] . '/aktivace/' . $token;
+        $emailService = new \Services\EmailService();
+        $emailService->sendActivationEmail($customer, $activationUrl);
+>>>>>>> 0b38b24821d9b9766d41bc9ff5ed30a4259491ef
     }
 }
