@@ -96,6 +96,8 @@ class AdminCustomerController extends BaseController
             [$id]
         );
 
+        $plans = $this->plan->findAll();
+
         $this->view('admin/customers/show', [
             'title' => $customer['name'] ?: $customer['phone'],
             'customer' => $customer,
@@ -105,6 +107,8 @@ class AdminCustomerController extends BaseController
             'reminderCount' => count($reminders),
             'callHistory' => $callHistory,
             'notes' => $notes,
+            'plans' => $plans,
+            'reminderCount' => count($reminders),
             'reminderLimit' => $subscription ? $subscription['reminder_limit'] : 0,
         ], 'admin');
     }
@@ -517,6 +521,46 @@ class AdminCustomerController extends BaseController
         ]);
 
         flash('success', 'Předplatné prodlouženo do ' . format_date($newExpires) . '.');
+        $this->redirect('/admin/zakaznik/' . $id);
+    }
+
+    /**
+     * Změna tarifu zákazníka
+     */
+    public function changePlan(array $params): void
+    {
+        $this->validateCsrf();
+
+        $id = (int) $params['id'];
+        $customer = $this->customer->find($id);
+
+        if (!$customer) {
+            $this->notFound();
+        }
+
+        $subscription = $this->subscription->findLatestByCustomer($id);
+        if (!$subscription) {
+            flash('error', 'Zákazník nemá žádné předplatné.');
+            $this->redirect('/admin/zakaznik/' . $id);
+        }
+
+        $planId = (int) $this->input('plan_id', 0);
+        $plan = $this->plan->find($planId);
+
+        if (!$plan) {
+            flash('error', 'Neplatný tarif.');
+            $this->redirect('/admin/zakaznik/' . $id);
+        }
+
+        $activeReminders = $this->reminder->countByCustomer($id);
+        if ($plan['reminder_limit'] < $activeReminders) {
+            flash('error', 'Nelze snížit tarif pod aktuální počet připomínek (' . $activeReminders . ').');
+            $this->redirect('/admin/zakaznik/' . $id);
+        }
+
+        $this->subscription->changePlan($subscription['id'], $plan);
+
+        flash('success', 'Tarif byl změněn.');
         $this->redirect('/admin/zakaznik/' . $id);
     }
 

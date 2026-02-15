@@ -166,7 +166,7 @@ class Subscription
     }
 
     /**
-     * Změnit tarif předplatného (upgrade/downgrade)
+     * Změna tarifu předplatného
      */
     public function changePlan(int $id, array $plan): bool
     {
