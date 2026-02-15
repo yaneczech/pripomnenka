@@ -114,8 +114,6 @@
                             <?= e($subscription['payment_note']) ?>
                         </div>
                     <?php endif; ?>
-<<<<<<< HEAD
-
                     <form action="/admin/zakaznik/<?= $customer['id'] ?>/zmenit-tarif" method="post" class="mt-3">
                         <?= \CSRF::field() ?>
                         <div class="form-group">
@@ -137,7 +135,6 @@
                         </div>
                         <button type="submit" class="btn btn--outline btn--small">Uložit tarif</button>
                     </form>
-=======
                     <?php if (in_array($subscription['status'], ['active', 'expired'])): ?>
                         <div class="mt-2">
                             <form action="/admin/zakaznik/<?= $customer['id'] ?>/prodlouzit" method="post" style="display: inline;"
@@ -156,7 +153,6 @@
                             </form>
                         </div>
                     <?php endif; ?>
->>>>>>> 0b38b24821d9b9766d41bc9ff5ed30a4259491ef
                 <?php else: ?>
                     <p class="text-muted">Zákazník nemá žádné předplatné.</p>
                 <?php endif; ?>

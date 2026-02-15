@@ -188,7 +188,7 @@ class Admin
     /**
      * Kontrola existence emailu
      */
-    public function emailExists(string $email, int $excludeId = null): bool
+    public function emailExists(string $email, ?int $excludeId = null): bool
     {
         $sql = "SELECT 1 FROM admins WHERE email = ?";
         $params = [strtolower(trim($email))];
