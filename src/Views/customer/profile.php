@@ -136,7 +136,9 @@
                         <ul style="margin: var(--spacing-sm) 0 0; padding-left: var(--spacing-lg);">
                             <li>Připomínky důležitých dat</li>
                             <li>Osobní telefonát před každou událostí</li>
-                            <li><strong>10% sleva</strong> na všechny kytice</li>
+                            <?php if (!empty($subscription['discount_percent']) && $subscription['discount_percent'] > 0): ?>
+                                <li><strong><?= (int) $subscription['discount_percent'] ?>% sleva</strong> na všechny kytice</li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 <?php endif; ?>

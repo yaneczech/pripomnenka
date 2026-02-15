@@ -121,6 +121,23 @@ class EmailService
     }
 
     /**
+     * Send empty account reminder email
+     */
+    public function sendEmptyAccountReminderEmail(array $customer, int $reminderNumber): bool
+    {
+        $subject = $this->setting->get('email_empty_account_subject', 'Zatím nemáte nastavené žádné připomínky 📅');
+
+        $body = $this->renderTemplate('empty_account_reminder', [
+            'customer' => $customer,
+            'reminder_number' => $reminderNumber,
+            'login_url' => $this->config['app']['url'] . '/prihlaseni',
+            'shop_phone' => $this->setting->get('shop_phone', '123 456 789'),
+        ]);
+
+        return $this->send($customer['email'], $subject, $body);
+    }
+
+    /**
      * Send admin password reset email
      */
     public function sendAdminPasswordResetEmail(string $adminEmail, string $adminName, string $resetUrl): bool
@@ -223,6 +240,8 @@ class EmailService
                 return $this->getOtpTemplate($data);
             case 'admin_summary':
                 return $this->getAdminSummaryTemplate($data);
+            case 'empty_account_reminder':
+                return $this->getEmptyAccountReminderTemplate($data);
             default:
                 return '';
         }
@@ -345,10 +364,6 @@ HTML;
 
     <p>Nechcete čekat? Ozvěte se nám:<br>
     📞 <a href="tel:+420{$data['shop_phone']}" style="color: #3e6ea1;">{$data['shop_phone']}</a></p>
-
-    <div style="background: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0;">
-        <strong>🎁 Nezapomeňte:</strong> máte <strong>10% slevu</strong> na všechny kytice!
-    </div>
 
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
 
@@ -501,6 +516,63 @@ HTML;
 
     <p style="text-align: center;">
         <a href="{$this->config['app']['url']}/admin" style="color: #3e6ea1;">Otevřít administraci →</a>
+    </p>
+</body>
+</html>
+HTML;
+    }
+
+    /**
+     * Get empty account reminder email template
+     */
+    private function getEmptyAccountReminderTemplate(array $data): string
+    {
+        $name = !empty($data['customer']['name']) ? ", {$data['customer']['name']}" : '';
+        $isSecondReminder = ($data['reminder_number'] ?? 1) >= 2;
+
+        $headline = $isSecondReminder
+            ? 'Ještě nemáte nastavené připomínky'
+            : 'Nezapomeňte si nastavit připomínky';
+
+        $intro = $isSecondReminder
+            ? 'Všimli jsme si, že jste si zatím nenastavili žádná důležitá data. Stačí pár kliknutí a my si je za vás budeme pamatovat.'
+            : 'Díky, že jste si aktivovali účet v Připomněnce! Zatím ale nemáte nastavená žádná data k hlídání.';
+
+        return <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{$headline}</title>
+</head>
+<body style="font-family: Georgia, serif; line-height: 1.6; color: #544a26; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #3e6ea1; margin: 0;">{$headline} 📅</h1>
+    </div>
+
+    <p>Dobrý den{$name}!</p>
+
+    <p>{$intro}</p>
+
+    <p>Přidejte si třeba:</p>
+    <ul>
+        <li>🎂 Narozeniny manželky, maminky, dcery...</li>
+        <li>💍 Výročí svatby nebo vztahu</li>
+        <li>🌷 Den matek, Valentýn a další svátky</li>
+    </ul>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{$data['login_url']}" style="background-color: #b87333; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">NASTAVIT PŘIPOMÍNKY →</a>
+    </div>
+
+    <p style="color: #888; font-size: 14px;">Včas vám zavoláme a pomůžeme vybrat tu pravou kytici.</p>
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+
+    <p style="text-align: center; color: #666;">
+        S pozdravem,<br>
+        <strong>Vaše květinářství Jeleni v zeleni 🌷</strong><br>
+        Tel: {$data['shop_phone']}
     </p>
 </body>
 </html>
