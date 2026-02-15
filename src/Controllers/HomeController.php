@@ -19,8 +19,12 @@ class HomeController extends BaseController
             $this->redirect('/moje-pripominky');
         }
 
+        $planModel = new \Models\SubscriptionPlan();
+        $plans = $planModel->getForLandingPage();
+
         $this->view('home/index', [
             'title' => 'Připomněnka',
+            'plans' => $plans,
         ], 'public');
     }
 }
