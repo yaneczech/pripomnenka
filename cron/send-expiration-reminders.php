@@ -131,13 +131,19 @@ foreach ($expiring14 as $sub) {
 }
 
 // Auto-renew free subscriptions (price=0)
+// - active + expired: robust against CRON order
+// - if already expired or missing date, set to today + 1 year and force active status
 $autoRenewed = $db->query("
     UPDATE subscriptions
-    SET expires_at = DATE_ADD(expires_at, INTERVAL 1 YEAR)
-    WHERE status = 'active'
-      AND expires_at <= ?
+    SET status = 'active',
+        expires_at = CASE
+            WHEN expires_at IS NULL OR expires_at < ? THEN DATE_ADD(CURDATE(), INTERVAL 1 YEAR)
+            ELSE DATE_ADD(expires_at, INTERVAL 1 YEAR)
+        END
+    WHERE status IN ('active', 'expired')
+      AND (expires_at IS NULL OR expires_at <= ?)
       AND price = 0
-", [$today]);
+", [$today, $today]);
 
 $renewedCount = $autoRenewed->rowCount();
 if ($renewedCount > 0) {

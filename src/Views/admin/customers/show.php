@@ -72,20 +72,26 @@
                             <span class="text-small text-muted">Stav</span>
                             <div>
                                 <?php
-                                $statusClass = match($subscription['status']) {
-                                    'active' => 'badge--success',
-                                    'awaiting_activation' => 'badge--info',
-                                    'awaiting_payment' => 'badge--warning',
-                                    'expired' => 'badge--error',
-                                    default => 'badge--muted',
-                                };
-                                $statusText = match($subscription['status']) {
-                                    'active' => 'Aktivní',
-                                    'awaiting_activation' => 'Čeká na aktivaci',
-                                    'awaiting_payment' => 'Čeká na platbu',
-                                    'expired' => 'Vypršelo',
-                                    default => $subscription['status'],
-                                };
+                                $isCustomerActive = (int) ($customer['is_active'] ?? 1) === 1;
+                                if (!$isCustomerActive) {
+                                    $statusClass = 'badge--warning';
+                                    $statusText = 'Deaktivovaný';
+                                } else {
+                                    $statusClass = match($subscription['status']) {
+                                        'active' => 'badge--success',
+                                        'awaiting_activation' => 'badge--info',
+                                        'awaiting_payment' => 'badge--warning',
+                                        'expired' => 'badge--error',
+                                        default => 'badge--muted',
+                                    };
+                                    $statusText = match($subscription['status']) {
+                                        'active' => 'Aktivní',
+                                        'awaiting_activation' => 'Čeká na aktivaci',
+                                        'awaiting_payment' => 'Čeká na platbu',
+                                        'expired' => 'Vypršelo',
+                                        default => $subscription['status'],
+                                    };
+                                }
                                 ?>
                                 <span class="badge <?= $statusClass ?>"><?= $statusText ?></span>
                             </div>
@@ -216,7 +222,7 @@
                 <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                     <span class="text-small text-muted"><?= count($reminders) ?>/<?= $reminderLimit ?></span>
                     <?php if (count($reminders) < $reminderLimit): ?>
-                        <button type="button" class="btn btn--primary btn--small" onclick="document.getElementById('addReminderModal').style.display='flex'">+ Přidat</button>
+                        <button type="button" class="btn btn--primary btn--small" data-modal-open="addReminderModal">+ Přidat</button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -328,18 +334,18 @@
     <div class="mt-3">
         <h4 class="text-error"><i class="ri-error-warning-line"></i> Nebezpečná zóna</h4>
         <p class="text-small text-muted">Smazání zákazníka je nevratné. Všechna data včetně připomínek budou odstraněna.</p>
-        <button type="button" class="btn btn--danger btn--small" onclick="document.getElementById('deleteCustomerModal').style.display='flex'">
+        <button type="button" class="btn btn--danger btn--small" data-modal-open="deleteCustomerModal">
             <i class="ri-delete-bin-line"></i> Smazat zákazníka
         </button>
     </div>
 </div>
 
 <!-- Modal pro přidání připomínky -->
-<div class="modal-overlay" id="addReminderModal" style="display: none;">
+<div class="modal-overlay" id="addReminderModal">
     <div class="modal" style="max-width: 500px;">
         <div class="modal-header">
             <h3 class="modal-title">Přidat připomínku</h3>
-            <button class="modal-close" onclick="document.getElementById('addReminderModal').style.display='none'">&times;</button>
+            <button class="modal-close" data-modal-close>&times;</button>
         </div>
         <form action="/admin/zakaznik/<?= $customer['id'] ?>/pripominka" method="post">
             <?= \CSRF::field() ?>
@@ -410,7 +416,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn--ghost" onclick="document.getElementById('addReminderModal').style.display='none'">Zrušit</button>
+                <button type="button" class="btn btn--ghost" data-modal-close>Zrušit</button>
                 <button type="submit" class="btn btn--primary">Přidat připomínku</button>
             </div>
         </form>
@@ -448,11 +454,11 @@
 </script>
 
 <!-- Modal pro potvrzení smazání -->
-<div class="modal-overlay" id="deleteCustomerModal" style="display: none;">
+<div class="modal-overlay" id="deleteCustomerModal">
     <div class="modal">
         <div class="modal-header">
             <h3 class="modal-title"><i class="ri-error-warning-line"></i> Potvrdit smazání</h3>
-            <button class="modal-close" onclick="document.getElementById('deleteCustomerModal').style.display='none'">&times;</button>
+            <button class="modal-close" data-modal-close>&times;</button>
         </div>
         <form action="/admin/zakaznik/<?= $customer['id'] ?>/smazat" method="post">
             <?= \CSRF::field() ?>
@@ -471,7 +477,7 @@
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn--ghost" onclick="document.getElementById('deleteCustomerModal').style.display='none'">Zrušit</button>
+                <button type="button" class="btn btn--ghost" data-modal-close>Zrušit</button>
                 <button type="submit" class="btn btn--danger">
                     <i class="ri-delete-bin-line"></i> Ano, smazat zákazníka
                 </button>

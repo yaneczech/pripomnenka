@@ -47,10 +47,11 @@ $deleted = $db->query("
 $log("Deleted $deleted old call queue records (completed/declined older than 90 days)");
 
 // 4. Označit vypršelá předplatné jako expired
+// Bezplatné tarify (price = 0) se expirací neukončují, obnovují se automaticky.
 $expired = $db->query("
     UPDATE subscriptions
     SET status = 'expired'
-    WHERE status = 'active' AND expires_at < CURDATE()
+    WHERE status = 'active' AND expires_at < CURDATE() AND price > 0
 ")->rowCount();
 
 if ($expired > 0) {

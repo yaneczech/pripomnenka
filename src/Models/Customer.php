@@ -122,7 +122,9 @@ class Customer
         }
 
         if (isset($data['is_active'])) {
-            $updateData['is_active'] = (bool) $data['is_active'];
+            // MySQL strict mode rejects empty string for TINYINT,
+            // so always normalize boolean-like values to 0/1.
+            $updateData['is_active'] = (int) ((bool) $data['is_active']);
         }
 
         if (empty($updateData)) {
@@ -200,7 +202,7 @@ class Customer
 
         switch ($filter) {
             case 'active':
-                $where = "EXISTS (SELECT 1 FROM subscriptions s WHERE s.customer_id = c.id AND s.status = 'active')";
+                $where = "c.is_active = 1 AND EXISTS (SELECT 1 FROM subscriptions s WHERE s.customer_id = c.id AND s.status = 'active')";
                 break;
             case 'awaiting_activation':
                 $where = "EXISTS (SELECT 1 FROM subscriptions s WHERE s.customer_id = c.id AND s.status = 'awaiting_activation')";
@@ -237,7 +239,7 @@ class Customer
 
         switch ($filter) {
             case 'active':
-                $where = "EXISTS (SELECT 1 FROM subscriptions s WHERE s.customer_id = c.id AND s.status = 'active')";
+                $where = "c.is_active = 1 AND EXISTS (SELECT 1 FROM subscriptions s WHERE s.customer_id = c.id AND s.status = 'active')";
                 break;
             case 'awaiting_activation':
                 $where = "EXISTS (SELECT 1 FROM subscriptions s WHERE s.customer_id = c.id AND s.status = 'awaiting_activation')";

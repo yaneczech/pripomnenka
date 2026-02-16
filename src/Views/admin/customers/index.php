@@ -72,21 +72,28 @@
                 </div>
                 <div class="customer-status">
                     <?php
+                    $isCustomerActive = (int) ($customer['is_active'] ?? 1) === 1;
                     $status = $customer['subscription_status'] ?? 'none';
-                    $statusClass = match($status) {
-                        'active' => 'badge--success',
-                        'awaiting_activation' => 'badge--info',
-                        'awaiting_payment' => 'badge--warning',
-                        'expired' => 'badge--error',
-                        default => 'badge--muted',
-                    };
-                    $statusText = match($status) {
-                        'active' => 'Aktivní',
-                        'awaiting_activation' => 'Čeká na aktivaci',
-                        'awaiting_payment' => 'Čeká na platbu',
-                        'expired' => 'Vypršelo',
-                        default => 'Bez předplatného',
-                    };
+
+                    if (!$isCustomerActive) {
+                        $statusClass = 'badge--warning';
+                        $statusText = 'Deaktivovaný';
+                    } else {
+                        $statusClass = match($status) {
+                            'active' => 'badge--success',
+                            'awaiting_activation' => 'badge--info',
+                            'awaiting_payment' => 'badge--warning',
+                            'expired' => 'badge--error',
+                            default => 'badge--muted',
+                        };
+                        $statusText = match($status) {
+                            'active' => 'Aktivní',
+                            'awaiting_activation' => 'Čeká na aktivaci',
+                            'awaiting_payment' => 'Čeká na platbu',
+                            'expired' => 'Vypršelo',
+                            default => 'Bez předplatného',
+                        };
+                    }
                     ?>
                     <span class="badge <?= $statusClass ?>"><?= $statusText ?></span>
                 </div>

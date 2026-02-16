@@ -404,7 +404,7 @@ class Subscription
     public function markExpired(): int
     {
         return $this->db->query(
-            "UPDATE subscriptions SET status = 'expired' WHERE status = 'active' AND expires_at < CURDATE()"
+            "UPDATE subscriptions SET status = 'expired' WHERE status = 'active' AND expires_at < CURDATE() AND price > 0"
         )->rowCount();
     }
 
