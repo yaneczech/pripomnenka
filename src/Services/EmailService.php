@@ -30,7 +30,7 @@ class EmailService
      */
     public function sendActivationEmail(array $customer, string $activationUrl): bool
     {
-        $subject = $this->setting->get('email_activation_subject', 'Vítejte v Připomněnce! 🌷');
+        $subject = $this->setting->get('email_activation_subject', 'Vitejte v Pripomnence');
 
         $body = $this->renderTemplate('activation', [
             'customer' => $customer,
@@ -46,7 +46,7 @@ class EmailService
      */
     public function sendPaymentQrEmail(array $customer, array $subscription): bool
     {
-        $subject = $this->setting->get('email_payment_qr_subject', 'QR kód pro platbu Připomněnka 💳');
+        $subject = $this->setting->get('email_payment_qr_subject', 'QR kod pro platbu Pripomnenka');
 
         $qrCodeUrl = $this->generateQrCodeUrl($subscription);
 
@@ -88,7 +88,7 @@ class EmailService
      */
     public function sendExpirationReminderEmail(array $customer, array $subscription, int $daysLeft): bool
     {
-        $subject = $this->setting->get('email_expiration_subject', 'Vaše předplatné Připomněnka brzy vyprší ⏰');
+        $subject = $this->setting->get('email_expiration_subject', 'Vase predplatne Pripomnenka brzy vyprsi');
 
         $qrCodeUrl = $this->generateQrCodeUrl($subscription);
 
@@ -125,7 +125,7 @@ class EmailService
      */
     public function sendEmptyAccountReminderEmail(array $customer, int $reminderNumber): bool
     {
-        $subject = $this->setting->get('email_empty_account_subject', 'Zatím nemáte nastavené žádné připomínky 📅');
+        $subject = $this->setting->get('email_empty_account_subject', 'Zatim nemate nastavene zadne pripominky');
 
         $body = $this->renderTemplate('empty_account_reminder', [
             'customer' => $customer,
@@ -621,25 +621,68 @@ HTML;
     }
 
     /**
-     * Send email
+     * Send email (multipart/alternative with plain text + HTML)
      */
     private function send(string $to, string $subject, string $body): bool
     {
+        $boundary = 'boundary_' . bin2hex(random_bytes(16));
+        $plainText = $this->htmlToPlainText($body);
+
         $headers = [
             'MIME-Version: 1.0',
-            'Content-type: text/html; charset=UTF-8',
+            'Content-Type: multipart/alternative; boundary="' . $boundary . '"',
             'From: ' . $this->formatAddress($this->fromAddress, $this->fromName),
             'Reply-To: ' . $this->fromAddress,
-            'X-Mailer: PHP/' . phpversion(),
+            'Return-Path: ' . $this->fromAddress,
+            'Message-ID: <' . bin2hex(random_bytes(16)) . '@jelenivzeleni.cz>',
+            'Date: ' . date('r'),
+            'X-Mailer: Pripomnenka/1.0',
         ];
+
+        $multipartBody = "--{$boundary}\r\n";
+        $multipartBody .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $multipartBody .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $multipartBody .= chunk_split(base64_encode($plainText)) . "\r\n";
+        $multipartBody .= "--{$boundary}\r\n";
+        $multipartBody .= "Content-Type: text/html; charset=UTF-8\r\n";
+        $multipartBody .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $multipartBody .= chunk_split(base64_encode($body)) . "\r\n";
+        $multipartBody .= "--{$boundary}--\r\n";
+
+        // Encode subject for UTF-8
+        $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 
         // Check if we should use SMTP
         if (!empty($this->config['email']['smtp']['host'])) {
-            return $this->sendViaSMTP($to, $subject, $body, $headers);
+            return $this->sendViaSMTP($to, $encodedSubject, $multipartBody, $headers);
         }
 
         // Use PHP mail() function (recommended for shared hosting)
-        return mail($to, $subject, $body, implode("\r\n", $headers));
+        return mail($to, $encodedSubject, $multipartBody, implode("\r\n", $headers));
+    }
+
+    /**
+     * Convert HTML email body to plain text
+     */
+    private function htmlToPlainText(string $html): string
+    {
+        // Remove style and script tags
+        $text = preg_replace('/<style[^>]*>.*?<\/style>/si', '', $html);
+        $text = preg_replace('/<script[^>]*>.*?<\/script>/si', '', $text);
+        // Convert links to text with URL
+        $text = preg_replace('/<a[^>]+href="([^"]*)"[^>]*>(.*?)<\/a>/si', '$2 ($1)', $text);
+        // Convert <br> and block elements to newlines
+        $text = preg_replace('/<br\s*\/?>/i', "\n", $text);
+        $text = preg_replace('/<\/(p|div|h[1-6]|tr|li)>/i', "\n", $text);
+        $text = preg_replace('/<(hr)\s*\/?>/i', "\n---\n", $text);
+        // Strip remaining HTML
+        $text = strip_tags($text);
+        // Decode HTML entities
+        $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+        // Normalize whitespace
+        $text = preg_replace('/[ \t]+/', ' ', $text);
+        $text = preg_replace('/\n{3,}/', "\n\n", $text);
+        return trim($text);
     }
 
     /**
@@ -707,10 +750,10 @@ HTML;
             fputs($socket, "DATA\r\n");
             fgets($socket, 515);
 
-            // Headers and body
+            // Headers and body (subject is already encoded)
             $message = implode("\r\n", $headers) . "\r\n";
             $message .= "To: $to\r\n";
-            $message .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
+            $message .= "Subject: $subject\r\n";
             $message .= "\r\n";
             $message .= $body;
             $message .= "\r\n.\r\n";
